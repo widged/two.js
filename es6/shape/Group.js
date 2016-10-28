@@ -1,59 +1,15 @@
-import EventTypes   from '../constants/EventTypes';
-import _  from '../utils/utils';
-import Collection  from '../utils/Collection';
+import EventTypes   from '../constant/EventTypes';
+import _  from '../util/underscore';
+import is  from '../util/is';
 import Path  from './Path';
 import Shape  from './Shape';
+import Children  from './ChildrenCollection';
 
-  /**
-   * Constants
-   */
-  var min = Math.min, max = Math.max;
+class Group extends Shape {
 
-  /**
-   * A children collection which is accesible both by index and by object id
-   * @constructor
-   */
-  var Children = function() {
+  constructor() {
 
-    Collection.apply(this, arguments);
-
-    Object.defineProperty(this, '_events', {
-      value : {},
-      enumerable: false
-    });
-
-    this.ids = {};
-
-    this.on(EventTypes.insert, this.attach);
-    this.on(EventTypes.remove, this.detach);
-    Children.prototype.attach.apply(this, arguments);
-
-  };
-
-  Children.prototype = new Collection();
-  Children.constructor = Children;
-
-  _.extend(Children.prototype, {
-
-    attach: function(children) {
-      for (var i = 0; i < children.length; i++) {
-        this.ids[children[i].id] = children[i];
-      }
-      return this;
-    },
-
-    detach: function(children) {
-      for (var i = 0; i < children.length; i++) {
-        delete this.ids[children[i].id];
-      }
-      return this;
-    }
-
-  });
-
-  var Group = function() {
-
-    Shape.call(this, true);
+    super(true);
 
     this._renderer.type = 'group';
 
@@ -63,180 +19,46 @@ import Shape  from './Shape';
     this._children = [];
     this.children = arguments;
 
-  };
+    var flags = {
+          // Flags
+        // http://en.wikipedia.org/wiki/Flag
 
-  _.extend(Group, {
+        _flagAdditions: false,
+        _flagSubtractions: false,
+        _flagOrder: false,
+        _flagOpacity: true,
 
-    Children: Children,
+        _flagMask: false,
 
-    InsertChildren: function(children) {
-      for (var i = 0; i < children.length; i++) {
-        replaceParent.call(this, children[i], this);
+        // Underlying Properties
+
+        _fill: '#fff',
+        _stroke: '#000',
+        _linewidth: 1.0,
+        _opacity: 1.0,
+        _visible: true,
+
+        _cap: 'round',
+        _join: 'round',
+        _miter: 4,
+
+        _closed: true,
+        _curved: false,
+        _automatic: true,
+        _beginning: 0,
+        _ending: 1.0,
+
+        _mask: null
       }
-    },
-
-    RemoveChildren: function(children) {
-      for (var i = 0; i < children.length; i++) {
-        replaceParent.call(this, children[i]);
-      }
-    },
-
-    OrderChildren: function(children) {
-      this._flagOrder = true;
-    },
-
-    MakeObservable: function(object) {
-
-      var properties = Path.Properties.slice(0);
-      var oi = _.indexOf(properties, 'opacity');
-
-      if (oi >= 0) {
-
-        properties.splice(oi, 1);
-
-        Object.defineProperty(object, 'opacity', {
-
-          enumerable: true,
-
-          get: function() {
-            return this._opacity;
-          },
-
-          set: function(v) {
-            // Only set flag if there is an actual difference
-            this._flagOpacity = (this._opacity != v);
-            this._opacity = v;
-          }
-
-        });
-
-      }
-
-      Shape.MakeObservable(object);
-      Group.MakeGetterSetters(object, properties);
-
-      Object.defineProperty(object, 'children', {
-
-        enumerable: true,
-
-        get: function() {
-          return this._collection;
-        },
-
-        set: function(children) {
-
-          var insertChildren = _.bind(Group.InsertChildren, this);
-          var removeChildren = _.bind(Group.RemoveChildren, this);
-          var orderChildren = _.bind(Group.OrderChildren, this);
-
-          if (this._collection) {
-            this._collection.unbind();
-          }
-
-          this._collection = new Children(children);
-          this._collection.bind(EventTypes.insert, insertChildren);
-          this._collection.bind(EventTypes.remove, removeChildren);
-          this._collection.bind(EventTypes.order, orderChildren);
-
-        }
-
-      });
-
-      Object.defineProperty(object, 'mask', {
-
-        enumerable: true,
-
-        get: function() {
-          return this._mask;
-        },
-
-        set: function(v) {
-          this._mask = v;
-          this._flagMask = true;
-          if (!v.clip) {
-            v.clip = true;
-          }
-        }
-
-      });
-
-    },
-
-    MakeGetterSetters: function(group, properties) {
-
-      if (!_.isArray(properties)) {
-        properties = [properties];
-      }
-
-      _.each(properties, function(k) {
-        Group.MakeGetterSetter(group, k);
-      });
-
-    },
-
-    MakeGetterSetter: function(group, k) {
-
-      var secret = '_' + k;
-
-      Object.defineProperty(group, k, {
-
-        enumerable: true,
-
-        get: function() {
-          return this[secret];
-        },
-
-        set: function(v) {
-          this[secret] = v;
-          _.each(this.children, function(child) { // Trickle down styles
-            child[k] = v;
-          });
-        }
-
-      });
-
-    }
-
-  });
-
-  _.extend(Group.prototype, Shape.prototype, {
-
-    // Flags
-    // http://en.wikipedia.org/wiki/Flag
-
-    _flagAdditions: false,
-    _flagSubtractions: false,
-    _flagOrder: false,
-    _flagOpacity: true,
-
-    _flagMask: false,
-
-    // Underlying Properties
-
-    _fill: '#fff',
-    _stroke: '#000',
-    _linewidth: 1.0,
-    _opacity: 1.0,
-    _visible: true,
-
-    _cap: 'round',
-    _join: 'round',
-    _miter: 4,
-
-    _closed: true,
-    _curved: false,
-    _automatic: true,
-    _beginning: 0,
-    _ending: 1.0,
-
-    _mask: null,
+      Object.keys(flags).forEach((k) => { this[k] = flags[k] });
+  }
 
     /**
      * TODO: Group has a gotcha in that it's at the moment required to be bound to
      * an instance of two in order to add elements correctly. This needs to
      * be rethought and fixed.
      */
-    clone: function(parent) {
+    clone(parent) {
 
       parent = parent || this.parent;
 
@@ -253,14 +75,14 @@ import Shape  from './Shape';
 
       return group;
 
-    },
+    }
 
     /**
      * Export the data from the instance of Group into a plain JavaScript
      * object. This also makes all children plain JavaScript objects. Great
      * for turning into JSON and storing in a database.
      */
-    toObject: function() {
+    toObject() {
 
       var result = {
         children: {},
@@ -275,13 +97,13 @@ import Shape  from './Shape';
 
       return result;
 
-    },
+    }
 
     /**
      * Anchor all children to the upper left hand corner
      * of the group.
      */
-    corner: function() {
+    corner() {
 
       var rect = this.getBoundingClientRect(true),
        corner = { x: rect.left, y: rect.top };
@@ -292,13 +114,13 @@ import Shape  from './Shape';
 
       return this;
 
-    },
+    }
 
     /**
      * Anchors all children around the center of the group,
      * effectively placing the shape around the unit circle.
      */
-    center: function() {
+    center() {
 
       var rect = this.getBoundingClientRect(true);
 
@@ -315,13 +137,13 @@ import Shape  from './Shape';
 
       return this;
 
-    },
+    }
 
     /**
      * Recursively search for id. Returns the first element found.
      * Returns null if none found.
      */
-    getById: function (id) {
+    getById (id) {
       var search = function (node, id) {
         if (node.id === id) {
           return node;
@@ -335,13 +157,13 @@ import Shape  from './Shape';
 
       };
       return search(this, id) || null;
-    },
+    }
 
     /**
      * Recursively search for classes. Returns an array of matching elements.
      * Empty array if none found.
      */
-    getByClassName: function (cl) {
+    getByClassName (cl) {
       var found = [];
       var search = function (node, cl) {
         if (node.classList.indexOf(cl) != -1) {
@@ -354,14 +176,14 @@ import Shape  from './Shape';
         return found;
       };
       return search(this, cl);
-    },
+    }
 
     /**
      * Recursively search for children of a specific type,
      * e.g. Two.Polygon. Pass a reference to this type as the param.
      * Returns an empty array if none found.
      */
-    getByType: function(type) {
+    getByType(type) {
       var found = [];
       var search = function (node, type) {
         for (var id in node.children) {
@@ -374,12 +196,12 @@ import Shape  from './Shape';
         return found;
       };
       return search(this, type);
-    },
+    }
 
     /**
      * Add objects to the group.
      */
-    add: function(objects) {
+    add(objects) {
 
       // Allow to pass multiple objects either as array or as multiple arguments
       // If it's an array also create copy of it in case we're getting passed
@@ -398,12 +220,12 @@ import Shape  from './Shape';
 
       return this;
 
-    },
+    }
 
     /**
      * Remove objects from the group.
      */
-    remove: function(objects) {
+    remove(objects) {
 
       var l = arguments.length,
         grandparent = this.parent;
@@ -432,14 +254,16 @@ import Shape  from './Shape';
 
       return this;
 
-    },
+    }
 
     /**
      * Return an object with top, left, right, bottom, width, and height
      * parameters of the group.
      */
-    getBoundingClientRect: function(shallow) {
+    getBoundingClientRect(shallow) {
       var rect;
+      var min = Math.min, max = Math.max;
+
 
       // TODO: Update this to not __always__ update. Just when it needs to.
       this._update(true);
@@ -456,8 +280,8 @@ import Shape  from './Shape';
 
         rect = child.getBoundingClientRect(shallow);
 
-        if (!_.isNumber(rect.top)   || !_.isNumber(rect.left)   ||
-            !_.isNumber(rect.right) || !_.isNumber(rect.bottom)) {
+        if (!is.Number(rect.top)   || !is.Number(rect.left)   ||
+            !is.Number(rect.right) || !is.Number(rect.bottom)) {
           return;
         }
 
@@ -477,40 +301,40 @@ import Shape  from './Shape';
         height: bottom - top
       };
 
-    },
+    }
 
     /**
      * Trickle down of noFill
      */
-    noFill: function() {
+    noFill() {
       this.children.forEach(function(child) {
         child.noFill();
       });
       return this;
-    },
+    }
 
     /**
      * Trickle down of noStroke
      */
-    noStroke: function() {
+    noStroke() {
       this.children.forEach(function(child) {
         child.noStroke();
       });
       return this;
-    },
+    }
 
     /**
      * Trickle down subdivide
      */
-    subdivide: function() {
+    subdivide() {
       var args = arguments;
       this.children.forEach(function(child) {
         child.subdivide.apply(child, args);
       });
       return this;
-    },
+    }
 
-    flagReset: function() {
+    flagReset() {
 
       if (this._flagAdditions) {
         this.additions.length = 0;
@@ -528,67 +352,199 @@ import Shape  from './Shape';
 
       return this;
 
+    }  
+}  
+
+Group.Children = Children;
+
+Group.InsertChildren = function(children) {
+  for (var i = 0; i < children.length; i++) {
+    replaceParent.call(this, children[i], this);
+  }
+};
+
+Group.RemoveChildren = function(children) {
+  for (var i = 0; i < children.length; i++) {
+    replaceParent.call(this, children[i]);
+  }
+};
+
+Group.OrderChildren =function(children) {
+  this._flagOrder = true;
+};
+
+Group.MakeObservable =function(object) {
+
+  var properties = Path.Properties.slice(0);
+  var oi = _.indexOf(properties, 'opacity');
+
+  if (oi >= 0) {
+
+    properties.splice(oi, 1);
+
+    Object.defineProperty(object, 'opacity', {
+
+      enumerable: true,
+
+      get: function() {
+        return this._opacity;
+      },
+
+      set: function(v) {
+        // Only set flag if there is an actual difference
+        this._flagOpacity = (this._opacity != v);
+        this._opacity = v;
+      }
+
+    });
+
+  }
+
+  Shape.MakeObservable(object);
+  Group.MakeGetterSetters(object, properties);
+
+  Object.defineProperty(object, 'children', {
+
+    enumerable: true,
+
+    get: function() {
+      return this._collection;
+    },
+
+    set: function(children) {
+
+      var insertChildren = _.bind(Group.InsertChildren, this);
+      var removeChildren = _.bind(Group.RemoveChildren, this);
+      var orderChildren = _.bind(Group.OrderChildren, this);
+
+      if (this._collection) {
+        this._collection.off();
+      }
+
+      this._collection = new Children(children);
+      this._collection.on(EventTypes.insert, insertChildren);
+      this._collection.on(EventTypes.remove, removeChildren);
+      this._collection.on(EventTypes.order, orderChildren);
+
     }
 
   });
 
-  Group.MakeObservable(Group.prototype);
+  Object.defineProperty(object, 'mask', {
 
-  /**
-   * Helper function used to sync parent-child relationship within the
-   * `Group.children` object.
-   *
-   * Set the parent of the passed object to another object
-   * and updates parent-child relationships
-   * Calling with one arguments will simply remove the parenting
-   */
-  function replaceParent(child, newParent) {
+    enumerable: true,
 
-    var parent = child.parent;
-    var index;
+    get: function() {
+      return this._mask;
+    },
 
-    if (parent === newParent) {
-      this.additions.push(child);
-      this._flagAdditions = true;
-      return;
-    }
-
-    if (parent && parent.children.ids[child.id]) {
-
-      index = _.indexOf(parent.children, child);
-      parent.children.splice(index, 1);
-
-      // If we're passing from one parent to another...
-      index = _.indexOf(parent.additions, child);
-
-      if (index >= 0) {
-        parent.additions.splice(index, 1);
-      } else {
-        parent.subtractions.push(child);
-        parent._flagSubtractions = true;
+    set: function(v) {
+      this._mask = v;
+      this._flagMask = true;
+      if (!v.clip) {
+        v.clip = true;
       }
-
     }
 
-    if (newParent) {
-      child.parent = newParent;
-      this.additions.push(child);
-      this._flagAdditions = true;
-      return;
+  });
+
+};
+
+Group.MakeGetterSetters = function(group, properties) {
+
+  if (!is.Array(properties)) {
+    properties = [properties];
+  }
+
+  _.each(properties, function(k) {
+    Group.MakeGetterSetter(group, k);
+  });
+
+};
+
+Group.MakeGetterSetter = function(group, k) {
+
+  var secret = '_' + k;
+
+  Object.defineProperty(group, k, {
+
+    enumerable: true,
+
+    get: function() {
+      return this[secret];
+    },
+
+    set: function(v) {
+      this[secret] = v;
+      _.each(this.children, function(child) { // Trickle down styles
+        child[k] = v;
+      });
     }
+
+  });
+
+};
+
+_.extend(Group.prototype, Shape.prototype);
+
+
+Group.MakeObservable(Group.prototype);
+
+/**
+ * Helper function used to sync parent-child relationship within the
+ * `Group.children` object.
+ *
+ * Set the parent of the passed object to another object
+ * and updates parent-child relationships
+ * Calling with one arguments will simply remove the parenting
+ */
+function replaceParent(child, newParent) {
+
+  var parent = child.parent;
+  var index;
+
+  if (parent === newParent) {
+    this.additions.push(child);
+    this._flagAdditions = true;
+    return;
+  }
+
+  if (parent && parent.children.ids[child.id]) {
+
+    index = _.indexOf(parent.children, child);
+    parent.children.splice(index, 1);
 
     // If we're passing from one parent to another...
-    index = _.indexOf(this.additions, child);
+    index = _.indexOf(parent.additions, child);
 
     if (index >= 0) {
-      this.additions.splice(index, 1);
+      parent.additions.splice(index, 1);
     } else {
-      this.subtractions.push(child);
-      this._flagSubtractions = true;
+      parent.subtractions.push(child);
+      parent._flagSubtractions = true;
     }
 
-    delete child.parent;
-
   }
+
+  if (newParent) {
+    child.parent = newParent;
+    this.additions.push(child);
+    this._flagAdditions = true;
+    return;
+  }
+
+  // If we're passing from one parent to another...
+  index = _.indexOf(this.additions, child);
+
+  if (index >= 0) {
+    this.additions.splice(index, 1);
+  } else {
+    this.subtractions.push(child);
+    this._flagSubtractions = true;
+  }
+
+  delete child.parent;
+
+}
 
 export default Group;

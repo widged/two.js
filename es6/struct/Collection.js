@@ -1,23 +1,28 @@
-import _ from './underscore';
-import EventsDecorator   from './eventsDecorator.js';
-import EventTypes   from '../constants/EventTypes';
+import _ from '../util/underscore';
+import EventsDecorator   from '../util/eventsDecorator.js';
+import EventTypes   from '../constant/EventTypes';
 
 /**
  * Array like collection that triggers inserted and removed events
  * removed : pop / shift / splice
  * inserted : push / unshift / splice (with > 2 arguments)
  */
-function Collection() {
 
-  Array.call(this);
+class Collection {
 
-  if (arguments.length > 1) {
-    Array.prototype.push.apply(this, arguments);
-  } else if (arguments[0] && Array.isArray(arguments[0])) {
-    Array.prototype.push.apply(this, arguments[0]);
+  constructor() {
+
+    Array.call(this);
+
+    if (arguments.length > 1) {
+      Array.prototype.push.apply(this, arguments);
+    } else if (arguments[0] && Array.isArray(arguments[0])) {
+      Array.prototype.push.apply(this, arguments[0]);
+    }
+
   }
-
 }
+
 
 Collection.prototype = new Array();
 Collection.constructor = Collection;

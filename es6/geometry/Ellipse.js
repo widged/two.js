@@ -1,11 +1,12 @@
-import _  from '../utils/utils';
-import Resolution from '../constants/Resolution';
+import is  from '../util/is';
+import _  from '../util/underscore';
+import Resolution from '../constant/Resolution';
 
 var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
 
 export default function(ox, oy, rx, ry, res) {
 
-	if (!_.isNumber(ry)) { ry = rx; }
+	if (!is.Number(ry)) { ry = rx; }
 
 	var amount = res || Resolution;
 

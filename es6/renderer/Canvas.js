@@ -1,7 +1,8 @@
-import _  from '../utils/utils';
-import Commands from '../constants/CommandTypes';
+import is  from '../util/is';
+import _  from '../util/underscore';
+import Commands from '../constant/CommandTypes';
 import Group   from '../shape/Group';
-import EventsDecorator   from '../utils/eventsDecorator.js';
+import EventsDecorator   from '../util/eventsDecorator.js';
 
 
 /**
@@ -143,7 +144,7 @@ var canvas = {
 
       // Styles
       if (fill) {
-        if (_.isString(fill)) {
+        if (is.String(fill)) {
           ctx.fillStyle = fill;
         } else {
           canvas[fill._renderer.type].render.call(fill, ctx);
@@ -151,7 +152,7 @@ var canvas = {
         }
       }
       if (stroke) {
-        if (_.isString(stroke)) {
+        if (is.String(stroke)) {
           ctx.strokeStyle = stroke;
         } else {
           canvas[stroke._renderer.type].render.call(stroke, ctx);
@@ -170,7 +171,7 @@ var canvas = {
       if (cap) {
         ctx.lineCap = cap;
       }
-      if (_.isNumber(opacity)) {
+      if (is.Number(opacity)) {
         ctx.globalAlpha = opacity;
       }
 
@@ -358,7 +359,7 @@ var canvas = {
 
       // Styles
       if (fill) {
-        if (_.isString(fill)) {
+        if (is.String(fill)) {
           ctx.fillStyle = fill;
         } else {
           canvas[fill._renderer.type].render.call(fill, ctx);
@@ -366,7 +367,7 @@ var canvas = {
         }
       }
       if (stroke) {
-        if (_.isString(stroke)) {
+        if (is.String(stroke)) {
           ctx.strokeStyle = stroke;
         } else {
           canvas[stroke._renderer.type].render.call(stroke, ctx);
@@ -376,7 +377,7 @@ var canvas = {
       if (linewidth) {
         ctx.lineWidth = linewidth;
       }
-      if (_.isNumber(opacity)) {
+      if (is.Number(opacity)) {
         ctx.globalAlpha = opacity;
       }
 
@@ -438,7 +439,7 @@ var Renderer = function(params) {
   this.ctx = this.domElement.getContext('2d');
   this.overdraw = params.overdraw || false;
 
-  if (!_.isUndefined(this.ctx.imageSmoothingEnabled)) {
+  if (!is.Undefined(this.ctx.imageSmoothingEnabled)) {
     this.ctx.imageSmoothingEnabled = smoothing;
   }
 
@@ -461,7 +462,7 @@ _.extend(Renderer.prototype, EventsDecorator, {
     this.width = width;
     this.height = height;
 
-    this.ratio = _.isUndefined(ratio) ? getRatio(this.ctx) : ratio;
+    this.ratio = is.Undefined(ratio) ? getRatio(this.ctx) : ratio;
 
     this.domElement.width = width * this.ratio;
     this.domElement.height = height * this.ratio;

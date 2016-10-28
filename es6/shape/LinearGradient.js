@@ -1,53 +1,41 @@
-import _  from '../utils/utils';
-import EventTypes    from '../constants/EventTypes';
-import Vector    from '../Vector';
+import _  from '../util/underscore';
+import is  from '../util/is';
+import EventTypes    from '../constant/EventTypes';
+import Vector    from '../struct/Vector';
 import Gradient  from './Gradient';
 
 
-var LinearGradient = function(x1, y1, x2, y2, stops) {
+class LinearGradient extends Gradient {
 
-  Gradient.call(this, stops);
+  constructor(x1, y1, x2, y2, stops) {
 
-  this._renderer.type = 'linear-gradient';
+    super(stops);
 
-  var flagEndPoints = _.bind(LinearGradient.FlagEndPoints, this);
-  this.left = new Vector().bind(EventTypes.change, flagEndPoints);
-  this.right = new Vector().bind(EventTypes.change, flagEndPoints);
+    this._renderer.type = 'linear-gradient';
 
-  if (_.isNumber(x1)) {
-    this.left.x = x1;
-  }
-  if (_.isNumber(y1)) {
-    this.left.y = y1;
-  }
-  if (_.isNumber(x2)) {
-    this.right.x = x2;
-  }
-  if (_.isNumber(y2)) {
-    this.right.y = y2;
-  }
+    var flagEndPoints = _.bind(LinearGradient.FlagEndPoints, this);
+    this.left = new Vector().on(EventTypes.change, flagEndPoints);
+    this.right = new Vector().on(EventTypes.change, flagEndPoints);
 
-};
+    if (is.Number(x1)) {
+      this.left.x = x1;
+    }
+    if (is.Number(y1)) {
+      this.left.y = y1;
+    }
+    if (is.Number(x2)) {
+      this.right.x = x2;
+    }
+    if (is.Number(y2)) {
+      this.right.y = y2;
+    }
 
-_.extend(LinearGradient, {
+   this._flagEndPoints = false;
 
-  Stop: Gradient.Stop,
-
-  MakeObservable: function(object) {
-    Gradient.MakeObservable(object);
-  },
-
-  FlagEndPoints: function() {
-    this._flagEndPoints = true;
   }
 
-});
 
-_.extend(LinearGradient.prototype, Gradient.prototype, {
-
-  _flagEndPoints: false,
-
-  clone: function(parent) {
+  clone(parent) {
 
     parent = parent || this.parent;
 
@@ -66,9 +54,9 @@ _.extend(LinearGradient.prototype, Gradient.prototype, {
 
     return clone;
 
-  },
+  }
 
-  toObject: function() {
+  toObject() {
 
     var result = Gradient.prototype.toObject.call(this);
 
@@ -77,9 +65,9 @@ _.extend(LinearGradient.prototype, Gradient.prototype, {
 
     return result;
 
-  },
+  }
 
-  flagReset: function() {
+  flagReset() {
 
     this._flagEndPoints = false;
 
@@ -87,9 +75,20 @@ _.extend(LinearGradient.prototype, Gradient.prototype, {
 
     return this;
 
-  }
+  }  
+}
 
-});
+LinearGradient.Stop = Gradient.Stop;
+
+LinearGradient.MakeObservable = function(object) {
+    Gradient.MakeObservable(object);
+}
+
+LinearGradient.FlagEndPoints = function() {
+  this._flagEndPoints = true;
+}
+
+
 
 LinearGradient.MakeObservable(LinearGradient.prototype);
 

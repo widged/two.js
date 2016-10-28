@@ -1,13 +1,14 @@
-import _  from '../utils/utils';
-import Commands from '../constants/CommandTypes';
-import Types from '../constants/RendererTypes';
-import Matrix   from '../Matrix';
-import Array2   from '../Array';
+import _  from '../util/underscore';
+import is  from '../util/is';
+import Commands from '../constant/CommandTypes';
+import Types from '../constant/RendererTypes';
+import Matrix   from '../struct/Matrix';
+import Array2   from '../struct/Array';
 import LinearGradient   from '../shape/LinearGradient';
 import RadialGradient   from '../shape/RadialGradient';
 import Group   from '../shape/Group';
-import EventsDecorator   from '../utils/eventsDecorator.js';
-import TwoError from '../utils/TwoError.js';
+import EventsDecorator   from '../util/eventsDecorator.js';
+import TwoError from '../util/TwoError.js';
 
   /**
    * Constants
@@ -174,7 +175,7 @@ import TwoError from '../utils/TwoError.js';
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if (fill) {
-          if (_.isString(fill)) {
+          if (is.String(fill)) {
             ctx.fillStyle = fill;
           } else {
             webgl[fill._renderer.type].render.call(fill, ctx, elem);
@@ -182,7 +183,7 @@ import TwoError from '../utils/TwoError.js';
           }
         }
         if (stroke) {
-          if (_.isString(stroke)) {
+          if (is.String(stroke)) {
             ctx.strokeStyle = stroke;
           } else {
             webgl[stroke._renderer.type].render.call(stroke, ctx, elem);
@@ -201,7 +202,7 @@ import TwoError from '../utils/TwoError.js';
         if (cap) {
           ctx.lineCap = cap;
         }
-        if (_.isNumber(opacity)) {
+        if (is.Number(opacity)) {
           ctx.globalAlpha = opacity;
         }
 
@@ -359,7 +360,7 @@ import TwoError from '../utils/TwoError.js';
 
         // Expand borders
 
-        if (_.isNumber(border)) {
+        if (is.Number(border)) {
           top -= border;
           left -= border;
           right += border;
@@ -507,7 +508,7 @@ import TwoError from '../utils/TwoError.js';
 
         // Styles
         if (fill) {
-          if (_.isString(fill)) {
+          if (is.String(fill)) {
             ctx.fillStyle = fill;
           } else {
             webgl[fill._renderer.type].render.call(fill, ctx, elem);
@@ -515,7 +516,7 @@ import TwoError from '../utils/TwoError.js';
           }
         }
         if (stroke) {
-          if (_.isString(stroke)) {
+          if (is.String(stroke)) {
             ctx.strokeStyle = stroke;
           } else {
             webgl[stroke._renderer.type].render.call(stroke, ctx, elem);
@@ -525,7 +526,7 @@ import TwoError from '../utils/TwoError.js';
         if (linewidth) {
           ctx.lineWidth = linewidth;
         }
-        if (_.isNumber(opacity)) {
+        if (is.Number(opacity)) {
           ctx.globalAlpha = opacity;
         }
 
@@ -822,7 +823,7 @@ import TwoError from '../utils/TwoError.js';
 
     updateBuffer: function(gl, elem, program) {
 
-      if (_.isObject(elem._renderer.buffer)) {
+      if (is.Object(elem._renderer.buffer)) {
         gl.deleteBuffer(elem._renderer.buffer);
       }
 
@@ -833,7 +834,7 @@ import TwoError from '../utils/TwoError.js';
 
       gl.bufferData(gl.ARRAY_BUFFER, elem._renderer.triangles, gl.STATIC_DRAW);
 
-      if (_.isObject(elem._renderer.textureCoordsBuffer)) {
+      if (is.Object(elem._renderer.textureCoordsBuffer)) {
         gl.deleteBuffer(elem._renderer.textureCoordsBuffer);
       }
 

@@ -1,14 +1,15 @@
-import _  from '../utils/utils';
+import _  from '../util/underscore';
+import is  from '../util/is';
 
 var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
 
 export default function(ox, oy, or, ir, sides) {
 
-  if (!_.isNumber(ir)) {
+  if (!is.Number(ir)) {
     ir = or / 2;
   }
 
-  if (!_.isNumber(sides) || sides <= 0) {
+  if (!is.Number(sides) || sides <= 0) {
     sides = 5;
   }
 

@@ -26,13 +26,14 @@
  *
  */
 
-var EventTypes = require('./constants/EventTypes').default;
-var RendrererTypes = require('./constants/RendererTypes').default;
-var _     = require('./utils/underscore').default;
-var EventDecorators = require('./utils/eventsDecorator').default;
-var Utils = require('./utils/utils').default;
-var dom   = require('./utils/dom').default;
-var perf  = require('./Performance').default;
+var EventTypes = require('./constant/EventTypes').default;
+var RendrererTypes = require('./constant/RendererTypes').default;
+var is     = require('./util/is').default;
+var _     = require('./util/underscore').default;
+var EventDecorators = require('./util/eventsDecorator').default;
+var Utils = require('./util/utils').default;
+var dom   = require('./platform/dom').default;
+var perf  = require('./platform/Performance').default;
 var Anchor = require('./Anchor').default;
 var Group = require('./shape/Group').default;
 var Path  = require('./shape/Path').default;
@@ -71,7 +72,7 @@ var Two = function(options) {
   }, this);
 
   // Specified domElement overrides type declaration only if the element does not support declared renderer type.
-  if (_.isElement(params.domElement)) {
+  if (is.Element(params.domElement)) {
     var tagName = params.domElement.tagName.toLowerCase();
     // TODO: Reconsider this if statement's logic.
     if (!/^(CanvasRenderer-canvas|WebGLRenderer-canvas|SVGRenderer-svg)$/.test(this.type+'-'+tagName)) {
@@ -114,7 +115,7 @@ var Two = function(options) {
     fitted();
 
 
-  } else if (!_.isElement(params.domElement)) {
+  } else if (!is.Element(params.domElement)) {
 
     this.renderer.setSize(params.width, params.height, this.ratio);
     this.width = params.width;
@@ -245,11 +246,11 @@ _.extend(Two.prototype, EventDecorators, {
   makeCurve: function(p) {
 
     var l = arguments.length, points = p;
-    if (!_.isArray(p)) {
+    if (!is.Array(p)) {
       points = [];
       for (var i = 0; i < l; i+=2) {
         var x = arguments[i];
-        if (!_.isNumber(x)) {
+        if (!is.Number(x)) {
           break;
         }
         var y = arguments[i + 1];
@@ -258,7 +259,7 @@ _.extend(Two.prototype, EventDecorators, {
     }
 
     var last = arguments[l - 1];
-    var curve = new Two.Path(points, !(_.isBoolean(last) ? last : undefined), true);
+    var curve = new Two.Path(points, !(is.isBoolean(last) ? last : undefined), true);
     var rect = curve.getBoundingClientRect();
     curve.center().translation
       .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
@@ -275,11 +276,11 @@ _.extend(Two.prototype, EventDecorators, {
   makePath: function(p) {
 
     var l = arguments.length, points = p;
-    if (!_.isArray(p)) {
+    if (!is.Array(p)) {
       points = [];
       for (var i = 0; i < l; i+=2) {
         var x = arguments[i];
-        if (!_.isNumber(x)) {
+        if (!is.Number(x)) {
           break;
         }
         var y = arguments[i + 1];
@@ -288,7 +289,7 @@ _.extend(Two.prototype, EventDecorators, {
     }
 
     var last = arguments[l - 1];
-    var path = new Two.Path(points, !(_.isBoolean(last) ? last : undefined));
+    var path = new Two.Path(points, !(is.isBoolean(last) ? last : undefined));
     var rect = path.getBoundingClientRect();
     path.center().translation
       .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
@@ -389,6 +390,7 @@ _.extend(Two.prototype, EventDecorators, {
     var nodes = [], elem, i;
 
     if (/.*\.svg/ig.test(text)) {
+      var xhr = require('./platform/xhr').default;
 
       Utils.xhr(text, _.bind(function(data) {
 
@@ -432,15 +434,6 @@ function fitToWindow() {
   this.renderer.setSize(width, height, this.ratio);
   this.trigger(EventTypes.resize, width, height);
 
-}
-
-
-if (typeof define === 'function' && define.amd) {
-  define('two', [], function() {
-    return Two;
-  });
-} else if (typeof module != 'undefined' && module.exports) {
-  module.exports = Two;
 }
 
 

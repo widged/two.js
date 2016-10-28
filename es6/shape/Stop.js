@@ -1,21 +1,25 @@
-import _  from '../utils/utils';
-import EventsDecorator   from '../utils/eventsDecorator.js';
+import _  from '../util/underscore';
+import is  from '../util/is';
+import EventsDecorator   from '../util/eventsDecorator.js';
 
-var Stop = function(offset, color, opacity) {
+class Stop {
 
-  this._renderer = {};
+  constructor(offset, color, opacity) {
 
-  this.offset = _.isNumber(offset) ? offset
-    : Stop.Index <= 0 ? 0 : 1;
+    this._renderer = {};
 
-  this.opacity = _.isNumber(opacity) ? opacity : 1;
+    this.offset = is.Number(offset) ? offset
+      : Stop.Index <= 0 ? 0 : 1;
 
-  this.color = _.isString(color) ? color
-    : Stop.Index <= 0 ? '#fff' : '#000';
+    this.opacity = is.Number(opacity) ? opacity : 1;
 
-  Stop.Index = (Stop.Index + 1) % 2;
+    this.color = is.String(color) ? color
+      : Stop.Index <= 0 ? '#fff' : '#000';
 
-};
+    Stop.Index = (Stop.Index + 1) % 2;
+
+  }
+}
 
 _.extend(Stop, {
 

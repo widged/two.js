@@ -1,4 +1,4 @@
-import Commands from '../constants/CommandTypes';
+import Commands from '../constant/CommandTypes';
 
 var PI = Math.PI, TWO_PI = Math.PI * 2, cos = Math.cos,
   sin = Math.sin, abs = Math.abs;

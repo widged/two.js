@@ -1,5 +1,7 @@
-import _  from '../utils/utils';
-import Resolution from '../constants/Resolution';
+import _  from '../util/underscore';
+import is  from '../util/is';
+
+import Resolution from '../constant/Resolution';
 
 function roundedRectangle(ox, oy, width, height, radius) {
 
@@ -7,7 +9,7 @@ function roundedRectangle(ox, oy, width, height, radius) {
     var h2 = height / 2;
     var x, y;
 
-    if (!_.isNumber(radius)) {
+    if (!is.Number(radius)) {
       radius = Math.floor(Math.min(width, height) / 12);
     }
 

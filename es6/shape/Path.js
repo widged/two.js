@@ -1,27 +1,29 @@
-import _  from '../utils/utils';
-import Collection  from '../utils/Collection';
-import EventTypes   from '../constants/EventTypes';
-import Commands from '../constants/CommandTypes';
+import _  from '../util/underscore';
+import is  from '../util/is';
+import EventTypes   from '../constant/EventTypes';
+import Commands from '../constant/CommandTypes';
 import Shape from './Shape';
-import Vector from '../Vector';
+import Collection  from '../struct/Collection';
+import Vector from '../struct/Vector';
 import Anchor from '../Anchor';
 
-  /**
-   * Constants
-   */
+/**
+ * Constants
+ */
 
-  var min = Math.min, max = Math.max, round = Math.round,
-    getComputedMatrix = _.getComputedMatrix;
+var min = Math.min, max = Math.max, round = Math.round,
+  getComputedMatrix = _.getComputedMatrix;
 
-  var commands = {};
+var commands = {};
 
-  _.each(Commands, function(v, k) {
-    commands[k] = new RegExp(v);
-  });
+_.each(Commands, function(v, k) {
+  commands[k] = new RegExp(v);
+});
 
-  var Path = function(vertices, closed, curved, manual) {
+class Path extends Shape {
 
-    Shape.call(this);
+  constructor(vertices, closed, curved, manual) {
+    super();
 
     this._renderer.type = 'path';
 
@@ -51,7 +53,9 @@ import Anchor from '../Anchor';
     // for themselves.
     this.automatic = !manual;
 
-  };
+  }
+}
+
 
   _.extend(Path, {
 
@@ -173,7 +177,7 @@ import Anchor from '../Anchor';
             // when importing a large SVG
             var i = items.length;
             while(i--) {
-              items[i].bind(EventTypes.change, updateVertices);
+              items[i].on(EventTypes.change, updateVertices);
             }
 
             updateVertices();
@@ -183,7 +187,7 @@ import Anchor from '../Anchor';
           var unbindVerts = _.bind(function(items) {
 
             _.each(items, function(v) {
-              v.unbind(EventTypes.change, updateVertices);
+              v.off(EventTypes.change, updateVertices);
             }, this);
 
             updateVertices();
@@ -192,15 +196,15 @@ import Anchor from '../Anchor';
 
           // Remove previous listeners
           if (this._collection) {
-            this._collection.unbind();
+            this._collection.off();
           }
 
           // Create new Collection with copy of vertices
           this._collection = new Collection((vertices || []).slice(0));
 
           // Listen for Collection changes and bind / unbind
-          this._collection.bind(EventTypes.insert, bindVerts);
-          this._collection.bind(EventTypes.remove, unbindVerts);
+          this._collection.on(EventTypes.insert, bindVerts);
+          this._collection.on(EventTypes.remove, unbindVerts);
 
           // Bind Initial Vertices
           bindVerts(this._collection);
@@ -489,7 +493,7 @@ import Anchor from '../Anchor';
       x = _.getPointOnCubicBezier(t, x1, x2, x3, x4);
       y = _.getPointOnCubicBezier(t, y1, y2, y3, y4);
 
-      if (_.isObject(obj)) {
+      if (is.Object(obj)) {
         obj.x = x;
         obj.y = y;
         return obj;

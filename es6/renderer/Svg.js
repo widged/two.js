@@ -1,7 +1,7 @@
-import _  from '../utils/utils';
-import Commands from '../constants/CommandTypes';
+import _  from '../util/underscore';
+import Commands from '../constant/CommandTypes';
 import Group   from '../shape/Group';
-import EventsDecorator   from '../utils/eventsDecorator.js';
+import EventsDecorator   from '../util/eventsDecorator.js';
 
   // Localize variables
   var mod = _.mod, toFixed = _.toFixed;

@@ -1,151 +1,143 @@
-import _  from '../utils/utils';
-import EventTypes    from '../constants/EventTypes';
+import _  from '../util/underscore';
+import EventTypes    from '../constant/EventTypes';
 import Stop      from './Stop';
 import Shape     from './Shape';
-import Collection  from '../utils/Collection';
+import Collection  from '../struct/Collection';
 
+class Gradient extends Shape {
 
-  var Gradient = function(stops) {
-
-    Shape.call(this);
-
+  constructor(stops) {
+    super();
     this._renderer.type = 'gradient';
-
     this.spread = 'pad';
-
     this.stops = stops;
+  }
 
-  };
+  clone(parent) {
 
-  _.extend(Gradient, {
+    parent = parent || this.parent;
 
-    Stop: Stop,
+    var stops = _.map(this.stops, function(s) {
+      return s.clone();
+    });
 
-    Properties: [
-      'spread'
-    ],
+    var clone = new Gradient(stops);
 
-    MakeObservable: function(object) {
+    _.each(Gradient.Properties, function(k) {
+      clone[k] = this[k];
+    }, this);
 
-      Shape.MakeObservable(object);
+    clone.translation.copy(this.translation);
+    clone.rotation = this.rotation;
+    clone.scale = this.scale;
 
-      _.each(Gradient.Properties, _.defineProperty, object);
+    parent.add(clone);
 
-      Object.defineProperty(object, 'stops', {
+    return clone;
 
-        enumerable: true,
+  }
 
-        get: function() {
-          return this._stops;
-        },
+  toObject() {
 
-        set: function(stops) {
+    var result = {
+      stops: _.map(this.stops, function(s) {
+        return s.toObject();
+      })
+    };
 
-          var updateStops = _.bind(Gradient.FlagStops, this);
+    _.each(Gradient.Properties, function(k) {
+      result[k] = this[k];
+    }, this);
 
-          var bindStops = _.bind(function(items) {
+    return result;
 
-            // This function is called a lot
-            // when importing a large SVG
-            var i = items.length;
-            while(i--) {
-              items[i].bind(EventTypes.change, updateStops);
-            }
+  }
 
-            updateStops();
+  flagReset() {
 
-          }, this);
+    this._flagSpread = this._flagStops = false;
 
-          var unbindStops = _.bind(function(items) {
+    Shape.prototype.flagReset.call(this);
 
-            _.each(items, function(v) {
-              v.unbind(EventTypes.change, updateStops);
-            }, this);
+    return this;
 
-            updateStops();
+  }
 
-          }, this);
+}
 
-          // Remove previous listeners
-          if (this._stops) {
-            this._stops.unbind();
-          }
 
-          // Create new Collection with copy of Stops
-          this._stops = new Collection((stops || []).slice(0));
+Gradient.Stop = Stop;
 
-          // Listen for Collection changes and bind / unbind
-          this._stops.bind(EventTypes.insert, bindStops);
-          this._stops.bind(EventTypes.remove, unbindStops);
+Gradient.Properties = [ 'spread' ];
 
-          // Bind Initial Stops
-          bindStops(this._stops);
+Gradient.MakeObservable = function(object) {
 
+  Shape.MakeObservable(object);
+
+  _.each(Gradient.Properties, _.defineProperty, object);
+
+  Object.defineProperty(object, 'stops', {
+
+    enumerable: true,
+
+    get() {
+      return this._stops;
+    },
+
+    set(stops) {
+
+      var updateStops = _.bind(Gradient.FlagStops, this);
+
+      var bindStops = _.bind(function(items) {
+
+        // This function is called a lot
+        // when importing a large SVG
+        var i = items.length;
+        while(i--) {
+          items[i].on(EventTypes.change, updateStops);
         }
 
-      });
+        updateStops();
 
-    },
+      }, this);
 
-    FlagStops: function() {
-      this._flagStops = true;
+      var unbindStops = _.bind(function(items) {
+
+        _.each(items, function(v) {
+          v.off(EventTypes.change, updateStops);
+        }, this);
+
+        updateStops();
+
+      }, this);
+
+      // Remove previous listeners
+      if (this._stops) {
+        this._stops.off();
+      }
+
+      // Create new Collection with copy of Stops
+      this._stops = new Collection((stops || []).slice(0));
+
+      // Listen for Collection changes and bind / unbind
+      this._stops.on(EventTypes.insert, bindStops);
+      this._stops.on(EventTypes.remove, unbindStops);
+
+      // Bind Initial Stops
+      bindStops(this._stops);
+
     }
 
   });
 
-  _.extend(Gradient.prototype, Shape.prototype, {
+};
 
-    clone: function(parent) {
+Gradient.FlagStops = function() {
+  this._flagStops = true;
+}
 
-      parent = parent || this.parent;
-
-      var stops = _.map(this.stops, function(s) {
-        return s.clone();
-      });
-
-      var clone = new Gradient(stops);
-
-      _.each(Gradient.Properties, function(k) {
-        clone[k] = this[k];
-      }, this);
-
-      clone.translation.copy(this.translation);
-      clone.rotation = this.rotation;
-      clone.scale = this.scale;
-
-      parent.add(clone);
-
-      return clone;
-
-    },
-
-    toObject: function() {
-
-      var result = {
-        stops: _.map(this.stops, function(s) {
-          return s.toObject();
-        })
-      };
-
-      _.each(Gradient.Properties, function(k) {
-        result[k] = this[k];
-      }, this);
-
-      return result;
-
-    },
-
-    flagReset: function() {
-
-      this._flagSpread = this._flagStops = false;
-
-      Shape.prototype.flagReset.call(this);
-
-      return this;
-
-    }
-
-  });
+_.extend(Gradient.prototype, Shape.prototype);
+  
 
   Gradient.MakeObservable(Gradient.prototype);
 

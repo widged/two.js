@@ -13,8 +13,8 @@
 
 function main() {
 
-	var Two = require('../es6/Two');
-	var Types = require('../es6/constants/RendererTypes').default;
+	var Two = require('../es6/Two').default;
+	var Types = require('../es6/constant/RendererTypes').default;
 
 	var two = new Two({
 	          width: 800,

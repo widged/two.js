@@ -1,32 +1,36 @@
-import _  from '../utils/utils';
-import EventTypes   from '../constants/EventTypes';
-import EventsDecorator   from '../utils/eventsDecorator.js';
-import Identifier from '../constants/Identifier';
-import Matrix from '../Matrix';
-import Vector from '../Vector';
-import UniqueIds from '../utils/UniqueIds';
+import _  from '../util/underscore';
+import EventTypes   from '../constant/EventTypes';
+import EventsDecorator   from '../util/eventsDecorator.js';
+import Identifier from '../constant/Identifier';
+import Matrix from '../struct/Matrix';
+import Vector from '../struct/Vector';
+import UniqueIds from '../util/UniqueIds';
 
 var uniqueId = UniqueIds();
 
-var Shape = function() {
+class Shape {
 
-  // Private object for renderer specific variables.
-  this._renderer = {};
+  constructor() {
 
-  this.id = Identifier + uniqueId();
-  this.classList = [];
+    // Private object for renderer specific variables.
+    this._renderer = {};
 
-  // Define matrix properties which all inherited
-  // objects of Shape have.
+    this.id = Identifier + uniqueId();
+    this.classList = [];
 
-  this._matrix = new Matrix();
+    // Define matrix properties which all inherited
+    // objects of Shape have.
 
-  this.translation = new Vector();
-  this.translation.bind(EventTypes.change, _.bind(Shape.FlagMatrix, this));
-  this.rotation = 0;
-  this.scale = 1;
+    this._matrix = new Matrix();
 
-};
+    this.translation = new Vector();
+    this.translation.on(EventTypes.change, _.bind(Shape.FlagMatrix, this));
+    this.rotation = 0;
+    this.scale = 1;
+
+  }
+}
+
 
 _.extend(Shape, EventsDecorator, {
 

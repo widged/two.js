@@ -1,36 +1,41 @@
-import _  from '../utils/utils';
+import _  from '../util/underscore';
+import is  from '../util/is';
 import Shape from './Shape';
 
 var getComputedMatrix = _.getComputedMatrix;
 
-Text = function(message, x, y, styles) {
+class Text extends Shape {
 
-  Shape.call(this);
+  constructor(message, x, y, styles) {
 
-  this._renderer.type = 'text';
+    super();
 
-  this.value = message;
+    this._renderer.type = 'text';
 
-  if (_.isNumber(x)) {
-      this.translation.x = x;
-  }
-  if (_.isNumber(y)) {
-      this.translation.y = y;
-  }
+    this.value = message;
 
-  if (!_.isObject(styles)) {
-    return this;
-  }
-
-  _.each(Text.Properties, function(property) {
-
-    if (property in styles) {
-      this[property] = styles[property];
+    if (is.Number(x)) {
+        this.translation.x = x;
+    }
+    if (is.Number(y)) {
+        this.translation.y = y;
     }
 
-  }, this);
+    if (!is.Object(styles)) {
+      return this;
+    }
 
-};
+    _.each(Text.Properties, function(property) {
+
+      if (property in styles) {
+        this[property] = styles[property];
+      }
+
+    }, this);
+
+  }
+}
+
 
 _.extend(Text, {
 

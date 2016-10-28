@@ -1,15 +1,19 @@
-import _  from './utils/underscore';
-import Commands  from './constants/CommandTypes';
-import EventTypes   from './constants/EventTypes';
-import Vector  from './Vector';
+import is  from './util/is';
+import _  from './util/underscore';
+import Commands  from './constant/CommandTypes';
+import EventTypes   from './constant/EventTypes';
+import Vector  from './struct/Vector';
 
   /**
    * An object that holds 3 `Vector`s, the anchor point and its
    * corresponding handles: `left` and `right`.
    */
-  var Anchor = function(x, y, ux, uy, vx, vy, command) {
+ class Anchor {
 
-    Vector.call(this, x, y);
+  constructor(x, y, ux, uy, vx, vy, command) {
+
+    this.x = x || 0;
+    this.y = y || 0;
 
     this._broadcast = _.bind(function() {
       this.trigger(EventTypes.change);
@@ -24,42 +28,40 @@ import Vector  from './Vector';
 
     Anchor.AppendCurveProperties(this);
 
-    if (_.isNumber(ux)) {
+    if (is.Number(ux)) {
       this.controls.left.x = ux;
     }
-    if (_.isNumber(uy)) {
+    if (is.Number(uy)) {
       this.controls.left.y = uy;
     }
-    if (_.isNumber(vx)) {
+    if (is.Number(vx)) {
       this.controls.right.x = vx;
     }
-    if (_.isNumber(vy)) {
+    if (is.Number(vy)) {
       this.controls.right.y = vy;
     }
 
+  }
+
+ } 
+  
+Anchor.AppendCurveProperties = (anchor) => {
+  anchor.controls = {
+    left: new Vector(0, 0),
+    right: new Vector(0, 0)
   };
-
-  _.extend(Anchor, {
-
-    AppendCurveProperties: function(anchor) {
-      anchor.controls = {
-        left: new Vector(0, 0),
-        right: new Vector(0, 0)
-      };
-    }
-
-  });
+}
 
   var AnchorProto = {
 
     listen: function() {
 
-      if (!_.isObject(this.controls)) {
+      if (!is.Object(this.controls)) {
         Anchor.AppendCurveProperties(this);
       }
 
-      this.controls.left.bind(EventTypes.change, this._broadcast);
-      this.controls.right.bind(EventTypes.change, this._broadcast);
+      this.controls.left.on(EventTypes.change, this._broadcast);
+      this.controls.right.on(EventTypes.change, this._broadcast);
 
       return this;
 
@@ -67,8 +69,8 @@ import Vector  from './Vector';
 
     ignore: function() {
 
-      this.controls.left.unbind(EventTypes.change, this._broadcast);
-      this.controls.right.unbind(EventTypes.change, this._broadcast);
+      this.controls.left.off(EventTypes.change, this._broadcast);
+      this.controls.right.off(EventTypes.change, this._broadcast);
 
       return this;
 
@@ -126,7 +128,7 @@ import Vector  from './Vector';
 
     set: function(c) {
       this._command = c;
-      if (this._command === Commands.curve && !_.isObject(this.controls)) {
+      if (this._command === Commands.curve && !is.Object(this.controls)) {
         Anchor.AppendCurveProperties(this);
       }
       return this.trigger(EventTypes.change);
@@ -156,13 +158,13 @@ import Vector  from './Vector';
 
   // Make it possible to bind and still have the Anchor specific
   // inheritance from Vector
-  Anchor.prototype.bind = Anchor.prototype.on = function() {
-    Vector.prototype.bind.apply(this, arguments);
+  Anchor.prototype.on = function() {
+    Vector.prototype.on.apply(this, arguments);
     _.extend(this, AnchorProto);
   };
 
-  Anchor.prototype.unbind = Anchor.prototype.off = function() {
-    Vector.prototype.unbind.apply(this, arguments);
+  Anchor.prototype.off = function() {
+    Vector.prototype.off.apply(this, arguments);
     _.extend(this, AnchorProto);
   };
 

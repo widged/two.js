@@ -1,68 +1,51 @@
-import _  from '../utils/utils';
-import EventTypes    from '../constants/EventTypes';
-import Vector    from '../Vector';
+import _  from '../util/underscore';
+import is  from '../util/is';
+import EventTypes    from '../constant/EventTypes';
+import Vector    from '../struct/Vector';
 import Gradient  from './Gradient';
 
+class RadialGradient extends Gradient {
 
-var RadialGradient = function(cx, cy, r, stops, fx, fy) {
+  constructor(cx, cy, r, stops, fx, fy) {
 
-  Gradient.call(this, stops);
+    super(stops);
 
-  this._renderer.type = 'radial-gradient';
+    this._renderer.type = 'radial-gradient';
 
-  this.center = new Vector()
-    .bind(EventTypes.change, _.bind(function() {
-      this._flagCenter = true;
-    }, this));
+    this.center = new Vector()
+      .on(EventTypes.change, _.bind(function() {
+        this._flagCenter = true;
+      }, this));
 
-  this.radius = _.isNumber(r) ? r : 20;
+    this.radius = is.Number(r) ? r : 20;
 
-  this.focal = new Vector()
-    .bind(EventTypes.change, _.bind(function() {
-      this._flagFocal = true;
-    }, this));
+    this.focal = new Vector()
+      .on(EventTypes.change, _.bind(function() {
+        this._flagFocal = true;
+      }, this));
 
-  if (_.isNumber(cx)) {
-    this.center.x = cx;
-  }
-  if (_.isNumber(cy)) {
-    this.center.y = cy;
-  }
+    if (is.Number(cx)) {
+      this.center.x = cx;
+    }
+    if (is.Number(cy)) {
+      this.center.y = cy;
+    }
 
-  this.focal.copy(this.center);
+    this.focal.copy(this.center);
 
-  if (_.isNumber(fx)) {
-    this.focal.x = fx;
-  }
-  if (_.isNumber(fy)) {
-    this.focal.y = fy;
-  }
+    if (is.Number(fx)) {
+      this.focal.x = fx;
+    }
+    if (is.Number(fy)) {
+      this.focal.y = fy;
+    }
 
-};
-
-_.extend(RadialGradient, {
-
-  Stop: Gradient.Stop,
-
-  Properties: [
-    'radius'
-  ],
-
-  MakeObservable: function(object) {
-
-    Gradient.MakeObservable(object);
-
-    _.each(RadialGradient.Properties, _.defineProperty, object);
-
+    this._flagEndPoints = false;
+  
   }
 
-});
 
-_.extend(RadialGradient.prototype, Gradient.prototype, {
-
-  _flagEndPoints: false,
-
-  clone: function(parent) {
+  clone(parent) {
 
     parent = parent || this.parent;
 
@@ -81,9 +64,9 @@ _.extend(RadialGradient.prototype, Gradient.prototype, {
 
     return clone;
 
-  },
+  }
 
-  toObject: function() {
+  toObject() {
 
     var result = Gradient.prototype.toObject.call(this);
 
@@ -96,9 +79,9 @@ _.extend(RadialGradient.prototype, Gradient.prototype, {
 
     return result;
 
-  },
+  }
 
-  flagReset: function() {
+  flagReset() {
 
     this._flagRadius = this._flagCenter = this._flagFocal = false;
 
@@ -108,7 +91,17 @@ _.extend(RadialGradient.prototype, Gradient.prototype, {
 
   }
 
-});
+} 
+
+RadialGradient.Stop = Gradient.Stop;
+
+RadialGradient.Properties = [ 'radius' ];
+
+RadialGradient.MakeObservable = function(object) {
+  Gradient.MakeObservable(object);
+  _.each(RadialGradient.Properties, _.defineProperty, object);
+}
+
 
 RadialGradient.MakeObservable(RadialGradient.prototype);
 
