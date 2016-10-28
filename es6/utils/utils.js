@@ -1,432 +1,32 @@
-this.Two = (function(previousTwo) {
+import _ from './underscore';
+import Commands from '../constants/CommandTypes';
+import EventTypes   from '../constants/EventTypes';
+import Resolution from '../constants/Resolution';
+import EventsDecorator   from '../utils/eventsDecorator.js';
 
-  var root = this;
-  var _ = {
-    // http://underscorejs.org/ • 1.8.3
-    _indexAmount: 0,
-    natural: {
-      slice: Array.prototype.slice,
-      indexOf: Array.prototype.indexOf,
-      keys: Object.keys,
-      bind: Function.prototype.bind,
-      create: Object.create
-    },
-    identity: function(value) {
-      return value;
-    },
-    isArguments: function(obj) {
-      return toString.call(obj) === '[object Arguments]';
-    },
-    isFunction: function(obj) {
-      return toString.call(obj) === '[object Function]';
-    },
-    isString: function(obj) {
-      return toString.call(obj) === '[object String]';
-    },
-    isNumber: function(obj) {
-      return toString.call(obj) === '[object Number]';
-    },
-    isDate: function(obj) {
-      return toString.call(obj) === '[object Date]';
-    },
-    isRegExp: function(obj) {
-      return toString.call(obj) === '[object RegExp]';
-    },
-    isError: function(obj) {
-      return toString.call(obj) === '[object Error]';
-    },
-    isFinite: function(obj) {
-      return isFinite(obj) && !isNaN(parseFloat(obj));
-    },
-    isNaN: function(obj) {
-      return _.isNumber(obj) && obj !== +obj;
-    },
-    isBoolean: function(obj) {
-      return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
-    },
-    isNull: function(obj) {
-      return obj === null;
-    },
-    isUndefined: function(obj) {
-      return obj === void 0;
-    },
-    isEmpty: function(obj) {
-      if (obj == null) return true;
-      if (isArrayLike && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
-      return _.keys(obj).length === 0;
-    },
-    isElement: function(obj) {
-      return !!(obj && obj.nodeType === 1);
-    },
-    isArray: Array.isArray || function(obj) {
-      return toString.call(obj) === '[object Array]';
-    },
-    isObject: function(obj) {
-      var type = typeof obj;
-      return type === 'function' || type === 'object' && !!obj;
-    },
-    toArray: function(obj) {
-      if (!obj) {
-        return [];
-      }
-      if (_.isArray(obj)) {
-        return slice.call(obj);
-      }
-      if (isArrayLike(obj)) {
-        return _.map(obj, _.identity);
-      }
-      return _.values(obj);
-    },
-    range: function(start, stop, step) {
-      if (stop == null) {
-        stop = start || 0;
-        start = 0;
-      }
-      step = step || 1;
+/*
+import Vector from '../Vector';
+import Matrix from '../Matrix';
+import Group from '../shape/Group';
+import Path from '../shape/Path';
+import Gradient from '../shape/Gradient';
+import LinearGradient from '../shape/LinearGradient';
+import RadialGradient from '../shape/RadialGradient';
+*/
 
-      var length = Math.max(Math.ceil((stop - start) / step), 0);
-      var range = Array(length);
-
-      for (var idx = 0; idx < length; idx++, start += step) {
-        range[idx] = start;
-      }
-
-      return range;
-    },
-    indexOf: function(list, item) {
-      if (!!_.natural.indexOf) {
-        return _.natural.indexOf.call(list, item);
-      }
-      for (var i = 0; i < list.length; i++) {
-        if (list[i] === item) {
-          return i;
-        }
-      }
-      return -1;
-    },
-    has: function(obj, key) {
-      return obj != null && hasOwnProperty.call(obj, key);
-    },
-    bind: function(func, ctx) {
-      var natural = _.natural.bind;
-      if (natural && func.bind === natural) {
-        return natural.apply(func, slice.call(arguments, 1));
-      }
-      var args = slice.call(arguments, 2);
-      return function() {
-        func.apply(ctx, args);
-      };
-    },
-    extend: function(base) {
-      var sources = slice.call(arguments, 1);
-      for (var i = 0; i < sources.length; i++) {
-        var obj = sources[i];
-        for (var k in obj) {
-          base[k] = obj[k];
-        }
-      }
-      return base;
-    },
-    defaults: function(base) {
-      var sources = slice.call(arguments, 1);
-      for (var i = 0; i < sources.length; i++) {
-        var obj = sources[i];
-        for (var k in obj) {
-          if (base[k] === void 0) {
-            base[k] = obj[k];
-          }
-        }
-      }
-      return base;
-    },
-    keys: function(obj) {
-      if (!_.isObject(obj)) {
-        return [];
-      }
-      if (_.natural.keys) {
-        return _.natural.keys(obj);
-      }
-      var keys = [];
-      for (var k in obj) {
-        if (_.has(obj, k)) {
-          keys.push(k);
-        }
-      }
-      return keys;
-    },
-    values: function(obj) {
-      var keys = _.keys(obj);
-      var values = [];
-      for (var i = 0; i < keys.length; i++) {
-        var k = keys[i];
-        values.push(obj[k]);
-      }
-      return values;
-    },
-    each: function(obj, iteratee, context) {
-      var ctx = context || this;
-      var keys = !isArrayLike(obj) && _.keys(obj);
-      var length = (keys || obj).length;
-      for (var i = 0; i < length; i++) {
-        var k = keys ? keys[i] : i;
-        iteratee.call(ctx, obj[k], k, obj);
-      }
-      return obj;
-    },
-    map: function(obj, iteratee, context) {
-      var ctx = context || this;
-      var keys = !isArrayLike(obj) && _.keys(obj);
-      var length = (keys || obj).length;
-      var result = [];
-      for (var i = 0; i < length; i++) {
-        var k = keys ? keys[i] : i;
-        result[i] = iteratee.call(ctx, obj[k], k, obj);
-      }
-      return result;
-    },
-    once: function(func) {
-      var init = false;
-      return function() {
-        if (!!init) {
-          return func;
-        }
-        init = true;
-        return func.apply(this, arguments);
-      }
-    },
-    after: function(times, func) {
-      return function() {
-        while (--times < 1) {
-          return func.apply(this, arguments);
-        }
-      }
-    },
-    uniqueId: function(prefix) {
-      var id = ++_._indexAmount + '';
-      return prefix ? prefix + id : id;
-    }
-  };
-
-  /**
-   * Constants
-   */
-
-  var sin = Math.sin,
-    cos = Math.cos,
-    atan2 = Math.atan2,
-    sqrt = Math.sqrt,
-    round = Math.round,
-    abs = Math.abs,
-    PI = Math.PI,
-    TWO_PI = PI * 2,
-    HALF_PI = PI / 2,
-    pow = Math.pow,
-    min = Math.min,
-    max = Math.max;
-
-  /**
-   * Localized variables
-   */
-
-  var count = 0;
-  var slice = _.natural.slice;
-  var perf = ((root.performance && root.performance.now) ? root.performance : Date);
-  var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
-  var getLength = function(obj) {
-    return obj == null ? void 0 : obj['length'];
-  };
-  var isArrayLike = function(collection) {
-    var length = getLength(collection);
-    return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
-  };
-
-  /**
-   * Cross browser dom events.
-   */
-  var dom = {
-
-    temp: (root.document ? root.document.createElement('div') : {}),
-
-    hasEventListeners: _.isFunction(root.addEventListener),
-
-    bind: function(elem, event, func, bool) {
-      if (this.hasEventListeners) {
-        elem.addEventListener(event, func, !!bool);
-      } else {
-        elem.attachEvent('on' + event, func);
-      }
-      return dom;
-    },
-
-    unbind: function(elem, event, func, bool) {
-      if (dom.hasEventListeners) {
-        elem.removeEventListeners(event, func, !!bool);
-      } else {
-        elem.detachEvent('on' + event, func);
-      }
-      return dom;
-    },
-
-    getRequestAnimationFrame: function() {
-
-      var lastTime = 0;
-      var vendors = ['ms', 'moz', 'webkit', 'o'];
-      var request, cancel;
-
-      for (var i = 0; i < vendors.length; i++) {
-        request = root[vendors[i] + 'RequestAnimationFrame'] || request;
-        cancel = root[vendors[i] + 'CancelAnimationFrame']
-          || root[vendors[i] + 'CancelRequestAnimationFrame'] || cancel;
-      }
-
-      request = request || function(callback, element) {
-        var currTime = new Date().getTime();
-        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-        var id = root.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
-        lastTime = currTime + timeToCall;
-        return id;
-      };
-      // cancel = cancel || function(id) {
-      //   clearTimeout(id);
-      // };
-
-      request.init = _.once(loop);
-
-      return request;
-
-    }
-
-  };
-
-  /**
-   * @class
-   */
-  var Two = root.Two = function(options) {
-
-    // Determine what Renderer to use and setup a scene.
-
-    var params = _.defaults(options || {}, {
-      fullscreen: false,
-      width: 640,
-      height: 480,
-      type: Two.Types.svg,
-      autostart: false
-    });
-
-    _.each(params, function(v, k) {
-      if (k === 'fullscreen' || k === 'autostart') {
-        return;
-      }
-      this[k] = v;
-    }, this);
-
-    // Specified domElement overrides type declaration only if the element does not support declared renderer type.
-    if (_.isElement(params.domElement)) {
-      var tagName = params.domElement.tagName.toLowerCase();
-      // TODO: Reconsider this if statement's logic.
-      if (!/^(CanvasRenderer-canvas|WebGLRenderer-canvas|SVGRenderer-svg)$/.test(this.type+'-'+tagName)) {
-        this.type = Two.Types[tagName];
-      }
-    }
-
-    this.renderer = new Two[this.type](this);
-    Two.Utils.setPlaying.call(this, params.autostart);
-    this.frameCount = 0;
-
-    if (params.fullscreen) {
-
-      var fitted = _.bind(fitToWindow, this);
-      _.extend(document.body.style, {
-        overflow: 'hidden',
-        margin: 0,
-        padding: 0,
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        position: 'fixed'
-      });
-      _.extend(this.renderer.domElement.style, {
-        display: 'block',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        position: 'fixed'
-      });
-      dom.bind(root, 'resize', fitted);
-      fitted();
-
-
-    } else if (!_.isElement(params.domElement)) {
-
-      this.renderer.setSize(params.width, params.height, this.ratio);
-      this.width = params.width;
-      this.height = params.height;
-
-    }
-
-    this.scene = this.renderer.scene;
-
-    Two.Instances.push(this);
-    raf.init();
-
-  };
-
-  _.extend(Two, {
-
-    /**
-     * Primitive
-     */
-
-    Array: root.Float32Array || Array,
-
-    
-
-    Version: 'v0.7.0',
-
-    Identifier: 'two_',
-
-    Properties: {
-      hierarchy: 'hierarchy',
-      demotion: 'demotion'
-    },
-
-    Events: {
-      play: 'play',
-      pause: 'pause',
-      update: 'update',
-      render: 'render',
-      resize: 'resize',
-      change: 'change',
-      remove: 'remove',
-      insert: 'insert',
-      order: 'order'
-    },
-
-    Commands: {
-      move: 'M',
-      line: 'L',
-      curve: 'C',
-      close: 'Z'
-    },
-
-    Resolution: 8,
-
-    Instances: [],
-
-    noConflict: function() {
-      root.Two = previousTwo;
-      return this;
-    },
-
-    uniqueId: function() {
-      var id = count;
-      count++;
-      return id;
-    },
-
-    Utils: _.extend(_, {
+var sin = Math.sin,
+        cos = Math.cos,
+        atan2 = Math.atan2,
+        sqrt = Math.sqrt,
+        round = Math.round,
+        abs = Math.abs,
+        PI = Math.PI,
+        TWO_PI = PI * 2,
+        HALF_PI = PI / 2,
+        pow = Math.pow,
+        min = Math.min,
+        max = Math.max;
+var Utils = _.extend(_, {
 
       defineProperty: function(property) {
 
@@ -474,7 +74,7 @@ this.Two = (function(previousTwo) {
 
         if (obj.children) {
           _.each(obj.children, function(obj) {
-            Two.Utils.release(obj);
+            Utils.release(obj);
           });
         }
 
@@ -567,7 +167,7 @@ this.Two = (function(previousTwo) {
       },
 
       getRatio: function(ctx) {
-        return Two.Utils.devicePixelRatio / getBackingStoreRatio(ctx);
+        return Utils.devicePixelRatio / getBackingStoreRatio(ctx);
       },
 
       /**
@@ -587,7 +187,7 @@ this.Two = (function(previousTwo) {
        */
       getComputedMatrix: function(object, matrix) {
 
-        matrix = (matrix && matrix.identity()) || new Two.Matrix();
+        matrix = (matrix && matrix.identity()) || new Matrix();
         var parent = object, matrices = [];
 
         while (parent && parent._matrix) {
@@ -614,7 +214,7 @@ this.Two = (function(previousTwo) {
         var dx = x * matrix.a + y * matrix.c + 0;
         var dy = x * matrix.b + y * matrix.d + 0;
 
-        return new Two.Vector(dx, dy);
+        return new Vector(dx, dy);
 
       },
 
@@ -624,8 +224,8 @@ this.Two = (function(previousTwo) {
       decomposeMatrix: function(matrix) {
 
         // calculate delta transform point
-        var px = Two.Utils.deltaTransformPoint(matrix, 0, 1);
-        var py = Two.Utils.deltaTransformPoint(matrix, 1, 0);
+        var px = Utils.deltaTransformPoint(matrix, 0, 1);
+        var py = Utils.deltaTransformPoint(matrix, 1, 0);
 
         // calculate skew
         var skewX = ((180 / Math.PI) * Math.atan2(px.y, px.x) - 90);
@@ -647,7 +247,7 @@ this.Two = (function(previousTwo) {
        * Walk through item properties and pick the ones of interest.
        * Will try to resolve styles applied via CSS
        *
-       * TODO: Reverse calculate `Two.Gradient`s for fill / stroke
+       * TODO: Reverse calculate `Gradient`s for fill / stroke
        * of any given path.
        */
       applySvgAttributes: function(node, elem) {
@@ -713,7 +313,7 @@ this.Two = (function(previousTwo) {
               // elem._matrix.set(m.a, m.b, m.c, m.d, m.e, m.f);
 
               // Option 2: Decompose and infer Two.js related properties.
-              var transforms = Two.Utils.decomposeMatrix(node.getCTM());
+              var transforms = Utils.decomposeMatrix(node.getCTM());
 
               elem.translation.set(transforms.translateX, transforms.translateY);
               elem.rotation = transforms.rotation;
@@ -778,15 +378,15 @@ this.Two = (function(previousTwo) {
       read: {
 
         svg: function() {
-          return Two.Utils.read.g.apply(this, arguments);
+          return Utils.read.g.apply(this, arguments);
         },
 
         g: function(node) {
 
-          var group = new Two.Group();
+          var group = new Group();
 
           // Switched up order to inherit more specific styles
-          Two.Utils.applySvgAttributes.call(this, node, group);
+          Utils.applySvgAttributes.call(this, node, group);
 
           for (var i = 0, l = node.childNodes.length; i < l; i++) {
             var n = node.childNodes[i];
@@ -795,8 +395,8 @@ this.Two = (function(previousTwo) {
 
             var tagName = tag.replace(/svg\:/ig, '').toLowerCase();
 
-            if (tagName in Two.Utils.read) {
-              var o = Two.Utils.read[tagName].call(group, n);
+            if (tagName in Utils.read) {
+              var o = Utils.read[tagName].call(group, n);
               group.add(o);
             }
           }
@@ -807,31 +407,32 @@ this.Two = (function(previousTwo) {
 
         polygon: function(node, open) {
 
+
           var points = node.getAttribute('points');
 
           var verts = [];
           points.replace(/(-?[\d\.?]+),(-?[\d\.?]+)/g, function(match, p1, p2) {
-            verts.push(new Two.Anchor(parseFloat(p1), parseFloat(p2)));
+            verts.push(new Anchor(parseFloat(p1), parseFloat(p2)));
           });
 
-          var poly = new Two.Path(verts, !open).noStroke();
+          var poly = new Path(verts, !open).noStroke();
           poly.fill = 'black';
 
-          return Two.Utils.applySvgAttributes.call(this, node, poly);
+          return Utils.applySvgAttributes.call(this, node, poly);
 
         },
 
         polyline: function(node) {
-          return Two.Utils.read.polygon.call(this, node, true);
+          return Utils.read.polygon.call(this, node, true);
         },
 
         path: function(node) {
 
           var path = node.getAttribute('d');
 
-          // Create a Two.Path from the paths.
+          // Create a Path from the paths.
 
-          var coord = new Two.Anchor();
+          var coord = new Anchor();
           var control, coords;
           var closed = false, relative = false;
           var commands = path.match(/[a-df-z][^a-df-z]*/ig);
@@ -913,7 +514,7 @@ this.Two = (function(previousTwo) {
 
           });
 
-          // Create the vertices for our Two.Path
+          // Create the vertices for our Path
 
           var points = [];
           _.each(commands, function(command, i) {
@@ -939,11 +540,11 @@ this.Two = (function(previousTwo) {
                 } else {
                   x = coord.x;
                   y = coord.y;
-                  result = new Two.Anchor(
+                  result = new Anchor(
                     x, y,
                     undefined, undefined,
                     undefined, undefined,
-                    Two.Commands.close
+                    Commands.close
                   );
                 }
                 break;
@@ -954,11 +555,11 @@ this.Two = (function(previousTwo) {
                 x = parseFloat(coords[0]);
                 y = parseFloat(coords[1]);
 
-                result = new Two.Anchor(
+                result = new Anchor(
                   x, y,
                   undefined, undefined,
                   undefined, undefined,
-                  lower === 'm' ? Two.Commands.move : Two.Commands.line
+                  lower === 'm' ? Commands.move : Commands.line
                 );
 
                 if (relative) {
@@ -977,11 +578,11 @@ this.Two = (function(previousTwo) {
                 var a = lower === 'h' ? 'x' : 'y';
                 var b = a === 'x' ? 'y' : 'x';
 
-                result = new Two.Anchor(
+                result = new Anchor(
                   undefined, undefined,
                   undefined, undefined,
                   undefined, undefined,
-                  Two.Commands.line
+                  Commands.line
                 );
                 result[a] = parseFloat(coords[0]);
                 result[b] = coord[b];
@@ -1003,7 +604,7 @@ this.Two = (function(previousTwo) {
                 y1 = coord.y;
 
                 if (!control) {
-                  control = new Two.Vector();//.copy(coord);
+                  control = new Vector();//.copy(coord);
                 }
 
                 if (lower === 'c') {
@@ -1041,15 +642,15 @@ this.Two = (function(previousTwo) {
                 }
 
                 if (!_.isObject(coord.controls)) {
-                  Two.Anchor.AppendCurveProperties(coord);
+                  Anchor.AppendCurveProperties(coord);
                 }
 
                 coord.controls.right.set(x2 - coord.x, y2 - coord.y);
-                result = new Two.Anchor(
+                result = new Anchor(
                   x4, y4,
                   x3 - x4, y3 - y4,
                   undefined, undefined,
-                  Two.Commands.curve
+                  Commands.curve
                 );
 
                 coord = result;
@@ -1064,7 +665,7 @@ this.Two = (function(previousTwo) {
                 y1 = coord.y;
 
                 if (!control) {
-                  control = new Two.Vector();//.copy(coord);
+                  control = new Vector();//.copy(coord);
                 }
 
                 if (control.isZero()) {
@@ -1103,15 +704,15 @@ this.Two = (function(previousTwo) {
                 }
 
                 if (!_.isObject(coord.controls)) {
-                  Two.Anchor.AppendCurveProperties(coord);
+                  Anchor.AppendCurveProperties(coord);
                 }
 
                 coord.controls.right.set(x2 - coord.x, y2 - coord.y);
-                result = new Two.Anchor(
+                result = new Anchor(
                   x4, y4,
                   x3 - x4, y3 - y4,
                   undefined, undefined,
-                  Two.Commands.curve
+                  Commands.curve
                 );
 
                 coord = result;
@@ -1121,7 +722,7 @@ this.Two = (function(previousTwo) {
 
               case 'a':
 
-                // throw new Two.Utils.Error('not yet able to interpret Elliptical Arcs.');
+                // throw new TwoError('not yet able to interpret Elliptical Arcs.');
                 x1 = coord.x;
                 y1 = coord.y;
 
@@ -1202,15 +803,15 @@ this.Two = (function(previousTwo) {
                   dt -= Math.PI * 2;
                 }
 
-                var length = Two.Resolution;
+                var length = Resolution;
 
                 // Save a projection of our rotation and translation to apply
                 // to the set of points.
-                var projection = new Two.Matrix()
+                var projection = new Matrix()
                   .translate(cx, cy)
                   .rotate(xAxisRotation);
 
-                // Create a resulting array of Two.Anchor's to export to the
+                // Create a resulting array of Anchor's to export to the
                 // the path.
                 result = _.map(_.range(length), function(i) {
                   var pct = 1 - (i / (length - 1));
@@ -1218,10 +819,10 @@ this.Two = (function(previousTwo) {
                   var x = rx * Math.cos(theta);
                   var y = ry * Math.sin(theta);
                   var projected = projection.multiply(x, y, 1);
-                  return new Two.Anchor(projected.x, projected.y, false, false, false, false, Two.Commands.line);;
+                  return new Anchor(projected.x, projected.y, false, false, false, false, Commands.line);;
                 });
 
-                result.push(new Two.Anchor(x4, y4, false, false, false, false, Two.Commands.line));
+                result.push(new Anchor(x4, y4, false, false, false, false, Commands.line));
 
                 coord = result[result.length - 1];
                 control = coord.controls.left;
@@ -1244,10 +845,10 @@ this.Two = (function(previousTwo) {
             return;
           }
 
-          var poly = new Two.Path(points, closed, undefined, true).noStroke();
+          var poly = new Path(points, closed, undefined, true).noStroke();
           poly.fill = 'black';
 
-          return Two.Utils.applySvgAttributes.call(this, node, poly);
+          return Utils.applySvgAttributes.call(this, node, poly);
 
         },
 
@@ -1257,20 +858,20 @@ this.Two = (function(previousTwo) {
           var y = parseFloat(node.getAttribute('cy'));
           var r = parseFloat(node.getAttribute('r'));
 
-          var amount = Two.Resolution;
+          var amount = Resolution;
           var points = _.map(_.range(amount), function(i) {
             var pct = i / amount;
             var theta = pct * TWO_PI;
             var x = r * cos(theta);
             var y = r * sin(theta);
-            return new Two.Anchor(x, y);
+            return new Anchor(x, y);
           });
 
-          var circle = new Two.Path(points, true, true).noStroke();
+          var circle = new Path(points, true, true).noStroke();
           circle.translation.set(x, y);
           circle.fill = 'black';
 
-          return Two.Utils.applySvgAttributes.call(this, node, circle);
+          return Utils.applySvgAttributes.call(this, node, circle);
 
         },
 
@@ -1281,20 +882,20 @@ this.Two = (function(previousTwo) {
           var width = parseFloat(node.getAttribute('rx'));
           var height = parseFloat(node.getAttribute('ry'));
 
-          var amount = Two.Resolution;
+          var amount = Resolution;
           var points = _.map(_.range(amount), function(i) {
             var pct = i / amount;
             var theta = pct * TWO_PI;
             var x = width * cos(theta);
             var y = height * sin(theta);
-            return new Two.Anchor(x, y);
+            return new Anchor(x, y);
           });
 
-          var ellipse = new Two.Path(points, true, true).noStroke();
+          var ellipse = new Path(points, true, true).noStroke();
           ellipse.translation.set(x, y);
           ellipse.fill = 'black';
 
-          return Two.Utils.applySvgAttributes.call(this, node, ellipse);
+          return Utils.applySvgAttributes.call(this, node, ellipse);
 
         },
 
@@ -1309,17 +910,17 @@ this.Two = (function(previousTwo) {
           var h2 = height / 2;
 
           var points = [
-            new Two.Anchor(w2, h2),
-            new Two.Anchor(-w2, h2),
-            new Two.Anchor(-w2, -h2),
-            new Two.Anchor(w2, -h2)
+            new Anchor(w2, h2),
+            new Anchor(-w2, h2),
+            new Anchor(-w2, -h2),
+            new Anchor(w2, -h2)
           ];
 
-          var rect = new Two.Path(points, true).noStroke();
+          var rect = new Path(points, true).noStroke();
           rect.translation.set(x + w2, y + h2);
           rect.fill = 'black';
 
-          return Two.Utils.applySvgAttributes.call(this, node, rect);
+          return Utils.applySvgAttributes.call(this, node, rect);
 
         },
 
@@ -1337,16 +938,16 @@ this.Two = (function(previousTwo) {
           var h2 = height / 2;
 
           var points = [
-            new Two.Anchor(- w2, - h2),
-            new Two.Anchor(w2, h2)
+            new Anchor(- w2, - h2),
+            new Anchor(w2, h2)
           ];
 
           // Center line and translate to desired position.
 
-          var line = new Two.Path(points).noFill();
+          var line = new Path(points).noFill();
           line.translation.set(x1 + w2, y1 + h2);
 
-          return Two.Utils.applySvgAttributes.call(this, node, line);
+          return Utils.applySvgAttributes.call(this, node, line);
 
         },
 
@@ -1380,14 +981,14 @@ this.Two = (function(previousTwo) {
               opacity = matches && matches.length > 1 ? parseFloat(matches[1]) : 1;
             }
 
-            stops.push(new Two.Gradient.Stop(offset, color, opacity));
+            stops.push(new Gradient.Stop(offset, color, opacity));
 
           }
 
-          var gradient = new Two.LinearGradient(x1 - ox, y1 - oy, x2 - ox,
+          var gradient = new LinearGradient(x1 - ox, y1 - oy, x2 - ox,
             y2 - oy, stops);
 
-          return Two.Utils.applySvgAttributes.call(this, node, gradient);
+          return Utils.applySvgAttributes.call(this, node, gradient);
 
         },
 
@@ -1431,14 +1032,14 @@ this.Two = (function(previousTwo) {
               opacity = matches && matches.length > 1 ? parseFloat(matches[1]) : 1;
             }
 
-            stops.push(new Two.Gradient.Stop(offset, color, opacity));
+            stops.push(new Gradient.Stop(offset, color, opacity));
 
           }
 
-          var gradient = new Two.RadialGradient(cx - ox, cy - oy, r,
+          var gradient = new RadialGradient(cx - ox, cy - oy, r,
             stops, fx - ox, fy - oy);
 
-          return Two.Utils.applySvgAttributes.call(this, node, gradient);
+          return Utils.applySvgAttributes.call(this, node, gradient);
 
         }
 
@@ -1451,13 +1052,13 @@ this.Two = (function(previousTwo) {
        */
       subdivide: function(x1, y1, x2, y2, x3, y3, x4, y4, limit) {
 
-        limit = limit || Two.Utils.Curve.RecursionLimit;
+        limit = limit || Utils.Curve.RecursionLimit;
         var amount = limit + 1;
 
         // TODO: Issue 73
         // Don't recurse if the end points are identical
         if (x1 === x4 && y1 === y4) {
-          return [new Two.Anchor(x4, y4)];
+          return [new Anchor(x4, y4)];
         }
 
         return _.map(_.range(0, amount), function(i) {
@@ -1466,7 +1067,7 @@ this.Two = (function(previousTwo) {
           var x = getPointOnCubicBezier(t, x1, x2, x3, x4);
           var y = getPointOnCubicBezier(t, y1, y2, y3, y4);
 
-          return new Two.Anchor(x, y);
+          return new Anchor(x, y);
 
         });
 
@@ -1510,7 +1111,7 @@ this.Two = (function(previousTwo) {
         };
 
         return integrate(
-          integrand, 0, 1, limit || Two.Utils.Curve.RecursionLimit
+          integrand, 0, 1, limit || Utils.Curve.RecursionLimit
         );
 
       },
@@ -1520,8 +1121,8 @@ this.Two = (function(previousTwo) {
        * Paper.js: https://github.com/paperjs/paper.js/blob/master/src/util/Numerical.js#L101
        */
       integrate: function(f, a, b, n) {
-        var x = Two.Utils.Curve.abscissas[n - 2],
-          w = Two.Utils.Curve.weights[n - 2],
+        var x = Utils.Curve.abscissas[n - 2],
+          w = Utils.Curve.weights[n - 2],
           A = 0.5 * (b - a),
           B = A + a,
           i = 0,
@@ -1539,6 +1140,9 @@ this.Two = (function(previousTwo) {
        */
       getCurveFromPoints: function(points, closed) {
 
+        var Anchor = require('../Anchor').default;
+
+
         var l = points.length, last = l - 1;
 
         for (var i = 0; i < l; i++) {
@@ -1546,7 +1150,7 @@ this.Two = (function(previousTwo) {
           var point = points[i];
 
           if (!_.isObject(point.controls)) {
-            Two.Anchor.AppendCurveProperties(point);
+            Anchor.AppendCurveProperties(point);
           }
 
           var prev = closed ? mod(i - 1, l) : max(i - 1, 0);
@@ -1557,7 +1161,7 @@ this.Two = (function(previousTwo) {
           var c = points[next];
           getControlPoints(a, b, c);
 
-          b._command = i === 0 ? Two.Commands.move : Two.Commands.curve;
+          b._command = i === 0 ? Commands.move : Commands.curve;
 
           b.controls.left.x = _.isNumber(b.controls.left.x) ? b.controls.left.x : b.x;
           b.controls.left.y = _.isNumber(b.controls.left.y) ? b.controls.left.y : b.y;
@@ -1585,8 +1189,8 @@ this.Two = (function(previousTwo) {
 
         // So we know which angle corresponds to which side.
 
-        b.u = _.isObject(b.controls.left) ? b.controls.left : new Two.Vector(0, 0);
-        b.v = _.isObject(b.controls.right) ? b.controls.right : new Two.Vector(0, 0);
+        b.u = _.isObject(b.controls.left) ? b.controls.left : new Vector(0, 0);
+        b.v = _.isObject(b.controls.right) ? b.controls.right : new Vector(0, 0);
 
         // TODO: Issue 73
         if (d1 < 0.0001 || d2 < 0.0001) {
@@ -1633,7 +1237,7 @@ this.Two = (function(previousTwo) {
        */
       getReflection: function(a, b, relative) {
 
-        return new Two.Vector(
+        return new Vector(
           2 * a.x - (b.x + a.x) - (relative ? a.x : 0),
           2 * a.y - (b.y + a.y) - (relative ? a.y : 0)
         );
@@ -1642,11 +1246,11 @@ this.Two = (function(previousTwo) {
 
       getAnchorsFromArcData: function(center, xAxisRotation, rx, ry, ts, td, ccw) {
 
-        var matrix = new Two.Matrix()
+        var matrix = new Matrix()
           .translate(center.x, center.y)
           .rotate(xAxisRotation);
 
-        var l = Two.Resolution;
+        var l = Resolution;
 
         // console.log(arguments);
 
@@ -1664,9 +1268,9 @@ this.Two = (function(previousTwo) {
           // x += center.x;
           // y += center.y;
 
-          var anchor = new Two.Anchor(x, y);
-          Two.Anchor.AppendCurveProperties(anchor);
-          anchor.command = Two.Commands.line;
+          var anchor = new Anchor(x, y);
+          Anchor.AppendCurveProperties(anchor);
+          anchor.command = Commands.line;
 
           // TODO: Calculate control points here...
 
@@ -1731,591 +1335,26 @@ this.Two = (function(previousTwo) {
 
         return v % l;
 
-      },
-
-      /**
-       * Array like collection that triggers inserted and removed events
-       * removed : pop / shift / splice
-       * inserted : push / unshift / splice (with > 2 arguments)
-       */
-      Collection: function() {
-
-        Array.call(this);
-
-        if (arguments.length > 1) {
-          Array.prototype.push.apply(this, arguments);
-        } else if (arguments[0] && Array.isArray(arguments[0])) {
-          Array.prototype.push.apply(this, arguments[0]);
-        }
-
-      },
-
-      // Custom Error Throwing for Two.js
-
-      Error: function(message) {
-        this.name = 'two.js';
-        this.message = message;
-      },
-
-      Events: {
-
-        on: function(name, callback) {
-
-          this._events || (this._events = {});
-          var list = this._events[name] || (this._events[name] = []);
-
-          list.push(callback);
-
-          return this;
-
-        },
-
-        off: function(name, callback) {
-
-          if (!this._events) {
-            return this;
-          }
-          if (!name && !callback) {
-            this._events = {};
-            return this;
-          }
-
-          var names = name ? [name] : _.keys(this._events);
-          for (var i = 0, l = names.length; i < l; i++) {
-
-            var name = names[i];
-            var list = this._events[name];
-
-            if (!!list) {
-              var events = [];
-              if (callback) {
-                for (var j = 0, k = list.length; j < k; j++) {
-                  var ev = list[j];
-                  if (callback && callback !== ev) {
-                    events.push(ev);
-                  }
-                }
-              }
-              this._events[name] = events;
-            }
-          }
-
-          return this;
-        },
-
-        trigger: function(name) {
-          if (!this._events) return this;
-          var args = slice.call(arguments, 1);
-          var events = this._events[name];
-          if (events) trigger(this, events, args);
-          return this;
-        }
-
       }
 
     })
 
-  });
-
-  Two.Utils.Events.bind = Two.Utils.Events.on;
-  Two.Utils.Events.unbind = Two.Utils.Events.off;
-
-  var trigger = function(obj, events, args) {
-    var method;
-    switch (args.length) {
-    case 0:
-      method = function(i) {
-        events[i].call(obj, args[0]);
-      };
-      break;
-    case 1:
-      method = function(i) {
-        events[i].call(obj, args[0], args[1]);
-      };
-      break;
-    case 2:
-      method = function(i) {
-        events[i].call(obj, args[0], args[1], args[2]);
-      };
-      break;
-    case 3:
-      method = function(i) {
-        events[i].call(obj, args[0], args[1], args[2], args[3]);
-      };
-      break;
-    default:
-      method = function(i) {
-        events[i].apply(obj, args);
-      };
-    }
-    for (var i = 0; i < events.length; i++) {
-      method(i);
-    }
-  };
-
-  Two.Utils.Error.prototype = new Error();
-  Two.Utils.Error.prototype.constructor = Two.Utils.Error;
-
-  Two.Utils.Collection.prototype = new Array();
-  Two.Utils.Collection.constructor = Two.Utils.Collection;
-
-  _.extend(Two.Utils.Collection.prototype, Two.Utils.Events, {
-
-    pop: function() {
-      var popped = Array.prototype.pop.apply(this, arguments);
-      this.trigger(Two.Events.remove, [popped]);
-      return popped;
-    },
-
-    shift: function() {
-      var shifted = Array.prototype.shift.apply(this, arguments);
-      this.trigger(Two.Events.remove, [shifted]);
-      return shifted;
-    },
-
-    push: function() {
-      var pushed = Array.prototype.push.apply(this, arguments);
-      this.trigger(Two.Events.insert, arguments);
-      return pushed;
-    },
-
-    unshift: function() {
-      var unshifted = Array.prototype.unshift.apply(this, arguments);
-      this.trigger(Two.Events.insert, arguments);
-      return unshifted;
-    },
-
-    splice: function() {
-      var spliced = Array.prototype.splice.apply(this, arguments);
-      var inserted;
-
-      this.trigger(Two.Events.remove, spliced);
-
-      if (arguments.length > 2) {
-        inserted = this.slice(arguments[0], arguments[0] + arguments.length - 2);
-        this.trigger(Two.Events.insert, inserted);
-        this.trigger(Two.Events.order);
-      }
-      return spliced;
-    },
-
-    sort: function() {
-      Array.prototype.sort.apply(this, arguments);
-      this.trigger(Two.Events.order);
-      return this;
-    },
-
-    reverse: function() {
-      Array.prototype.reverse.apply(this, arguments);
-      this.trigger(Two.Events.order);
-      return this;
-    }
-
-  });
-
-  // Localize utils
-
-  var distanceBetween = Two.Utils.distanceBetween,
-    getAnchorsFromArcData = Two.Utils.getAnchorsFromArcData,
-    distanceBetweenSquared = Two.Utils.distanceBetweenSquared,
-    ratioBetween = Two.Utils.ratioBetween,
-    angleBetween = Two.Utils.angleBetween,
-    getControlPoints = Two.Utils.getControlPoints,
-    getCurveFromPoints = Two.Utils.getCurveFromPoints,
-    solveSegmentIntersection = Two.Utils.solveSegmentIntersection,
-    decoupleShapes = Two.Utils.decoupleShapes,
-    mod = Two.Utils.mod,
-    getBackingStoreRatio = Two.Utils.getBackingStoreRatio,
-    getPointOnCubicBezier = Two.Utils.getPointOnCubicBezier,
-    getCurveLength = Two.Utils.getCurveLength,
-    integrate = Two.Utils.integrate,
-    getReflection = Two.Utils.getReflection;
-
-  _.extend(Two.prototype, Two.Utils.Events, {
-
-    appendTo: function(elem) {
-
-      elem.appendChild(this.renderer.domElement);
-      return this;
-
-    },
-
-    play: function() {
-
-      Two.Utils.setPlaying.call(this, true);
-      return this.trigger(Two.Events.play);
-
-    },
-
-    pause: function() {
-
-      this.playing = false;
-      return this.trigger(Two.Events.pause);
-
-    },
-
-    /**
-     * Update positions and calculations in one pass before rendering.
-     */
-    update: function() {
-
-      var animated = !!this._lastFrame;
-      var now = perf.now();
-
-      this.frameCount++;
-
-      if (animated) {
-        this.timeDelta = parseFloat((now - this._lastFrame).toFixed(3));
-      }
-      this._lastFrame = now;
-
-      var width = this.width;
-      var height = this.height;
-      var renderer = this.renderer;
-
-      // Update width / height for the renderer
-      if (width !== renderer.width || height !== renderer.height) {
-        renderer.setSize(width, height, this.ratio);
-      }
-
-      this.trigger(Two.Events.update, this.frameCount, this.timeDelta);
-
-      return this.render();
-
-    },
-
-    /**
-     * Render all drawable - visible objects of the scene.
-     */
-    render: function() {
-
-      this.renderer.render();
-      return this.trigger(Two.Events.render, this.frameCount);
-
-    },
-
-    /**
-     * Convenience Methods
-     */
-
-    add: function(o) {
-
-      var objects = o;
-      if (!(objects instanceof Array)) {
-        objects = _.toArray(arguments);
-      }
-
-      this.scene.add(objects);
-      return this;
-
-    },
-
-    remove: function(o) {
-
-      var objects = o;
-      if (!(objects instanceof Array)) {
-        objects = _.toArray(arguments);
-      }
-
-      this.scene.remove(objects);
-
-      return this;
-
-    },
-
-    clear: function() {
-
-      this.scene.remove(_.toArray(this.scene.children));
-      return this;
-
-    },
-
-    makeLine: function(x1, y1, x2, y2) {
-
-      var line = new Two.Line(x1, y1, x2, y2);
-      this.scene.add(line);
-
-      return line;
-
-    },
-
-    makeRectangle: function(x, y, width, height) {
-      var rect = new Two.Rectangle(x, y, width, height);
-      this.scene.add(rect);
-
-      return rect;
-
-    },
-
-    makeRoundedRectangle: function(x, y, width, height, sides) {
-
-      var rect = new Two.RoundedRectangle(x, y, width, height, sides);
-      this.scene.add(rect);
-
-      return rect;
-
-    },
-
-    makeCircle: function(ox, oy, r) {
-
-      return this.makeEllipse(ox, oy, r, r);
-
-    },
-
-    makeEllipse: function(ox, oy, rx, ry) {
-
-      var ellipse = new Two.Ellipse(ox, oy, rx, ry);
-      this.scene.add(ellipse);
-
-      return ellipse;
-
-    },
-
-    makeStar: function(ox, oy, or, ir, sides) {
-
-      var star = new Two.Star(ox, oy, or, ir, sides);
-      this.scene.add(star);
-
-      return star;
-
-    },
-
-    makeCurve: function(p) {
-
-      var l = arguments.length, points = p;
-      if (!_.isArray(p)) {
-        points = [];
-        for (var i = 0; i < l; i+=2) {
-          var x = arguments[i];
-          if (!_.isNumber(x)) {
-            break;
-          }
-          var y = arguments[i + 1];
-          points.push(new Two.Anchor(x, y));
-        }
-      }
-
-      var last = arguments[l - 1];
-      var curve = new Two.Path(points, !(_.isBoolean(last) ? last : undefined), true);
-      var rect = curve.getBoundingClientRect();
-      curve.center().translation
-        .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
-
-      this.scene.add(curve);
-
-      return curve;
-
-    },
-
-    makePolygon: function(ox, oy, r, sides) {
-
-      var poly = new Two.Polygon(ox, oy, r, sides);
-      this.scene.add(poly);
-
-      return poly;
-
-    },
-
-    /*
-    * Make an Arc Segment
-    */
-
-    makeArcSegment: function(ox, oy, ir, or, sa, ea, res) {
-      var arcSegment = new Two.ArcSegment(ox, oy, ir, or, sa, ea, res);
-      this.scene.add(arcSegment);
-      return arcSegment;
-    },
-
-    /**
-     * Convenience method to make and draw a Two.Path.
-     */
-    makePath: function(p) {
-
-      var l = arguments.length, points = p;
-      if (!_.isArray(p)) {
-        points = [];
-        for (var i = 0; i < l; i+=2) {
-          var x = arguments[i];
-          if (!_.isNumber(x)) {
-            break;
-          }
-          var y = arguments[i + 1];
-          points.push(new Two.Anchor(x, y));
-        }
-      }
-
-      var last = arguments[l - 1];
-      var path = new Two.Path(points, !(_.isBoolean(last) ? last : undefined));
-      var rect = path.getBoundingClientRect();
-      path.center().translation
-        .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
-
-      this.scene.add(path);
-
-      return path;
-
-    },
-
-    /**
-     * Convenience method to make and add a Two.Text.
-     */
-    makeText: function(message, x, y, styles) {
-      var text = new Two.Text(message, x, y, styles);
-      this.add(text);
-      return text;
-    },
-
-    /**
-     * Convenience method to make and add a Two.LinearGradient.
-     */
-    makeLinearGradient: function(x1, y1, x2, y2 /* stops */) {
-
-      var stops = slice.call(arguments, 4);
-      var gradient = new Two.LinearGradient(x1, y1, x2, y2, stops);
-
-      this.add(gradient);
-
-      return gradient;
-
-    },
-
-    /**
-     * Convenience method to make and add a Two.RadialGradient.
-     */
-    makeRadialGradient: function(x1, y1, r /* stops */) {
-
-      var stops = slice.call(arguments, 3);
-      var gradient = new Two.RadialGradient(x1, y1, r, stops);
-
-      this.add(gradient);
-
-      return gradient;
-
-    },
-
-    makeGroup: function(o) {
-
-      var objects = o;
-      if (!(objects instanceof Array)) {
-        objects = _.toArray(arguments);
-      }
-
-      var group = new Two.Group();
-      this.scene.add(group);
-      group.add(objects);
-
-      return group;
-
-    },
-
-    /**
-     * Interpret an SVG Node and add it to this instance's scene. The
-     * distinction should be made that this doesn't `import` svg's, it solely
-     * interprets them into something compatible for Two.js — this is slightly
-     * different than a direct transcription.
-     *
-     * @param {Object} svgNode - The node to be parsed
-     * @param {Boolean} shallow - Don't create a top-most group but
-     *                                    append all contents directly
-     */
-    interpret: function(svgNode, shallow) {
-
-      var tag = svgNode.tagName.toLowerCase();
-
-      if (!(tag in Two.Utils.read)) {
-        return null;
-      }
-
-      var node = Two.Utils.read[tag].call(this, svgNode);
-
-      if (shallow && node instanceof Two.Group) {
-        this.add(node.children);
-      } else {
-        this.add(node);
-      }
-
-      return node;
-
-    },
-
-    /**
-     * Load an SVG file / text and interpret.
-     */
-    load: function(text, callback) {
-
-      var nodes = [], elem, i;
-
-      if (/.*\.svg/ig.test(text)) {
-
-        Two.Utils.xhr(text, _.bind(function(data) {
-
-          dom.temp.innerHTML = data;
-          for (i = 0; i < dom.temp.children.length; i++) {
-            elem = dom.temp.children[i];
-            nodes.push(this.interpret(elem));
-          }
-
-          callback(nodes.length <= 1 ? nodes[0] : nodes,
-            dom.temp.children.length <= 1 ? dom.temp.children[0] : dom.temp.children);
-
-        }, this));
-
-        return this;
-
-      }
-
-      dom.temp.innerHTML = text;
-      for (i = 0; i < dom.temp.children.length; i++) {
-        elem = dom.temp.children[i];
-        nodes.push(this.interpret(elem));
-      }
-
-      callback(nodes.length <= 1 ? nodes[0] : nodes,
-        dom.temp.children.length <= 1 ? dom.temp.children[0] : dom.temp.children);
-
-      return this;
-
-    }
-
-  });
-
-  function fitToWindow() {
-
-    var wr = document.body.getBoundingClientRect();
-
-    var width = this.width = wr.width;
-    var height = this.height = wr.height;
-
-    this.renderer.setSize(width, height, this.ratio);
-    this.trigger(Two.Events.resize, width, height);
-
-  }
-
-  // Request Animation Frame
-
-  var raf = dom.getRequestAnimationFrame();
-
-  function loop() {
-
-    raf(loop);
-
-    for (var i = 0; i < Two.Instances.length; i++) {
-      var t = Two.Instances[i];
-      if (t.playing) {
-        t.update();
-      }
-    }
-
-  }
-
-  if (typeof define === 'function' && define.amd) {
-    define('two', [], function() {
-      return Two;
-    });
-  } else if (typeof module != 'undefined' && module.exports) {
-    module.exports = Two;
-  }
-
-  return Two;
-
-})(this.Two);
+      var slice = _.natural.slice;
+
+      var distanceBetween = Utils.distanceBetween,
+    getAnchorsFromArcData = Utils.getAnchorsFromArcData,
+    distanceBetweenSquared = Utils.distanceBetweenSquared,
+    ratioBetween = Utils.ratioBetween,
+    angleBetween = Utils.angleBetween,
+    getControlPoints = Utils.getControlPoints,
+    getCurveFromPoints = Utils.getCurveFromPoints,
+    solveSegmentIntersection = Utils.solveSegmentIntersection,
+    decoupleShapes = Utils.decoupleShapes,
+    mod = Utils.mod,
+    getBackingStoreRatio = Utils.getBackingStoreRatio,
+    getPointOnCubicBezier = Utils.getPointOnCubicBezier,
+    getCurveLength = Utils.getCurveLength,
+    integrate = Utils.integrate,
+    getReflection = Utils.getReflection;
+    
+export default Utils;
