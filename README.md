@@ -1,3 +1,10 @@
+!!WIP!!
+
+Porting the Two.js library to es6. Tests and bundling are broken until further notice. 
+
+----------------------------
+
+
 <h1 id="masthead" style="display: block; width: 285px; height: 80px; background: url(//jonobr1.github.io/two.js/images/logo.gif) center center no-repeat; overflow: hidden; text-indent: -9999px;">two.js</h1>
 
 A two-dimensional drawing api meant for modern browsers. It is renderer agnostic enabling the same api to render in multiple contexts: webgl, canvas2d, and svg.
