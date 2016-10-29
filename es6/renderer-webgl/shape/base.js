@@ -202,16 +202,16 @@ base.ctx = base.canvas.getContext('2d');
 base.Commands = Commands;
 base.transformation = new Array2(9);
 
-var cachedShape = new Cache((key) => { return require('./' + key).default; });
+var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
 base.renderShape = (elm, ctx, condi, clip) => {
   var type = elm._renderer.type;
-  cachedShape.get(type).render.call(elm, ctx, condi, clip);
+  shapeCache.get(type).render.call(elm, ctx, condi, clip);
 };
 
 base.updateCanvas = (elem, webgl) => {
   var type = elem._renderer.type;
-  cachedShape.get(type).updateCanvas.call(webgl, elem);
+  shapeCache.get(type).updateCanvas.call(webgl, elem);
 }
 
 export default base;

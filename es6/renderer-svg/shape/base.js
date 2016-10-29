@@ -1,5 +1,6 @@
 import _  from '../../util/common';
 import is  from '../../util/is';
+import Cache   from '../../util/Cache';
 import MathExtras   from '../../util/math-extras';
 import Commands from '../../constant/CommandTypes';
 
@@ -8,7 +9,6 @@ var {isEmpty} = is;
 
 var {mod, toFixed} = MathExtras;
 
-var shapeCache = {};
 
 var base = {
 
@@ -202,15 +202,11 @@ var base = {
 
 base.Commands = Commands;
 
+var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
 base.renderShape = (elm, ctx, condi, clip) => {
   var type = elm._renderer.type;
-  if(!shapeCache.hasOwnProperty(type)) {
-    var m = require('./' + type).default;
-    shapeCache[type] = m;
-    console.log(type, m)
-  }
-  shapeCache[type].render.call(elm, ctx, condi, clip);
+  shapeCache.get(type).render.call(elm, ctx, condi, clip);
 };
 
 export default base;

@@ -1,3 +1,4 @@
+import Cache   from '../../util/Cache';
 import Commands from '../../constant/CommandTypes';
 
 // Returns true if this is a non-transforming matrix
@@ -26,15 +27,11 @@ FN.isDefaultMatrix = (m) => {
   return (m[0] == 1 && m[3] == 0 && m[1] == 0 && m[4] == 1 && m[2] == 0 && m[5] == 0);
 };
 
+var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
 FN.renderShape = (elm, ctx, condi, clip) => {
 	var type = elm._renderer.type;
-	if(!shapeCache.hasOwnProperty(type)) {
-	  var m = require('./' + type).default;
-	  shapeCache[type] = m;
-	  console.log(type, m)
-	}
-	shapeCache[type].render.call(elm, ctx, condi, clip);
+	shapeCache.get(type).render.call(elm, ctx, condi, clip);
 };
 
 
