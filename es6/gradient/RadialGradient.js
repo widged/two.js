@@ -1,8 +1,10 @@
-import _  from '../util/underscore';
+import _  from '../util/common';
 import is  from '../util/is';
 import EventTypes    from '../constant/EventTypes';
 import Vector    from '../struct/Vector';
-import Gradient  from './Gradient';
+import Gradient  from '../shape/Gradient';
+
+var {isNumber} = is;
 
 class RadialGradient extends Gradient {
 
@@ -17,26 +19,26 @@ class RadialGradient extends Gradient {
         this._flagCenter = true;
       }, this));
 
-    this.radius = is.Number(r) ? r : 20;
+    this.radius = isNumber(r) ? r : 20;
 
     this.focal = new Vector()
       .on(EventTypes.change, _.bind(function() {
         this._flagFocal = true;
       }, this));
 
-    if (is.Number(cx)) {
+    if (isNumber(cx)) {
       this.center.x = cx;
     }
-    if (is.Number(cy)) {
+    if (isNumber(cy)) {
       this.center.y = cy;
     }
 
     this.focal.copy(this.center);
 
-    if (is.Number(fx)) {
+    if (isNumber(fx)) {
       this.focal.x = fx;
     }
-    if (is.Number(fy)) {
+    if (isNumber(fy)) {
       this.focal.y = fy;
     }
 

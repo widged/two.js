@@ -1,15 +1,15 @@
 import is  from '../util/is';
-import _  from '../util/underscore';
+import _  from '../util/common';
+import dom  from '../platform/dom';
 import Commands from '../constant/CommandTypes';
-import Group   from '../shape/Group';
-import EventsDecorator   from '../util/eventsDecorator.js';
+import EventsDecorator   from '../util/emitter-decorator.js';
+import MathExtras   from '../util/math-extras.js';
 
+var {mod, toFixed} = MathExtras;
+var {isNumber, isUndefined, isString} = is;
 
-/**
- * Constants
- */
-var mod = _.mod, toFixed = _.toFixed;
-var getRatio = _.getRatio;
+var getRatio = dom.getRatio;
+
 
 // Returns true if this is a non-transforming matrix
 var isDefaultMatrix = function (m) {
@@ -144,7 +144,7 @@ var canvas = {
 
       // Styles
       if (fill) {
-        if (is.String(fill)) {
+        if (isString(fill)) {
           ctx.fillStyle = fill;
         } else {
           canvas[fill._renderer.type].render.call(fill, ctx);
@@ -152,7 +152,7 @@ var canvas = {
         }
       }
       if (stroke) {
-        if (is.String(stroke)) {
+        if (isString(stroke)) {
           ctx.strokeStyle = stroke;
         } else {
           canvas[stroke._renderer.type].render.call(stroke, ctx);
@@ -171,7 +171,7 @@ var canvas = {
       if (cap) {
         ctx.lineCap = cap;
       }
-      if (is.Number(opacity)) {
+      if (isNumber(opacity)) {
         ctx.globalAlpha = opacity;
       }
 
@@ -359,7 +359,7 @@ var canvas = {
 
       // Styles
       if (fill) {
-        if (is.String(fill)) {
+        if (isString(fill)) {
           ctx.fillStyle = fill;
         } else {
           canvas[fill._renderer.type].render.call(fill, ctx);
@@ -367,7 +367,7 @@ var canvas = {
         }
       }
       if (stroke) {
-        if (is.String(stroke)) {
+        if (isString(stroke)) {
           ctx.strokeStyle = stroke;
         } else {
           canvas[stroke._renderer.type].render.call(stroke, ctx);
@@ -377,7 +377,7 @@ var canvas = {
       if (linewidth) {
         ctx.lineWidth = linewidth;
       }
-      if (is.Number(opacity)) {
+      if (isNumber(opacity)) {
         ctx.globalAlpha = opacity;
       }
 
@@ -429,22 +429,22 @@ var canvas = {
 
 };
 
-var Renderer = function(params) {
+var Renderer = function(options) {
   // Smoothing property. Defaults to true
   // Set it to false when working with pixel art.
   // false can lead to better performance, since it would use a cheaper interpolation algorithm.
   // It might not make a big difference on GPU backed canvases.
-  var smoothing = (params.smoothing !== false);
-  this.domElement = params.domElement || document.createElement('canvas');
+  var smoothing = (options.smoothing !== false);
+  this.domElement = options.domElement || document.createElement('canvas');
   this.ctx = this.domElement.getContext('2d');
-  this.overdraw = params.overdraw || false;
+  this.overdraw = options.overdraw || false;
 
-  if (!is.Undefined(this.ctx.imageSmoothingEnabled)) {
+  if (!isUndefined(this.ctx.imageSmoothingEnabled)) {
     this.ctx.imageSmoothingEnabled = smoothing;
   }
 
   // Everything drawn on the canvas needs to be added to the scene.
-  this.scene = new Group();
+  this.scene = options.scene;
   this.scene.parent = this;
 };
 
@@ -462,7 +462,7 @@ _.extend(Renderer.prototype, EventsDecorator, {
     this.width = width;
     this.height = height;
 
-    this.ratio = is.Undefined(ratio) ? getRatio(this.ctx) : ratio;
+    this.ratio = isUndefined(ratio) ? getRatio(this.ctx) : ratio;
 
     this.domElement.width = width * this.ratio;
     this.domElement.height = height * this.ratio;

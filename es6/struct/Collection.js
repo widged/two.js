@@ -1,84 +1,87 @@
-import _ from '../util/underscore';
-import EventsDecorator   from '../util/eventsDecorator.js';
-import EventTypes   from '../constant/EventTypes';
+import _ from '../util/common';
+import Emitter    from '../util/EventEmitter2.js';
+import EventTypes from '../constant/EventTypes';
 
 /**
  * Array like collection that triggers inserted and removed events
  * removed : pop / shift / splice
  * inserted : push / unshift / splice (with > 2 arguments)
  */
-
-class Collection {
+class Collection extends Emitter  {
 
   constructor() {
+    super();
 
-    Array.call(this);
+    this.state = {arr: []};
 
     if (arguments.length > 1) {
       Array.prototype.push.apply(this, arguments);
     } else if (arguments[0] && Array.isArray(arguments[0])) {
       Array.prototype.push.apply(this, arguments[0]);
     }
+  }
 
+  emit(eventType, data) {
+    var types = {removed: EventTypes.remove, inserted: EventTypes.insert, reordered: EventTypes.order};
+    var evenType = types[eventType] || eventType;
+    super.emit(eventType, data);
+  }  
+
+  pop() {
+    var popped = Array.prototype.pop.apply(this, arguments);
+    this.emit(EventTypes.remove, [popped]);
+    return popped;
+  }  
+
+  shift() {
+    var shifted = Array.prototype.shift.apply(this, arguments);
+    this.emit(EventTypes.remove, [shifted]);
+    return shifted;
+  }
+
+  push() {
+    var pushed = Array.prototype.push.apply(this, arguments);
+    this.emit(EventTypes.insert, arguments);
+    return pushed;
+  }  
+
+  unshift() {
+    var unshifted = Array.prototype.unshift.apply(this, arguments);
+    this.emit(EventTypes.insert, arguments);
+    return unshifted;
+  }
+
+  splice() {
+    var spliced = Array.prototype.splice.apply(this, arguments);
+    var inserted;
+
+    this.emit(EventTypes.remove, spliced);
+
+    if (arguments.length > 2) {
+      inserted = this.slice(arguments[0], arguments[0] + arguments.length - 2);
+      this.emit(EventTypes.insert, inserted);
+      this.emit(EventTypes.order);
+    }
+    return spliced;
+  }
+
+  sort() {
+    Array.prototype.sort.apply(this, arguments);
+    this.emit(EventTypes.order);
+    return this;
+  }
+
+  reverse() {
+    Array.prototype.reverse.apply(this, arguments);
+    this.emit(EventTypes.order);
+    return this;
   }
 }
 
 
-Collection.prototype = new Array();
-Collection.constructor = Collection;
 
-_.extend(Collection.prototype, EventsDecorator, {
+// _.extend(Collection.prototype, EventsDecorator);
 
-  pop: function() {
-    var popped = Array.prototype.pop.apply(this, arguments);
-    this.trigger(EventTypes.remove, [popped]);
-    return popped;
-  },
 
-  shift: function() {
-    var shifted = Array.prototype.shift.apply(this, arguments);
-    this.trigger(EventTypes.remove, [shifted]);
-    return shifted;
-  },
-
-  push: function() {
-    var pushed = Array.prototype.push.apply(this, arguments);
-    this.trigger(EventTypes.insert, arguments);
-    return pushed;
-  },
-
-  unshift: function() {
-    var unshifted = Array.prototype.unshift.apply(this, arguments);
-    this.trigger(EventTypes.insert, arguments);
-    return unshifted;
-  },
-
-  splice: function() {
-    var spliced = Array.prototype.splice.apply(this, arguments);
-    var inserted;
-
-    this.trigger(EventTypes.remove, spliced);
-
-    if (arguments.length > 2) {
-      inserted = this.slice(arguments[0], arguments[0] + arguments.length - 2);
-      this.trigger(EventTypes.insert, inserted);
-      this.trigger(EventTypes.order);
-    }
-    return spliced;
-  },
-
-  sort: function() {
-    Array.prototype.sort.apply(this, arguments);
-    this.trigger(EventTypes.order);
-    return this;
-  },
-
-  reverse: function() {
-    Array.prototype.reverse.apply(this, arguments);
-    this.trigger(EventTypes.order);
-    return this;
-  }
-
-});
 
 export default Collection;

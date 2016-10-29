@@ -1,6 +1,8 @@
-import _  from '../util/underscore';
+import _  from '../util/common';
 import is  from '../util/is';
 import Shape from './Shape';
+
+var {isNumber, isObject} = is;
 
 var getComputedMatrix = _.getComputedMatrix;
 
@@ -14,14 +16,14 @@ class Text extends Shape {
 
     this.value = message;
 
-    if (is.Number(x)) {
+    if (isNumber(x)) {
         this.translation.x = x;
     }
-    if (is.Number(y)) {
+    if (isNumber(y)) {
         this.translation.y = y;
     }
 
-    if (!is.Object(styles)) {
+    if (!isObject(styles)) {
       return this;
     }
 

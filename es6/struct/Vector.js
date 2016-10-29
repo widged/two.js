@@ -1,4 +1,4 @@
-import _  from '../util/underscore';
+import _  from '../util/common';
 import EventEmitter  from '../util/EventEmitter.js';
 import EventTypes    from '../constant/EventTypes';
 

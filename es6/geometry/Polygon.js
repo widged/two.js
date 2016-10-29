@@ -1,4 +1,4 @@
-import _  from '../util/underscore';
+import _  from '../util/common';
 
 var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
 

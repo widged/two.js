@@ -13,14 +13,14 @@
 
 function main() {
 
-	var Two = require('../es6/Two').default;
-	var Types = require('../es6/constant/RendererTypes').default;
+var Two = require('../es6/Two').default;
+var Types = require('../es6/constant/RendererTypes').default;
 
-	var two = new Two({
-	          width: 800,
-	          height: 800,
-	          type: Types.canvas
-	        }).appendTo(document.getElementById('app'));
+var two = new Two({
+  width: 800,
+  height: 800,
+  type: Types.canvas
+}).appendTo(document.getElementById('app'));
 
 
 var gp = two.makeGroup();
@@ -68,35 +68,35 @@ poly.fill = "brown";
 poly.stroke = "green";
 poly.opacity = 0.25;
 
-var Star = Two.Star = require('../es6/geometry/Star').default;
+var Star = require('../es6/geometry/Star').default;
 var star = two.addShape(Star(60,60,30,20, 10));
 star.fill = "purple";
 star.stroke = "purple";
 star.opacity = 0.25;
 
-Two.Text = require('../es6/shape/Text').default;
 var txt = two.makeText('hello there', 200,200);
 txt.opacity = 0.25;
 
 // ----------- gradients ------
 // 
-Two.Stop = require('../es6/shape/Stop').default;
-Two.Gradient = require('../es6/shape/Gradient').default;
+var Stop = require('../es6/gradient/Stop').default;
 
-Two.RadialGradient = require('../es6/shape/RadialGradient').default;
+var RadialGradient = require('../es6/gradient/RadialGradient').default;
 var radius = Math.max(150, 100);
 var radialGradient = two.makeRadialGradient(
 	0, 0,
 	radius,
-	new Two.Stop(0,  'rgba(255, 0, 0, 1)', 1),
-	new Two.Stop(0.5, 'rgba(255, 0, 0, 0)', 0)
+	new Stop(0,  'rgba(255, 0, 0, 1)', 1),
+	new Stop(0.5, 'rgba(255, 0, 0, 0)', 0)
 );
+var stop = new Stop(0,  'rgba(255, 0, 0, 1)', 1);
+console.log(stop.toObject())
 
 var vignette = two.addShape(RoundedRectangle(215, 290, 150, 100, 10))
 vignette.fill = radialGradient;
 
 
-Two.LinearGradient = require('../es6/shape/LinearGradient').default;
+var LinearGradient = require('../es6/gradient/LinearGradient').default;
 // Two.js colors from main.css
 var colors = [
   'rgb(255, 64, 64)',
@@ -112,9 +112,9 @@ colors.index = 0;
 var linearGradient = two.makeLinearGradient(
   150 / 2, - 100 / 2,
   150 / 2, 100 / 2,
-  new Two.Stop(0, colors[0]),
-  new Two.Stop(1, colors[1]),
-  new Two.Stop(1, colors[2])
+  new Stop(0, colors[0]),
+  new Stop(1, colors[1]),
+  new Stop(1, colors[2])
 );
 
 var rectangle = two.addShape(Rectangle(315, 390, 150, 100));

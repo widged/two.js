@@ -1,9 +1,10 @@
-import _  from '../util/underscore';
+import _  from '../util/common';
 import is  from '../util/is';
 import EventTypes    from '../constant/EventTypes';
 import Vector    from '../struct/Vector';
-import Gradient  from './Gradient';
+import Gradient  from '../shape/Gradient';
 
+var {isNumber} = is;
 
 class LinearGradient extends Gradient {
 
@@ -17,16 +18,16 @@ class LinearGradient extends Gradient {
     this.left = new Vector().on(EventTypes.change, flagEndPoints);
     this.right = new Vector().on(EventTypes.change, flagEndPoints);
 
-    if (is.Number(x1)) {
+    if (isNumber(x1)) {
       this.left.x = x1;
     }
-    if (is.Number(y1)) {
+    if (isNumber(y1)) {
       this.left.y = y1;
     }
-    if (is.Number(x2)) {
+    if (isNumber(x2)) {
       this.right.x = x2;
     }
-    if (is.Number(y2)) {
+    if (isNumber(y2)) {
       this.right.y = y2;
     }
 

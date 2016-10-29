@@ -1,5 +1,5 @@
-import _ from './underscore';
-import EventsDecorator   from './eventsDecorator.js';
+import _ from './common';
+import EventsDecorator   from './emitter-decorator.js';
 
 class Emitter {
 

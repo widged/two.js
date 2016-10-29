@@ -1,6 +1,143 @@
+import is from './util/is';
+import Anchor from './strucct/Anchor';
+
+var {isObject, isUndefined, isNaN, isArray, isNull} = is;
+
+
 /**
-       * Read any number of SVG node types and create Two equivalents of them.
-       */
+ * Walk through item properties and pick the ones of interest.
+ * Will try to resolve styles applied via CSS
+ *
+ * TODO: Reverse calculate `Gradient`s for fill / stroke
+ * of any given path.
+ */
+var applySvgAttributes = function(node, elem) {
+
+  var attributes = {}, styles = {}, i, key, value, attr;
+
+  // Not available in non browser environments
+  if (getComputedStyle) {
+    // Convert CSSStyleDeclaration to a normal object
+    var computedStyles = getComputedStyle(node);
+    i = computedStyles.length;
+
+    while (i--) {
+      key = computedStyles[i];
+      value = computedStyles[key];
+      // Gecko returns undefined for unset properties
+      // Webkit returns the default value
+      if (value !== undefined) {
+        styles[key] = value;
+      }
+    }
+  }
+
+  // Convert NodeMap to a normal object
+  i = node.attributes.length;
+  while (i--) {
+    attr = node.attributes[i];
+    attributes[attr.nodeName] = attr.value;
+  }
+
+  // Getting the correct opacity is a bit tricky, since SVG path elements don't
+  // support opacity as an attribute, but you can apply it via CSS.
+  // So we take the opacity and set (stroke/fill)-opacity to the same value.
+  if (!isUndefined(styles.opacity)) {
+    styles['stroke-opacity'] = styles.opacity;
+    styles['fill-opacity'] = styles.opacity;
+  }
+
+  // Merge attributes and applied styles (attributes take precedence)
+  _.extend(styles, attributes);
+
+  // Similarly visibility is influenced by the value of both display and visibility.
+  // Calculate a unified value here which defaults to `true`.
+  styles.visible = !(isUndefined(styles.display) && styles.display === 'none')
+    || (isUndefined(styles.visibility) && styles.visibility === 'hidden');
+
+  // Now iterate the whole thing
+  for (key in styles) {
+    value = styles[key];
+
+    switch (key) {
+      case 'transform':
+        // TODO: Check this out https://github.com/paperjs/paper.js/blob/develop/src/svg/SvgImport.js#L313
+        if (value === 'none') break;
+        var m = node.getCTM();
+
+        // Might happen when transform string is empty or not valid.
+        if (m === null) break;
+
+        // // Option 1: edit the underlying matrix and don't force an auto calc.
+        // var m = node.getCTM();
+        // elem._matrix.manual = true;
+        // elem._matrix.set(m.a, m.b, m.c, m.d, m.e, m.f);
+
+        // Option 2: Decompose and infer Two.js related properties.
+        var transforms = FN.decomposeMatrix(node.getCTM());
+
+        elem.translation.set(transforms.translateX, transforms.translateY);
+        elem.rotation = transforms.rotation;
+        // Warning: Two.js elements only support uniform scalars...
+        elem.scale = transforms.scaleX;
+
+        // Override based on attributes.
+        if (styles.x) {
+          elem.translation.x = styles.x;
+        }
+
+        if (styles.y) {
+          elem.translation.y = styles.y;
+        }
+
+        break;
+      case 'visible':
+        elem.visible = value;
+        break;
+      case 'stroke-linecap':
+        elem.cap = value;
+        break;
+      case 'stroke-linejoin':
+        elem.join = value;
+        break;
+      case 'stroke-miterlimit':
+        elem.miter = value;
+        break;
+      case 'stroke-width':
+        elem.linewidth = parseFloat(value);
+        break;
+      case 'stroke-opacity':
+      case 'fill-opacity':
+      case 'opacity':
+        elem.opacity = parseFloat(value);
+        break;
+      case 'fill':
+      case 'stroke':
+        if (/url\(\#.*\)/i.test(value)) {
+          // getById is a function of a group instance
+          elem[key] = this.getById(
+            value.replace(/url\(\#(.*)\)/i, '$1'));
+        } else {
+          elem[key] = (value === 'none') ? 'transparent' : value;
+        }
+        break;
+      case 'id':
+        elem.id = value;
+        break;
+      case 'class':
+        elem.classList = value.split(' ');
+        break;
+    }
+  }
+
+  return elem;
+
+}
+
+
+/**
+ * Read any number of SVG node types and create Two equivalents of them.
+ */
 var read = {
 
   svg: function() {
@@ -12,7 +149,7 @@ var read = {
     var group = new Group();
 
     // Switched up order to inherit more specific styles
-    Utils.applySvgAttributes.call(this, node, group);
+    applySvgAttributes.call(this, node, group);
 
     for (var i = 0, l = node.childNodes.length; i < l; i++) {
       var n = node.childNodes[i];
@@ -44,7 +181,7 @@ var read = {
     var poly = new Path(verts, !open).noStroke();
     poly.fill = 'black';
 
-    return Utils.applySvgAttributes.call(this, node, poly);
+    return applySvgAttributes.call(this, node, poly);
 
   },
 
@@ -267,7 +404,7 @@ var read = {
             y4 += y1;
           }
 
-          if (!is.Object(coord.controls)) {
+          if (!isObject(coord.controls)) {
             Anchor.AppendCurveProperties(coord);
           }
 
@@ -329,7 +466,7 @@ var read = {
             y4 += y1;
           }
 
-          if (!is.Object(coord.controls)) {
+          if (!isObject(coord.controls)) {
             Anchor.AppendCurveProperties(coord);
           }
 
@@ -390,7 +527,7 @@ var read = {
 
           var amp = Math.sqrt((rx2 * ry2 - rx2 * _y2 - ry2 * _x2) / (rx2 * _y2 + ry2 * _x2));
 
-          if (_.isNaN(amp)) {
+          if (isNaN(amp)) {
             amp = 0;
           } else if (largeArcFlag != sweepFlag && amp > 0) {
             amp *= -1;
@@ -458,7 +595,7 @@ var read = {
       }
 
       if (result) {
-        if (_.isArray(result)) {
+        if (isArray(result)) {
           points = points.concat(result);
         } else {
           points.push(result);
@@ -474,10 +611,11 @@ var read = {
     var poly = new Path(points, closed, undefined, true).noStroke();
     poly.fill = 'black';
 
-    return Utils.applySvgAttributes.call(this, node, poly);
+    return applySvgAttributes.call(this, node, poly);
 
   },
 
+   // a lot of redundancy with geometry/Ellipse
   circle: function(node) {
 
     var x = parseFloat(node.getAttribute('cx'));
@@ -497,10 +635,11 @@ var read = {
     circle.translation.set(x, y);
     circle.fill = 'black';
 
-    return Utils.applySvgAttributes.call(this, node, circle);
+    return applySvgAttributes.call(this, node, circle);
 
   },
 
+   // a lot of redundancy with geometry/Ellipse
   ellipse: function(node) {
 
     var x = parseFloat(node.getAttribute('cx'));
@@ -521,10 +660,11 @@ var read = {
     ellipse.translation.set(x, y);
     ellipse.fill = 'black';
 
-    return Utils.applySvgAttributes.call(this, node, ellipse);
+    return applySvgAttributes.call(this, node, ellipse);
 
   },
 
+   // a lot of redundancy with geometry/Rectangle
   rect: function(node) {
 
     var x = parseFloat(node.getAttribute('x')) || 0;
@@ -546,7 +686,7 @@ var read = {
     rect.translation.set(x + w2, y + h2);
     rect.fill = 'black';
 
-    return Utils.applySvgAttributes.call(this, node, rect);
+    return applySvgAttributes.call(this, node, rect);
 
   },
 
@@ -573,7 +713,7 @@ var read = {
     var line = new Path(points).noFill();
     line.translation.set(x1 + w2, y1 + h2);
 
-    return Utils.applySvgAttributes.call(this, node, line);
+    return applySvgAttributes.call(this, node, line);
 
   },
 
@@ -597,12 +737,12 @@ var read = {
       var opacity = child.getAttribute('stop-opacity');
       var style = child.getAttribute('style');
 
-      if (_.isNull(color)) {
+      if (isNull(color)) {
         var matches = style.match(/stop\-color\:\s?([\#a-fA-F0-9]*)/);
         color = matches && matches.length > 1 ? matches[1] : undefined;
       }
 
-      if (_.isNull(opacity)) {
+      if (isNull(opacity)) {
         var matches = style.match(/stop\-opacity\:\s?([0-9\.\-]*)/);
         opacity = matches && matches.length > 1 ? parseFloat(matches[1]) : 1;
       }
@@ -614,7 +754,7 @@ var read = {
     var gradient = new LinearGradient(x1 - ox, y1 - oy, x2 - ox,
       y2 - oy, stops);
 
-    return Utils.applySvgAttributes.call(this, node, gradient);
+    return applySvgAttributes.call(this, node, gradient);
 
   },
 
@@ -627,11 +767,11 @@ var read = {
     var fx = parseFloat(node.getAttribute('fx'));
     var fy = parseFloat(node.getAttribute('fy'));
 
-    if (_.isNaN(fx)) {
+    if (isNaN(fx)) {
       fx = cx;
     }
 
-    if (_.isNaN(fy)) {
+    if (isNaN(fy)) {
       fy = cy;
     }
 
@@ -648,12 +788,12 @@ var read = {
       var opacity = child.getAttribute('stop-opacity');
       var style = child.getAttribute('style');
 
-      if (_.isNull(color)) {
+      if (isNull(color)) {
         var matches = style.match(/stop\-color\:\s?([\#a-fA-F0-9]*)/);
         color = matches && matches.length > 1 ? matches[1] : undefined;
       }
 
-      if (_.isNull(opacity)) {
+      if (isNull(opacity)) {
         var matches = style.match(/stop\-opacity\:\s?([0-9\.\-]*)/);
         opacity = matches && matches.length > 1 ? parseFloat(matches[1]) : 1;
       }
@@ -665,7 +805,7 @@ var read = {
     var gradient = new RadialGradient(cx - ox, cy - oy, r,
       stops, fx - ox, fy - oy);
 
-    return Utils.applySvgAttributes.call(this, node, gradient);
+    return applySvgAttributes.call(this, node, gradient);
 
   }
 

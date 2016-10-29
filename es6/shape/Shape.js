@@ -1,6 +1,6 @@
-import _  from '../util/underscore';
+import _  from '../util/common';
 import EventTypes   from '../constant/EventTypes';
-import EventsDecorator   from '../util/eventsDecorator.js';
+import EventsDecorator   from '../util/emitter-decorator.js';
 import Identifier from '../constant/Identifier';
 import Matrix from '../struct/Matrix';
 import Vector from '../struct/Vector';
@@ -31,8 +31,9 @@ class Shape {
   }
 }
 
+_.extend(Shape, EventsDecorator);
 
-_.extend(Shape, EventsDecorator, {
+_.extend(Shape, {
 
   FlagMatrix: function() {
     this._flagMatrix = true;

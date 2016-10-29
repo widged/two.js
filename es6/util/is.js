@@ -1,80 +1,75 @@
-var is = {};
+var FN = {};
 
 
-is.Arguments = (obj) =>  {
+FN.isArguments = (obj) =>  {
   return toString.call(obj) === '[object Arguments]';
 };
-is.Function = (obj) =>  {
+FN.isFunction = (obj) =>  {
   return toString.call(obj) === '[object Function]';
 };
 
-is.String = (obj) =>  {
+FN.isString = (obj) =>  {
   return toString.call(obj) === '[object String]';
 };
 
-is.Number = (obj) =>  {
+FN.isNumber = (obj) =>  {
   return toString.call(obj) === '[object Number]';
 };
 
-is.Date = (obj) =>  {
+FN.isDate = (obj) =>  {
   return toString.call(obj) === '[object Date]';
 };
 
-is.RegExp = (obj) =>  {
+FN.isRegExp = (obj) =>  {
   return toString.call(obj) === '[object RegExp]';
 };
 
-is.Error = (obj) =>  {
+FN.isError = (obj) =>  {
   return toString.call(obj) === '[object Error]';
 };
 
-is.Finite = (obj) =>  {
+FN.isFinite = (obj) =>  {
   return isFinite(obj) && !isNaN(parseFloat(obj));
 };
 
-is.NaN = (obj) =>  {
-  return is.Number(obj) && obj !== +obj;
+FN.isNaN = (obj) =>  {
+  return FN.isNumber(obj) && obj !== +obj;
 };
 
-is.Boolean = (obj) =>  {
+FN.isBoolean = (obj) =>  {
   return obj === true || obj === false || toString.call(obj) === '[object Boolean]';
 };
 
-is.Null = (obj) =>  {
+FN.isNull = (obj) =>  {
   return obj === null;
 };
 
-is.Undefined = (obj) =>  {
+FN.isUndefined = (obj) =>  {
   return obj === void 0;
 };
 
-is.Empty = (obj) =>  {
+FN.isEmpty = (obj) =>  {
+  var {isArrayLike, isArray, isString, isArguments} = FN;
   if (obj == null) return true;
-  if (isArrayLike && (_.isArray(obj) || is.String(obj) || _.isArguments(obj))) return obj.length === 0;
-  return _.keys(obj).length === 0;
+  if (isArrayLike && (isArray(obj) || isString(obj) || isArguments(obj))) return obj.length === 0;
+  return Object.keys(obj).length === 0;
 };
 
-is.Element = (obj) =>  {
-  return !!(obj && obj.nodeType === 1);
-};
 
-is.Array = Array.isArray || ((obj) => {
+FN.isArray = Array.isArray || ((obj) => {
   return toString.call(obj) === '[object Array]';
 });
 
-is.Object = (obj) =>  {
+FN.isObject = (obj) =>  {
   var type = typeof obj;
   return type === 'function' || type === 'object' && !!obj;
 }
 
-var getLength = function(obj) {
-  return obj == null ? void 0 : obj['length'];
-};
 var MAX_ARRAY_INDEX = Math.pow(2, 53) - 1;
 
-is.ArrayLike = (collection) =>  {
-  var length = getLength(collection);
+FN.isArrayLike = (collection) =>  {
+  var length = collection == null ? void 0 : collection.length;
   return typeof length == 'number' && length >= 0 && length <= MAX_ARRAY_INDEX;
 }
 
-export default is;
+export default FN;

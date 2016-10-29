@@ -1,10 +1,12 @@
-import _  from '../util/underscore';
+import is  from '../util/is';
+import _  from '../util/common';
 import Commands from '../constant/CommandTypes';
-import Group   from '../shape/Group';
-import EventsDecorator   from '../util/eventsDecorator.js';
+import EventsDecorator   from '../util/emitter-decorator.js';
+import MathExtras   from '../util/math-extras.js';
+import dom   from '../platform/dom.js';
 
-  // Localize variables
-  var mod = _.mod, toFixed = _.toFixed;
+var {mod, toFixed} = MathExtras;
+var {isEmpty} = is;
 
   var svg = {
 
@@ -30,7 +32,7 @@ import EventsDecorator   from '../util/eventsDecorator.js';
           version: this.version
         });
       }
-      if (!_.isEmpty(attrs)) {
+      if (!isEmpty(attrs)) {
         svg.setAttributes(elem, attrs);
       }
       return elem;
@@ -586,11 +588,7 @@ import EventsDecorator   from '../util/eventsDecorator.js';
         }
 
         if (this._flagStops) {
-
-          if(this._renderer.elem.childNodes.length !== 0) {
-            this._renderer.elem.childNodes.length = 0;
-          }
-
+          dom.removeChildNodes(this._renderer.elem);
 
           for (var i = 0; i < this.stops.length; i++) {
 
@@ -670,9 +668,7 @@ import EventsDecorator   from '../util/eventsDecorator.js';
 
         if (this._flagStops) {
 
-          if(this._renderer.elem.childNodes.length !== 0) {
-            this._renderer.elem.childNodes.length = 0;
-          }
+          dom.removeChildNodes(this._renderer.elem);
 
 
           for (var i = 0; i < this.stops.length; i++) {
@@ -714,11 +710,11 @@ import EventsDecorator   from '../util/eventsDecorator.js';
   /**
    * @class
    */
-  var Renderer = function(params) {
+  var Renderer = function(options) {
 
-    this.domElement = params.domElement || svg.createElement('svg');
+    this.domElement = options.domElement || svg.createElement('svg');
 
-    this.scene = new Group();
+    this.scene = options.scene;
     this.scene.parent = this;
 
     this.defs = svg.createElement('defs');

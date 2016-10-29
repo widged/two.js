@@ -1,6 +1,6 @@
-import _  from '../util/underscore';
+import _  from '../util/common';
 import EventTypes    from '../constant/EventTypes';
-import Stop      from './Stop';
+import Stop      from '../gradient/Stop';
 import Shape     from './Shape';
 import Collection  from '../struct/Collection';
 
@@ -88,29 +88,6 @@ Gradient.MakeObservable = function(object) {
 
       var updateStops = _.bind(Gradient.FlagStops, this);
 
-      var bindStops = _.bind(function(items) {
-
-        // This function is called a lot
-        // when importing a large SVG
-        var i = items.length;
-        while(i--) {
-          items[i].on(EventTypes.change, updateStops);
-        }
-
-        updateStops();
-
-      }, this);
-
-      var unbindStops = _.bind(function(items) {
-
-        _.each(items, function(v) {
-          v.off(EventTypes.change, updateStops);
-        }, this);
-
-        updateStops();
-
-      }, this);
-
       // Remove previous listeners
       if (this._stops) {
         this._stops.off();
@@ -119,12 +96,8 @@ Gradient.MakeObservable = function(object) {
       // Create new Collection with copy of Stops
       this._stops = new Collection((stops || []).slice(0));
 
-      // Listen for Collection changes and bind / unbind
-      this._stops.on(EventTypes.insert, bindStops);
-      this._stops.on(EventTypes.remove, unbindStops);
+      // :CHANGE: bindStops removed as Stop never dispaches a change event. 
 
-      // Bind Initial Stops
-      bindStops(this._stops);
 
     }
 

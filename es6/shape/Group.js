@@ -1,57 +1,99 @@
 import EventTypes   from '../constant/EventTypes';
-import _  from '../util/underscore';
+import _  from '../util/common';
 import is  from '../util/is';
 import Path  from './Path';
 import Shape  from './Shape';
 import Children  from './ChildrenCollection';
 
+var {isNumber, isArray} = is;
+
+// Flags
+// http://en.wikipedia.org/wiki/Flag
+const FLAGS = {
+  _flagAdditions: false,
+  _flagSubtractions: false,
+  _flagOrder: false,
+  _flagOpacity: true,
+  _flagMask: false,
+ 
+};
+
+// Underlying Properties
+const PROPS = {
+  _fill: '#fff',
+  _stroke: '#000',
+  _linewidth: 1.0,
+  _opacity: 1.0,
+  _visible: true,
+  _cap: 'round',
+  _join: 'round',
+  _miter: 4,
+  _closed: true,
+  _curved: false,
+  _automatic: true,
+  _beginning: 0,
+  _ending: 1.0,
+  _mask: null        
+};
+
 class Group extends Shape {
 
   constructor() {
-
     super(true);
-
     this._renderer.type = 'group';
-
     this.additions = [];
     this.subtractions = [];
-
-    this._children = [];
     this.children = arguments;
-
-    var flags = {
-          // Flags
-        // http://en.wikipedia.org/wiki/Flag
-
-        _flagAdditions: false,
-        _flagSubtractions: false,
-        _flagOrder: false,
-        _flagOpacity: true,
-
-        _flagMask: false,
-
-        // Underlying Properties
-
-        _fill: '#fff',
-        _stroke: '#000',
-        _linewidth: 1.0,
-        _opacity: 1.0,
-        _visible: true,
-
-        _cap: 'round',
-        _join: 'round',
-        _miter: 4,
-
-        _closed: true,
-        _curved: false,
-        _automatic: true,
-        _beginning: 0,
-        _ending: 1.0,
-
-        _mask: null
-      }
-      Object.keys(flags).forEach((k) => { this[k] = flags[k] });
+    Object.keys(FLAGS).forEach((k) => { this[k] = FLAGS[k] });
+    Object.keys(PROPS).forEach((k) => { this[k] = PROPS[k] });
   }
+
+  /**
+   * Observables
+   */
+
+  get children() {
+    return this._children;
+  }
+
+  set children(children) {
+
+    var insertChildren = _.bind(Group.InsertChildren, this);
+    var removeChildren = _.bind(Group.RemoveChildren, this);
+    var orderChildren = _.bind(Group.OrderChildren, this);
+
+    if (this._children) {
+      this._children.off();
+    }
+
+    this._children = new Children(children);
+    this._children.on(EventTypes.insert, insertChildren);
+    this._children.on(EventTypes.remove, removeChildren);
+    this._children.on(EventTypes.order, orderChildren);
+
+  }
+
+    get mask() {
+      return this._mask;
+    }
+
+    set mask(v) {
+      this._mask = v;
+      this._flagMask = true;
+      if (!v.clip) {
+        v.clip = true;
+      }
+    }  
+
+    get opacity() {
+      return this._opacity;
+    }
+
+    set opacity(v) {
+      // Only set flag if there is an actual difference
+      this._flagOpacity = (this._opacity != v);
+      this._opacity = v;
+    }    
 
     /**
      * TODO: Group has a gotcha in that it's at the moment required to be bound to
@@ -280,8 +322,8 @@ class Group extends Shape {
 
         rect = child.getBoundingClientRect(shallow);
 
-        if (!is.Number(rect.top)   || !is.Number(rect.left)   ||
-            !is.Number(rect.right) || !is.Number(rect.bottom)) {
+        if (!isNumber(rect.top)   || !isNumber(rect.left)   ||
+            !isNumber(rect.right) || !isNumber(rect.bottom)) {
           return;
         }
 
@@ -376,83 +418,25 @@ Group.OrderChildren =function(children) {
 Group.MakeObservable =function(object) {
 
   var properties = Path.Properties.slice(0);
-  var oi = _.indexOf(properties, 'opacity');
-
+  // ["fill", "stroke", "linewidth", "visible", "cap", "join", "miter", "closed", "curved", "automatic", "beginning", "ending"]
+  var oi = properties.indexOf('opacity');
   if (oi >= 0) {
-
     properties.splice(oi, 1);
-
-    Object.defineProperty(object, 'opacity', {
-
-      enumerable: true,
-
-      get: function() {
-        return this._opacity;
-      },
-
-      set: function(v) {
-        // Only set flag if there is an actual difference
-        this._flagOpacity = (this._opacity != v);
-        this._opacity = v;
-      }
-
-    });
-
   }
 
   Shape.MakeObservable(object);
   Group.MakeGetterSetters(object, properties);
 
-  Object.defineProperty(object, 'children', {
+  Object.defineProperty(Group.prototype, 'children', {enumerable: true});
+  Object.defineProperty(Group.prototype, 'mask',     {enumerable: true});
+  Object.defineProperty(Group.prototype, 'opacity', {enumerable: true});
 
-    enumerable: true,
-
-    get: function() {
-      return this._collection;
-    },
-
-    set: function(children) {
-
-      var insertChildren = _.bind(Group.InsertChildren, this);
-      var removeChildren = _.bind(Group.RemoveChildren, this);
-      var orderChildren = _.bind(Group.OrderChildren, this);
-
-      if (this._collection) {
-        this._collection.off();
-      }
-
-      this._collection = new Children(children);
-      this._collection.on(EventTypes.insert, insertChildren);
-      this._collection.on(EventTypes.remove, removeChildren);
-      this._collection.on(EventTypes.order, orderChildren);
-
-    }
-
-  });
-
-  Object.defineProperty(object, 'mask', {
-
-    enumerable: true,
-
-    get: function() {
-      return this._mask;
-    },
-
-    set: function(v) {
-      this._mask = v;
-      this._flagMask = true;
-      if (!v.clip) {
-        v.clip = true;
-      }
-    }
-
-  });
 
 };
 
 Group.MakeGetterSetters = function(group, properties) {
 
-  if (!is.Array(properties)) {
+  if (!isArray(properties)) {
     properties = [properties];
   }
 

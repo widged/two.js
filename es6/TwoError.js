@@ -2,6 +2,7 @@
 
 class TwoError extends Error {
 	constructor(message) {
+		super(message);
 		this.name = 'two.js';
 		this.message = message;
 	}

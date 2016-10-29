@@ -1,7 +1,8 @@
-import _  from '../util/underscore';
+import _  from '../util/common';
 import is  from '../util/is';
 import Array2   from './Array';
 
+var {isArray} = is;
 /**
  * Constants
  */
@@ -28,7 +29,7 @@ class Matrix {
     this.elements = new Array2(9);
 
     var elements = a;
-    if (!is.Array(elements)) {
+    if (!isArray(elements)) {
       elements = Array.from(arguments);
     }
 
@@ -45,7 +46,7 @@ class Matrix {
   set(a) {
 
     var elements = a;
-    if (!is.Array(elements)) {
+    if (!isArray(elements)) {
       elements = _.toArray(arguments);
     }
 

@@ -1,5 +1,7 @@
 import is from './is';
 
+var {isArray, isArrayLike, isObject} = is;
+
 var _ = {};
 
 // http://underscorejs.org/ • 1.8.3
@@ -42,10 +44,10 @@ _.toArray = function(obj) {
   if (!obj) {
     return [];
   }
-  if (is.Array(obj)) {
+  if (isArray(obj)) {
     return slice.call(obj);
   }
-  if (is.ArrayLike(obj)) {
+  if (isArrayLike(obj)) {
     return _.map(obj, _.identity);
   }
   return _.values(obj);
@@ -57,7 +59,7 @@ _.has = function(obj, key) {
 };
 
 _.keys = function(obj) {
-  if (!is.Object(obj)) {
+  if (!isObject(obj)) {
     return [];
   }
   if (_.natural.keys) {
@@ -104,6 +106,10 @@ _.defaults = function(base) {
   return base;
 };
 
+_.copyKeys = (keys, source, target) => {
+  return keys.reduce(((acc, k) => { acc[k] = source[k]; return acc; }), target);
+}
+
 
 // ------------------------
 // Arrays, Iterables
@@ -141,7 +147,7 @@ _.indexOf = function(list, item) {
 
 _.each = function(obj, iteratee, context) {
   var ctx = context || this;
-  var keys = !is.ArrayLike(obj) && _.keys(obj);
+  var keys = !isArrayLike(obj) && _.keys(obj);
   var length = (keys || obj).length;
   for (var i = 0; i < length; i++) {
     var k = keys ? keys[i] : i;
@@ -151,7 +157,7 @@ _.each = function(obj, iteratee, context) {
 };
 _.map = function(obj, iteratee, context) {
   var ctx = context || this;
-  var keys = !is.ArrayLike(obj) && _.keys(obj);
+  var keys = !isArrayLike(obj) && _.keys(obj);
   var length = (keys || obj).length;
   var result = [];
   for (var i = 0; i < length; i++) {

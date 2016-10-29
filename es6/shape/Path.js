@@ -1,18 +1,20 @@
-import _  from '../util/underscore';
-import is  from '../util/is';
 import EventTypes   from '../constant/EventTypes';
 import Commands from '../constant/CommandTypes';
-import Shape from './Shape';
+import _  from '../util/common';
+import is  from '../util/is';
 import Collection  from '../struct/Collection';
 import Vector from '../struct/Vector';
+import curveFN  from '../util/curve-manipulation.js';
 import Anchor from '../Anchor';
+import Shape from './Shape';
 
 /**
  * Constants
  */
 
-var min = Math.min, max = Math.max, round = Math.round,
-  getComputedMatrix = _.getComputedMatrix;
+var {min, max, round} = Math;
+var {getComputedMatrix, getCurveLength} = curveFN;
+var {isUndefined, isNull} = is;
 
 var commands = {};
 
@@ -464,7 +466,7 @@ class Path extends Shape {
 
       }
 
-      if (_.isNull(a) || _.isNull(b)) {
+      if (isNull(a) || isNull(b)) {
         return null;
       }
 
@@ -606,7 +608,7 @@ class Path extends Shape {
       var closed = this._closed || this.vertices[last]._command === Commands.close;
       var sum = 0;
 
-      if (_.isUndefined(this._lengths)) {
+      if (isUndefined(this._lengths)) {
         this._lengths = [];
       }
 
@@ -721,6 +723,7 @@ class Path extends Shape {
   }
 
   function getSubdivisions(a, b, limit) {
+    var {subdivide} = curve;
     // TODO: DRYness
     var x1, x2, x3, x4, y1, y2, y3, y4;
 
@@ -746,7 +749,9 @@ class Path extends Shape {
       y3 += a.y;
     }
 
-    return _.subdivide(x1, y1, x2, y2, x3, y3, x4, y4, limit);
+    return subdivide(x1, y1, x2, y2, x3, y3, x4, y4, limit).map((d) => {
+      return new Anchor(d);
+    });
 
   }
 

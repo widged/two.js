@@ -1,7 +1,8 @@
-import _ from './underscore';
+import _ from './common';
 
 var slice = _.natural.slice;
 
+var FN = {}
 var Events = {
 
   on: function(name, callback) {

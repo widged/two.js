@@ -1,8 +1,10 @@
 import is  from './util/is';
-import _  from './util/underscore';
+import _  from './util/common';
 import Commands  from './constant/CommandTypes';
 import EventTypes   from './constant/EventTypes';
 import Vector  from './struct/Vector';
+
+var {isNumber, isObject} = is;
 
   /**
    * An object that holds 3 `Vector`s, the anchor point and its
@@ -28,16 +30,16 @@ import Vector  from './struct/Vector';
 
     Anchor.AppendCurveProperties(this);
 
-    if (is.Number(ux)) {
+    if (isNumber(ux)) {
       this.controls.left.x = ux;
     }
-    if (is.Number(uy)) {
+    if (isNumber(uy)) {
       this.controls.left.y = uy;
     }
-    if (is.Number(vx)) {
+    if (isNumber(vx)) {
       this.controls.right.x = vx;
     }
-    if (is.Number(vy)) {
+    if (isNumber(vy)) {
       this.controls.right.y = vy;
     }
 
@@ -56,7 +58,7 @@ Anchor.AppendCurveProperties = (anchor) => {
 
     listen: function() {
 
-      if (!is.Object(this.controls)) {
+      if (!isObject(this.controls)) {
         Anchor.AppendCurveProperties(this);
       }
 
@@ -128,7 +130,7 @@ Anchor.AppendCurveProperties = (anchor) => {
 
     set: function(c) {
       this._command = c;
-      if (this._command === Commands.curve && !is.Object(this.controls)) {
+      if (this._command === Commands.curve && !isObject(this.controls)) {
         Anchor.AppendCurveProperties(this);
       }
       return this.trigger(EventTypes.change);

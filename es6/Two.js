@@ -29,16 +29,21 @@
 var EventTypes = require('./constant/EventTypes').default;
 var RendrererTypes = require('./constant/RendererTypes').default;
 var is     = require('./util/is').default;
-var _     = require('./util/underscore').default;
-var EventDecorators = require('./util/eventsDecorator').default;
-var Utils = require('./util/utils').default;
+var _     = require('./util/common').default;
+var EventDecorators = require('./util/emitter-decorator').default;
+var Utils = require('./utils').default;
 var dom   = require('./platform/dom').default;
 var perf  = require('./platform/Performance').default;
 var Anchor = require('./Anchor').default;
 var Group = require('./shape/Group').default;
 var Path  = require('./shape/Path').default;
+var RadialGradient  = require('./gradient/RadialGradient').default;
+var LinearGradient  = require('./gradient/LinearGradient').default;
+var Text  = require('./shape/Text').default;
 
 var root = this;
+
+var {isNumber, isArray} = is;
 
 var instances = [];
 var ticker = dom.getRequestAnimationFrame(() => {
@@ -72,7 +77,7 @@ var Two = function(options) {
   }, this);
 
   // Specified domElement overrides type declaration only if the element does not support declared renderer type.
-  if (is.Element(params.domElement)) {
+  if (dom.isElement(params.domElement)) {
     var tagName = params.domElement.tagName.toLowerCase();
     // TODO: Reconsider this if statement's logic.
     if (!/^(CanvasRenderer-canvas|WebGLRenderer-canvas|SVGRenderer-svg)$/.test(this.type+'-'+tagName)) {
@@ -80,12 +85,15 @@ var Two = function(options) {
     }
   }
 
+  this.scene = new Group();
+
+
   var renderers = {};
   renderers[RendrererTypes.webgl]  = './renderer/Webgl';
   renderers[RendrererTypes.canvas] = './renderer/Canvas';
   renderers[RendrererTypes.svg]    = './renderer/Svg';
   var Renderer = require(renderers[this.type]).default;
-   
+  
   this.renderer = new Renderer(this);
   Utils.setPlaying.call(this, params.autostart);
   this.frameCount = 0;
@@ -115,15 +123,13 @@ var Two = function(options) {
     fitted();
 
 
-  } else if (!is.Element(params.domElement)) {
+  } else if (!dom.isElement(params.domElement)) {
 
     this.renderer.setSize(params.width, params.height, this.ratio);
     this.width = params.width;
     this.height = params.height;
 
   }
-
-  this.scene = this.renderer.scene;
 
   instances.push(this);
   ticker.init();
@@ -246,20 +252,20 @@ _.extend(Two.prototype, EventDecorators, {
   makeCurve: function(p) {
 
     var l = arguments.length, points = p;
-    if (!is.Array(p)) {
+    if (!isArray(p)) {
       points = [];
       for (var i = 0; i < l; i+=2) {
         var x = arguments[i];
-        if (!is.Number(x)) {
+        if (!isNumber(x)) {
           break;
         }
         var y = arguments[i + 1];
-        points.push(new Two.Anchor(x, y));
+        points.push(new Anchor(x, y));
       }
     }
 
     var last = arguments[l - 1];
-    var curve = new Two.Path(points, !(is.isBoolean(last) ? last : undefined), true);
+    var curve = new Path(points, !(is.isBoolean(last) ? last : undefined), true);
     var rect = curve.getBoundingClientRect();
     curve.center().translation
       .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
@@ -271,25 +277,25 @@ _.extend(Two.prototype, EventDecorators, {
   },
 
   /**
-   * Convenience method to make and draw a Two.Path.
+   * Convenience method to make and draw a Path.
    */
   makePath: function(p) {
 
     var l = arguments.length, points = p;
-    if (!is.Array(p)) {
+    if (!isArray(p)) {
       points = [];
       for (var i = 0; i < l; i+=2) {
         var x = arguments[i];
-        if (!is.Number(x)) {
+        if (!isNumber(x)) {
           break;
         }
         var y = arguments[i + 1];
-        points.push(new Two.Anchor(x, y));
+        points.push(new Anchor(x, y));
       }
     }
 
     var last = arguments[l - 1];
-    var path = new Two.Path(points, !(is.isBoolean(last) ? last : undefined));
+    var path = new Path(points, !(is.isBoolean(last) ? last : undefined));
     var rect = path.getBoundingClientRect();
     path.center().translation
       .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
@@ -301,21 +307,21 @@ _.extend(Two.prototype, EventDecorators, {
   },
 
   /**
-   * Convenience method to make and add a Two.Text.
+   * Convenience method to make and add a Text.
    */
   makeText: function(message, x, y, styles) {
-    var text = new Two.Text(message, x, y, styles);
+    var text = new Text(message, x, y, styles);
     this.add(text);
     return text;
   },
 
   /**
-   * Convenience method to make and add a Two.LinearGradient.
+   * Convenience method to make and add a LinearGradient.
    */
   makeLinearGradient: function(x1, y1, x2, y2 /* stops */) {
     var slice = _.natural.slice;
     var stops = slice.call(arguments, 4);
-    var gradient = new Two.LinearGradient(x1, y1, x2, y2, stops);
+    var gradient = new LinearGradient(x1, y1, x2, y2, stops);
 
     this.add(gradient);
 
@@ -324,12 +330,12 @@ _.extend(Two.prototype, EventDecorators, {
   },
 
   /**
-   * Convenience method to make and add a Two.RadialGradient.
+   * Convenience method to make and add a RadialGradient.
    */
   makeRadialGradient: function(x1, y1, r /* stops */) {
     var slice = _.natural.slice;
     var stops = slice.call(arguments, 3);
-    var gradient = new Two.RadialGradient(x1, y1, r, stops);
+    var gradient = new RadialGradient(x1, y1, r, stops);
 
     this.add(gradient);
 
@@ -372,11 +378,14 @@ _.extend(Two.prototype, EventDecorators, {
 
     var node = Utils.read[tag].call(this, svgNode);
 
+    var shape;
     if (shallow && node instanceof Group) {
-      this.add(node.children);
+      shape = node.children;
     } else {
-      this.add(node);
+      shape = node;
     }
+
+    this.add(shape);
 
     return node;
 
