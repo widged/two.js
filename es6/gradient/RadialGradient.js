@@ -1,6 +1,6 @@
 import _  from '../util/common';
 import is  from '../util/is';
-import EventTypes    from '../constant/EventTypes';
+import VectorEvent    from '../constant/VectorEvent';
 import Vector    from '../struct/Vector';
 import Gradient  from '../shape/Gradient';
 
@@ -18,18 +18,19 @@ class RadialGradient extends Gradient {
 
     this._renderer.type = 'radial-gradient';
 
-    this.center = new Vector()
-      .on(EventTypes.change, _.bind(function() {
-        this._flagCenter = true;
-      }, this));
+    this.center = new Vector();
+
+    this.center.dispatcher.on(VectorEvent.change, () => {
+      this._flagCenter = true;
+    });
 
     this.radius = isNumber(r) ? r : 20;
 
-    this.focal = new Vector()
-      .on(EventTypes.change, _.bind(function() {
-        this._flagFocal = true;
-      }, this));
-
+    this.focal = new Vector();
+    this.focal.dispatcher.on(VectorEvent.change, () => {
+      this._flagFocal = true;
+    });
+        
     if (isNumber(cx)) {
       this.center.x = cx;
     }

@@ -1,7 +1,7 @@
 import Collection  from '../struct/Collection';
 import is  from '../util/is';
 import _  from '../util/common';
-import EventTypes   from '../constant/EventTypes';
+import CollectionEvent   from '../constant/CollectionEvent';
 
 /**
  * A children collection which is accesible both by index and by object id
@@ -15,10 +15,10 @@ class Children extends Collection {
 
     this.ids = {};
 
-    this.on(EventTypes.insert, (children) => {
+    this.dispatcher.on(CollectionEvent.insert, (children) => {
       attachChildren(children, this.ids);
     });
-    this.on(EventTypes.remove, (children) => {
+    this.dispatcher.on(CollectionEvent.remove, (children) => {
       detachChildren(children, this.ids)
     });
     attachChildren(children, this.ids);

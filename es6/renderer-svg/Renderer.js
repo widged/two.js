@@ -16,7 +16,6 @@ class SvgRenderer extends Renderer {
     this.domElement.appendChild(this.defs);
     this.domElement.defs = this.defs;
     this.domElement.style.overflow = 'hidden';
-
   }
 
   setSize(width, height) {

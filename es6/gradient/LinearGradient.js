@@ -1,6 +1,6 @@
 import _  from '../util/common';
 import is  from '../util/is';
-import EventTypes    from '../constant/EventTypes';
+import VectorEvent    from '../constant/VectorEvent';
 import Vector    from '../struct/Vector';
 import Gradient  from '../shape/Gradient';
 
@@ -16,8 +16,10 @@ class LinearGradient extends Gradient {
     this._renderer.type = 'linear-gradient';
 
     var flagEndPoints = _.bind(LinearGradient.FlagEndPoints, this);
-    this.left = new Vector().on(EventTypes.change, flagEndPoints);
-    this.right = new Vector().on(EventTypes.change, flagEndPoints);
+    this.left = new Vector();
+    this.left.dispatcher.on(VectorEvent.change, flagEndPoints);
+    this.right = new Vector()
+    this.right.dispatcher.on(VectorEvent.change, flagEndPoints);
 
     if (isNumber(x1)) {
       this.left.x = x1;

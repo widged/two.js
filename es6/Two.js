@@ -26,7 +26,7 @@
  *
  */
 
-var EventTypes = require('./constant/EventTypes').default;
+var TwoEvent = require('./constant/TwoEvent').default;
 var RendrererTypes = require('./constant/RendererTypes').default;
 var is     = require('./util/is').default;
 var _     = require('./util/common').default;
@@ -66,9 +66,11 @@ var setPlaying = function(b) {
  * @class
  */
 
-class Two extends EventEmitter {
+class Two {
+
   constructor(options) {
-    super([EventTypes.play, EventTypes.pause, EventTypes.update]);
+
+    this.dispatcher = new EventEmitter(Object.keys(TwoEvent));
 
     // Determine what Renderer to use and setup a scene.
     // 
@@ -147,26 +149,38 @@ class Two extends EventEmitter {
     ticker.init();
   }
 
+  whenPlayed() {
+    this.dispatcher.emit(TwoEvent.play);
+  }
+  whenPaused() {
+    this.dispatcher.emit(TwoEvent.pause);
+  }
+  whenUpdated() {
+    this.dispatcher.emit(TwoEvent.update, this.frameCount, this.timeDelta);
+  }
+  whenRendered() {
+    this.dispatcher.emit(TwoEvent.render, this.frameCount);
+  }
+  whenResized(width, height) {
+    this.dispatcher.emit(TwoEvent.resize, this.width, this.height);
+  }
+
+
   appendTo(elem) {
-  console.log(this.renderer)
-  elem.appendChild(this.renderer.domElement);
-  return this;
+    console.log(this.renderer)
+    elem.appendChild(this.renderer.domElement);
+    return this;
+  }
 
-}
+  play() {
+    setPlaying.call(this, true);
+    this.whenPlayed();
+  }
 
-play() {
-
-  setPlaying.call(this, true);
-  return this.emit(EventTypes.play);
-
-}
-
-pause() {
-
-  this.playing = false;
-  return this.emit(EventTypes.pause);
-
-}
+  pause() {
+    this.playing = false;
+    whenPaused();
+  }
 
 /**
  * Update positions and calculations in one pass before rendering.
@@ -192,7 +206,7 @@ update() {
     renderer.setSize(width, height, this.ratio);
   }
 
-  this.emit(EventTypes.update, this.frameCount, this.timeDelta);
+  this.whenUpdated();
 
   return this.render();
 
@@ -204,8 +218,7 @@ update() {
 render() {
 
   this.renderer.render();
-  return this.emit(EventTypes.render, this.frameCount);
-
+  this.whenRendered(this.frameCount);
 }
 
 /**
@@ -451,7 +464,7 @@ function fitToWindow() {
   this.height = height;
 
   this.renderer.setSize(width, height, this.ratio);
-  this.emit(EventTypes.resize, width, height);
+  this.whenResized();
 
 }
 

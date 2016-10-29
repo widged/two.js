@@ -9,6 +9,7 @@ var {getRatio} = dom;
 class CanvasRenderer extends Renderer {
 
   constructor(options) {
+
     super(options)
     // Smoothing property. Defaults to true
     // Set it to false when working with pixel art.
@@ -25,6 +26,7 @@ class CanvasRenderer extends Renderer {
   }
 
   setSize(width, height, ratio) {
+    
     super.setSize(width, height);
     this.ratio = isUndefined(ratio) ? getRatio(this.ctx) : ratio;
     this.domElement.width = width * this.ratio;

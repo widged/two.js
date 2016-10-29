@@ -1,4 +1,4 @@
-import EventTypes   from '../constant/EventTypes';
+import CollectionEvent   from '../constant/CollectionEvent';
 import _  from '../util/common';
 import is  from '../util/is';
 import Path  from './Path';
@@ -64,13 +64,13 @@ class Group extends Shape {
     var orderChildren = _.bind(Group.OrderChildren, this);
 
     if (this._children) {
-      this._children.off();
+      this._children.dispatcher.off();
     }
 
     this._children = new Children(children);
-    this._children.on(EventTypes.insert, insertChildren);
-    this._children.on(EventTypes.remove, removeChildren);
-    this._children.on(EventTypes.order, orderChildren);
+    this._children.dispatcher.on(CollectionEvent.insert, insertChildren);
+    this._children.dispatcher.on(CollectionEvent.remove, removeChildren);
+    this._children.dispatcher.on(CollectionEvent.order, orderChildren);
 
   }
 

@@ -1,5 +1,4 @@
 import _  from '../util/common';
-import EventTypes    from '../constant/EventTypes';
 import Stop      from '../gradient/Stop';
 import Shape     from './Shape';
 import Collection  from '../struct/Collection';
@@ -26,7 +25,7 @@ class Gradient extends Shape {
     var updateStops = _.bind(Gradient.FlagStops, this);
     // Remove previous listeners
     if (this._stops) {
-      this._stops.off();
+      this._stops.dispatcher.off();
     }
     // Create new Collection with copy of Stops
     this._stops = new Collection((stops || []).slice(0));

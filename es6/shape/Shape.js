@@ -1,5 +1,5 @@
 import _  from '../util/common';
-import EventTypes   from '../constant/EventTypes';
+import VectorEvent   from '../constant/VectorEvent';
 import Identifier from '../constant/Identifier';
 import Matrix from '../struct/Matrix';
 import Vector from '../struct/Vector';
@@ -42,7 +42,7 @@ class Shape {
 
     var flagMatrix = () => { this._flagMatrix = true; }
     this.translation = new Vector();
-    this.translation.on(EventTypes.change, flagMatrix);
+    this.translation.dispatcher.on(VectorEvent.change, flagMatrix);
     this.rotation = 0;
     this.scale = 1;
 

@@ -1,7 +1,7 @@
 import is  from './util/is';
 import _  from './util/common';
 import Commands  from './constant/CommandTypes';
-import EventTypes   from './constant/EventTypes';
+import VectorEvent   from './constant/VectorEvent';
 import Vector  from './struct/Vector';
 
 var {isNumber, isObject} = is;
@@ -50,7 +50,7 @@ var {isNumber, isObject} = is;
     if (this._command === Commands.curve && !isObject(this.controls)) {
       Anchor.AppendCurveProperties(this);
     }
-    return this.trigger(EventTypes.change);
+    this.whenChange();
   }
 
   get relative() {
@@ -60,26 +60,26 @@ var {isNumber, isObject} = is;
   set relative(b) {
     if (this._relative == b) { return this; }
     this._relative = !!b;
-    this.emit(EventTypes.change);
+    this.whenChange();
     return 
   }
 
-   emitChange() {
-      this.emit(EventTypes.change);
+   whenChange() {
+      this.dispatcher.emit(VectorEvent.change);
    } 
 
   listen() {
     if (!isObject(this.controls)) {
       Anchor.AppendCurveProperties(this);
     }
-    this.controls.left.on(EventTypes.change, this.emitChange);
-    this.controls.right.on(EventTypes.change, this.emitChange);
+    this.controls.left.dispatcher.on(VectorEvent.change, this.whenChange);
+    this.controls.right.dispatcher.on(VectorEvent.change, this.whenChange);
     return this;
   }
 
   ignore() {
-    this.controls.left.off(EventTypes.change, this.emitChange);
-    this.controls.right.off(EventTypes.change, this.emitChange);
+    this.controls.left.dispatcher.off(VectorEvent.change, this.whenChange);
+    this.controls.right.dispatcher.off(VectorEvent.change, this.whenChange);
     return this;
   }
 

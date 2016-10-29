@@ -1,4 +1,5 @@
-import EventTypes   from '../constant/EventTypes';
+import CollectionEvent   from '../constant/CollectionEvent';
+import VectorEvent   from '../constant/VectorEvent';
 import Commands from '../constant/CommandTypes';
 import _  from '../util/common';
 import is  from '../util/is';
@@ -183,7 +184,7 @@ class Path extends Shape {
       // when importing a large SVG
       var i = items.length;
       while(i--) {
-        items[i].on(EventTypes.change, updateVertices);
+        items[i].dispatcher.on(VectorEvent.change, updateVertices);
       }
 
       updateVertices();
@@ -193,7 +194,7 @@ class Path extends Shape {
     var unbindVerts = _.bind(function(items) {
 
       _.each(items, function(v) {
-        v.off(EventTypes.change, updateVertices);
+        v.dispatcher.off(VectorEvent.change, updateVertices);
       }, this);
 
       updateVertices();
@@ -202,15 +203,15 @@ class Path extends Shape {
 
     // Remove previous listeners
     if (this._collection) {
-      this._collection.off();
+      this._collection.dispatcher.off();
     }
 
     // Create new Collection with copy of vertices
     this._collection = new Collection((vertices || []).slice(0));
 
     // Listen for Collection changes and bind / unbind
-    this._collection.on(EventTypes.insert, bindVerts);
-    this._collection.on(EventTypes.remove, unbindVerts);
+    this._collection.dispatcher.on(CollectionEvent.insert, bindVerts);
+    this._collection.dispatcher.on(CollectionEvent.remove, unbindVerts);
 
     // Bind Initial Vertices
     bindVerts(this._collection);

@@ -1,62 +1,52 @@
 import _  from '../util/common';
 import EventEmitter  from '../util/EventEmitter';
-import EventTypes    from '../constant/EventTypes';
+import VectorEvent    from '../constant/VectorEvent';
 
-class Vector extends EventEmitter {
+class Vector  {
 
   constructor(x, y) {
-    super([EventTypes.change]);
+    this.dispatcher = new EventEmitter([VectorEvent.change]);
+
     this._x = this.x = x || 0;
     this._y = this.y = y || 0;
-    this.emitter;
   }
 
   get x() { return this._x; }
   set x(v){
     this._x = v;
-    this.emit('x');
+    this.whenChange('x');
     return this;
   }
 
   get y() { return this._y; }
   set y(v) {
     this._y = v;
-    this.emit('y');
+    this.whenChange('y');
     return this;
   }
 
-  emit(v) {
-    super.emit(EventTypes.change, v);
+  whenChange(attributeName) {
+    this.dispatcher.emit(VectorEvent.change, attributeName);
   }
-
-  on(name, callback) {
-    super.on(name, callback)
-    if(!this._bound) {
-      this._x = this.x;
-      this._y = this.y;
-      this._bound = true; // Reserved for event initialization check
-    }
-    return this;
-  }  
 
   set(x, y) {
     this._x = x;
     this._y = y;
-    this.emit();
+    this.whenChange();
     return this;
   }
 
   copy(v) {
     this._x = v.x;
     this._y = v.y;
-    this.emit();
+    this.whenChange();
     return this;
   }
 
   clear() {
     this._x = 0;
     this._y = 0;
-    this.emit();
+    this.whenChange();
     return this;
   }
 
@@ -67,42 +57,42 @@ class Vector extends EventEmitter {
   add(v1, v2) {
     this._x = v1.x + v2.x;
     this._y = v1.y + v2.y;
-    this.emit();
+    this.whenChange();
     return this;
   }
 
   addSelf(v) {
     this._x += v.x;
     this._y += v.y;
-    this.emit();
+    this.whenChange();
     return this;
   }
 
   sub(v1, v2) {
     this._x = v1.x - v2.x;
     this._y = v1.y - v2.y;
-    this.emit();
+    this.whenChange();
     return this;
   }
 
   subSelf(v) {
     this._x -= v.x;
     this._y -= v.y;
-    this.emit();
+    this.whenChange();
     return this;
   }
 
   multiplySelf(v) {
     this._x *= v.x;
     this._y *= v.y;
-    this.emit();
+    this.whenChange();
     return this;
   }
 
   multiplyScalar(s) {
     this._x *= s;
     this._y *= s;
-    this.emit();
+    this.whenChange();
     return this;
   }
 
@@ -110,7 +100,7 @@ class Vector extends EventEmitter {
     if (s) {
       this._x /= s;
       this._y /= s;
-      this.emit();
+      this.whenChange();
       return this;
     }
     return this.clear();
