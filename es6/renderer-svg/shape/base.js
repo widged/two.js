@@ -206,7 +206,7 @@ var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
 base.renderShape = (elm, ctx, condi, clip) => {
   var type = elm._renderer.type;
-  shapeCache.get(type).render.call(elm, ctx, condi, clip);
+  shapeCache.get(type).call(elm, ctx, condi, clip);
 };
 
 export default base;

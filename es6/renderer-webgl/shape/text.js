@@ -7,7 +7,70 @@ var {isString, isNumber} = is;
 
 var multiplyMatrix = Matrix.Multiply;
 
-var {transformation, renderShape, isHidden, ctx, alignments, updateBuffer, updateTexture, getTriangles} = base;
+var {transformation, renderShape, isHidden, ctx, alignments, updateBuffer, updateTexture, getTriangles, drawTextureAndRect} = base;
+
+var getBoundingClientRect = function(elem, rect, lineWidth, stroke) {
+
+  ctx.font = [elem._style, elem._weight, elem._size + 'px/' +
+    elem._leading + 'px', elem._family].join(' ');
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = elem._baseline;
+
+  // TODO: Estimate this better
+  var width = ctx.measureText(elem._value).width;
+  var height = Math.max(elem._size || elem._leading);
+
+  if (lineWidth && !isHidden.test(stroke)) {
+    // width += this._linewidth; // TODO: Not sure if the `measure` calcs this.
+    height += lineWidth;
+  }
+
+  var w = width / 2;
+  var h = height / 2;
+
+  switch (alignments[elem._alignment] || elem._alignment) {
+
+    case alignments.left:
+      rect.left = 0;
+      rect.right = width;
+      break;
+    case alignments.right:
+      rect.left = - width;
+      rect.right = 0;
+      break;
+    default:
+      rect.left = - w;
+      rect.right = w;
+  }
+
+  // TODO: Gradients aren't inherited...
+  switch (elem._baseline) {
+    case 'bottom':
+      rect.top = - height;
+      rect.bottom = 0;
+      break;
+    case 'top':
+      rect.top = 0;
+      rect.bottom = height;
+      break;
+    default:
+      rect.top = - h;
+      rect.bottom = h;
+  }
+
+  rect.width = width;
+  rect.height = height;
+
+  if (!rect.centroid) {
+    rect.centroid = {};
+  }
+
+  // TODO:
+  rect.centroid.x = w;
+  rect.centroid.y = h;
+
+};
 
 var text = {
 
@@ -73,68 +136,6 @@ var text = {
 
     },
 
-    getBoundingClientRect: function(elem, rect) {
-
-      ctx.font = [elem._style, elem._weight, elem._size + 'px/' +
-        elem._leading + 'px', elem._family].join(' ');
-
-      ctx.textAlign = 'center';
-      ctx.textBaseline = elem._baseline;
-
-      // TODO: Estimate this better
-      var width = ctx.measureText(elem._value).width;
-      var height = Math.max(elem._size || elem._leading);
-
-      if (this._linewidth && !isHidden.test(this._stroke)) {
-        // width += this._linewidth; // TODO: Not sure if the `measure` calcs this.
-        height += this._linewidth;
-      }
-
-      var w = width / 2;
-      var h = height / 2;
-
-      switch (alignments[elem._alignment] || elem._alignment) {
-
-        case alignments.left:
-          rect.left = 0;
-          rect.right = width;
-          break;
-        case alignments.right:
-          rect.left = - width;
-          rect.right = 0;
-          break;
-        default:
-          rect.left = - w;
-          rect.right = w;
-      }
-
-      // TODO: Gradients aren't inherited...
-      switch (elem._baseline) {
-        case 'bottom':
-          rect.top = - height;
-          rect.bottom = 0;
-          break;
-        case 'top':
-          rect.top = 0;
-          rect.bottom = height;
-          break;
-        default:
-          rect.top = - h;
-          rect.bottom = h;
-      }
-
-      rect.width = width;
-      rect.height = height;
-
-      if (!rect.centroid) {
-        rect.centroid = {};
-      }
-
-      // TODO:
-      rect.centroid.x = w;
-      rect.centroid.y = h;
-
-    },
 
     render: function(gl, program, forcedParent) {
 
@@ -188,7 +189,7 @@ var text = {
 
         this._renderer.opacity = this._opacity * parent._renderer.opacity;
 
-        text.getBoundingClientRect(this, this._renderer.rect);
+        getBoundingClientRect(this, this._renderer.rect, this._linewidth, this._stroke);
         getTriangles(this._renderer.rect, this._renderer.triangles);
 
         updateBuffer.call(base, gl, this, program);
@@ -204,24 +205,16 @@ var text = {
         return;
       }
 
-      // Draw Texture
-
-      gl.bindBuffer(gl.ARRAY_BUFFER, this._renderer.textureCoordsBuffer);
-
-      gl.vertexAttribPointer(program.textureCoords, 2, gl.FLOAT, false, 0, 0);
-
-      gl.bindTexture(gl.TEXTURE_2D, this._renderer.texture);
-
-
-      // Draw Rect
-
-      gl.uniformMatrix3fv(program.matrix, false, this._renderer.matrix);
-
-      gl.bindBuffer(gl.ARRAY_BUFFER, this._renderer.buffer);
-
-      gl.vertexAttribPointer(program.position, 2, gl.FLOAT, false, 0, 0);
-
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      drawTextureAndRect({
+        gl: gl,
+        coordBind: this._renderer.textureCoordsBuffer, 
+        coordVertex: program.textureCoords, 
+        textureBind: this._renderer.texture,
+        rectMatrixBuffer: program.matrix, 
+        rectMatrix: this._renderer.matrix,
+        rectBind: this._renderer.buffer,
+        rectVertex: program.position
+      });
 
       return this.flagReset();
 

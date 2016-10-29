@@ -1,6 +1,4 @@
-var linearGradient = {
-
-    render: function(ctx) {
+var linearGradient = function(ctx) {
 
       this._update();
 
@@ -22,6 +20,5 @@ var linearGradient = {
 
     }
 
-  }
 
 export default linearGradient;

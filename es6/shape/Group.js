@@ -420,56 +420,20 @@ Group.MakeObservable =function(object) {
 
   var properties = Path.Properties.slice(0);
   // ["fill", "stroke", "linewidth", "visible", "cap", "join", "miter", "closed", "curved", "automatic", "beginning", "ending"]
-  var oi = properties.indexOf('opacity');
-  if (oi >= 0) {
-    properties.splice(oi, 1);
-  }
+  var exclusions = (d) => { return d !== 'opacity'; };
 
-  Group.MakeGetterSetters(object, properties);
+  _.defineStyleAccessors(Group.prototype, properties.filter(exclusions)) ;
+
+
 
   Object.defineProperty(Group.prototype, 'children', {enumerable: true});
   Object.defineProperty(Group.prototype, 'mask',     {enumerable: true});
   Object.defineProperty(Group.prototype, 'opacity', {enumerable: true});
 
 
-};
 
-Group.MakeGetterSetters = function(group, properties) {
-
-  if (!isArray(properties)) {
-    properties = [properties];
-  }
-
-  _.each(properties, function(k) {
-    Group.MakeGetterSetter(group, k);
-  });
 
 };
-
-Group.MakeGetterSetter = function(group, k) {
-
-  var secret = '_' + k;
-
-  Object.defineProperty(group, k, {
-
-    enumerable: true,
-
-    get: function() {
-      return this[secret];
-    },
-
-    set: function(v) {
-      this[secret] = v;
-      _.each(this.children, function(child) { // Trickle down styles
-        child[k] = v;
-      });
-    }
-
-  });
-
-};
-
-_.extend(Group.prototype, Shape.prototype);
 
 
 Group.MakeObservable(Group.prototype);

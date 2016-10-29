@@ -2,9 +2,7 @@ import base from './base';
 
 var {isDefaultMatrix, renderShape} = base;
 
-var group = {
-
-    render: function(ctx) {
+var group = function(ctx) {
 
       // TODO: Add a check here to only invoke _update if need be.
       this._update();
@@ -57,7 +55,6 @@ var group = {
 
     }
 
-  }
 
 
 

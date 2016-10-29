@@ -6,20 +6,19 @@ import base from './base';
 var {renderShape, transformation} = base;
 var {Multiply: multiplyMatrix} = Matrix;
 
+var removeChild = function(child, gl) {
+  if (child.children) {
+    for (var i = 0; i < child.children.length; i++) {
+      removeChild(child.children[i], gl);
+    }
+    return;
+  }
+  // Deallocate texture to free up gl memory.
+  gl.deleteTexture(child._renderer.texture);
+  delete child._renderer.texture;
+};
+
 var group = {
-
-    removeChild: function(child, gl) {
-      if (child.children) {
-        for (var i = 0; i < child.children.length; i++) {
-          group.removeChild(child.children[i], gl);
-        }
-        return;
-      }
-      // Deallocate texture to free up gl memory.
-      gl.deleteTexture(child._renderer.texture);
-      delete child._renderer.texture;
-    },
-
 
     render: function(gl, program) {
 
@@ -70,7 +69,7 @@ var group = {
 
       if (this._flagSubtractions) {
         for (var i = 0; i < this.subtractions.length; i++) {
-          group.removeChild(this.subtractions[i], gl);
+          removeChild(this.subtractions[i], gl);
         }
       }
 

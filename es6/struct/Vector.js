@@ -2,9 +2,10 @@ import _  from '../util/common';
 import EventEmitter  from '../util/EventEmitter';
 import EventTypes    from '../constant/EventTypes';
 
-class Vector {
+class Vector extends EventEmitter {
 
   constructor(x, y) {
+    super([EventTypes.change]);
     this._x = this.x = x || 0;
     this._y = this.y = y || 0;
     this.emitter;
@@ -13,27 +14,23 @@ class Vector {
   get x() { return this._x; }
   set x(v){
     this._x = v;
-    this.dispatchChange('x');
+    this.emit('x');
     return this;
   }
 
   get y() { return this._y; }
   set y(v) {
     this._y = v;
-    this.dispatchChange('y');
+    this.emit('y');
     return this;
   }
 
-  dispatchChange(v) {
-    //  Do not broadcast events unless event listeners are explicity bound to it.
-    if(!this.emitter) { return; }
-    this.emitter.trigger(EventTypes.change, v);
+  emit(v) {
+    super.emit(EventTypes.change, v);
   }
 
   on(name, callback) {
-    if(![EventTypes.change].includes(name)) { return; }
-    if(!this.emitter) { this.emitter = new EventEmitter(); }
-    this.emitter.on(name, callback);
+    super.on(name, callback)
     if(!this._bound) {
       this._x = this.x;
       this._y = this.y;
@@ -42,29 +39,24 @@ class Vector {
     return this;
   }  
 
-  off(name, callback) {
-    if(!this.emitter) { return; }
-    this.emitter.off(name, callback);
-  }
-
   set(x, y) {
     this._x = x;
     this._y = y;
-    this.dispatchChange();
+    this.emit();
     return this;
   }
 
   copy(v) {
     this._x = v.x;
     this._y = v.y;
-    this.dispatchChange();
+    this.emit();
     return this;
   }
 
   clear() {
     this._x = 0;
     this._y = 0;
-    this.dispatchChange();
+    this.emit();
     return this;
   }
 
@@ -75,42 +67,42 @@ class Vector {
   add(v1, v2) {
     this._x = v1.x + v2.x;
     this._y = v1.y + v2.y;
-    this.dispatchChange();
+    this.emit();
     return this;
   }
 
   addSelf(v) {
     this._x += v.x;
     this._y += v.y;
-    this.dispatchChange();
+    this.emit();
     return this;
   }
 
   sub(v1, v2) {
     this._x = v1.x - v2.x;
     this._y = v1.y - v2.y;
-    this.dispatchChange();
+    this.emit();
     return this;
   }
 
   subSelf(v) {
     this._x -= v.x;
     this._y -= v.y;
-    this.dispatchChange();
+    this.emit();
     return this;
   }
 
   multiplySelf(v) {
     this._x *= v.x;
     this._y *= v.y;
-    this.dispatchChange();
+    this.emit();
     return this;
   }
 
   multiplyScalar(s) {
     this._x *= s;
     this._y *= s;
-    this.dispatchChange();
+    this.emit();
     return this;
   }
 
@@ -118,7 +110,7 @@ class Vector {
     if (s) {
       this._x /= s;
       this._y /= s;
-      this.dispatchChange();
+      this.emit();
       return this;
     }
     return this.clear();

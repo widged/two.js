@@ -2,11 +2,13 @@ import base from './base';
 
 var {renderShape} = base;
 
-var group = {
+var orderChild = function(object) {
+  this.elem.appendChild(object._renderer.elem);
+};
 
   // TODO: Can speed up.
   // TODO: How does this effect a f
-  appendChild: function(object) {
+var appendChild = function(object) {
 
     var elem = object._renderer.elem;
 
@@ -22,9 +24,9 @@ var group = {
 
     this.elem.appendChild(elem);
 
-  },
+  };
 
-  removeChild: function(object) {
+var removeChild = function(object) {
 
     var elem = object._renderer.elem;
 
@@ -45,13 +47,9 @@ var group = {
 
     this.elem.removeChild(elem);
 
-  },
+  };
 
-  orderChild: function(object) {
-    this.elem.appendChild(object._renderer.elem);
-  },
-
-  render: function(domElement) {
+var group = function(domElement) {
 
     this._update();
 
@@ -90,15 +88,15 @@ var group = {
     }
 
     if (this._flagAdditions) {
-      this.additions.forEach(group.appendChild, context);
+      this.additions.forEach(appendChild, context);
     }
 
     if (this._flagSubtractions) {
-      this.subtractions.forEach(group.removeChild, context);
+      this.subtractions.forEach(removeChild, context);
     }
 
     if (this._flagOrder) {
-      this.children.forEach(group.orderChild, context);
+      this.children.forEach(orderChild, context);
     }
 
     /**
@@ -136,6 +134,5 @@ var group = {
 
   }
 
-}
 
 export default group;

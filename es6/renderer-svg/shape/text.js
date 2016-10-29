@@ -1,8 +1,6 @@
 import base from './base';
 
-var text = {
-
-  render: function(domElement) {
+var text = function(domElement) {
 
     this._update();
 
@@ -95,7 +93,6 @@ var text = {
 
   }
 
-}
 
 
 export default text;

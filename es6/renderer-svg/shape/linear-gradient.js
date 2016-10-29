@@ -1,8 +1,6 @@
 import base from './base';
 
-var linearGradient = {
-
-      render: function(domElement) {
+var linearGradient = function(domElement) {
 
         this._update();
 
@@ -71,6 +69,5 @@ var linearGradient = {
 
       }
 
-    }
 
 export default linearGradient;

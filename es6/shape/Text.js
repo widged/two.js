@@ -49,7 +49,9 @@ _.extend(Text, {
 
   MakeObservable: function(object) {
 
-    _.each(Text.Properties, _.defineProperty, object);
+
+   _.defineFlaggedAccessors(object, Text.Properties);
+
 
     Object.defineProperty(object, 'clip', {
       enumerable: true,
@@ -66,7 +68,7 @@ _.extend(Text, {
 
 });
 
-_.extend(Text.prototype, Shape.prototype, {
+_.extend(Text.prototype, {
 
   // Flags
   // http://en.wikipedia.org/wiki/Flag

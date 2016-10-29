@@ -19,7 +19,7 @@ var Types = require('../es6/constant/RendererTypes').default;
 var two = new Two({
   width: 800,
   height: 800,
-  type: Types.webgl
+  type: Types.canvas
 }).appendTo(document.getElementById('app'));
 
 
@@ -79,17 +79,15 @@ txt.opacity = 0.25;
 
 // ----------- gradients ------
 // 
-var Stop = require('../es6/gradient/Stop').default;
-
 var RadialGradient = require('../es6/gradient/RadialGradient').default;
 var radius = Math.max(150, 100);
 var radialGradient = two.makeRadialGradient(
 	0, 0,
 	radius,
-	new Stop(0,  'rgba(255, 0, 0, 1)', 1),
-	new Stop(0.5, 'rgba(255, 0, 0, 0)', 0)
+	new RadialGradient.Stop(0,  'rgba(255, 0, 0, 1)', 1),
+	new RadialGradient.Stop(0.5, 'rgba(255, 0, 0, 0)', 0)
 );
-var stop = new Stop(0,  'rgba(255, 0, 0, 1)', 1);
+var stop = new RadialGradient.Stop(0,  'rgba(255, 0, 0, 1)', 1);
 console.log(stop.toObject())
 
 var vignette = two.addShape(RoundedRectangle(215, 290, 150, 100, 10))
@@ -112,9 +110,9 @@ colors.index = 0;
 var linearGradient = two.makeLinearGradient(
   150 / 2, - 100 / 2,
   150 / 2, 100 / 2,
-  new Stop(0, colors[0]),
-  new Stop(1, colors[1]),
-  new Stop(1, colors[2])
+  new LinearGradient.Stop(0, colors[0]),
+  new LinearGradient.Stop(1, colors[1]),
+  new LinearGradient.Stop(1, colors[2])
 );
 
 var rectangle = two.addShape(Rectangle(315, 390, 150, 100));

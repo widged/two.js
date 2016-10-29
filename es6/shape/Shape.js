@@ -74,9 +74,7 @@ class Shape {
     clone.translation.copy(this.translation);
     clone.rotation = this.rotation;
     clone.scale = this.scale;
-    _.each(Shape.Properties, function(k) {
-      clone[k] = this[k];
-    }, this);
+    copyKeys(PROPS, this, clone);
     return clone._update();
   }  
 
@@ -111,6 +109,7 @@ class Shape {
     return this;
   }  
 }
+Shape.Properties = PROPS;
 
 Object.defineProperty(Shape.prototype, 'rotation', {enumerable: true});
 Object.defineProperty(Shape.prototype, 'scale', {enumerable: true});

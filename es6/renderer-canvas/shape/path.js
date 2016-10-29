@@ -7,9 +7,7 @@ var {isDefaultMatrix, renderShape, Commands} = base;
 var {mod, toFixed} = MathExtras;
 var {isString, isNumber} = is;
 
-var path = {
-
-  render: function(ctx, forced, parentClipped) {
+var path = function(ctx, forced, parentClipped) {
 
     var matrix, stroke, linewidth, fill, opacity, visible, cap, join, miter,
         closed, commands, length, last, next, prev, a, b, c, d, ux, uy, vx, vy,
@@ -199,7 +197,6 @@ var path = {
 
   }
 
-}
 
 export default path;
 

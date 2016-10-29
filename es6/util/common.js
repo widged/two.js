@@ -168,23 +168,51 @@ _.map = function(obj, iteratee, context) {
 };
 
 
-_.defineProperty = function(property) {
+_.defineFlaggedAccessors = (object, properties) => {
+  if(!properties) { return; }
+  if (properties && !isArray(properties)) { properties = [properties]; }
 
-  var object = this;
-  var secret = '_' + property;
-  var flag = '_flag' + property.charAt(0).toUpperCase() + property.slice(1);
+  var each =   function(property) {
 
-  Object.defineProperty(object, property, {
-    enumerable: true,
-    get() {
-      return this[secret];
-    },
-    set(v) {
-      this[secret] = v;
-      this[flag] = true;
-    }
-  });
+    var secret = '_' + property;
+    var flag = '_flag' + property.charAt(0).toUpperCase() + property.slice(1);
 
-} 
+    Object.defineProperty(object, property, {
+      enumerable: true,
+      get() {
+        return this[secret];
+      },
+      set(v) {
+        this[secret] = v;
+        this[flag] = true;
+      }
+    });
+
+  } 
+
+  properties.forEach(each);
+
+}
+
+_.defineStyleAccessors = function(object, properties) {
+
+  if (!isArray(properties)) { properties = [properties]; }
+
+  var makeOne = (k) => {
+    var secret = '_' + k;
+    Object.defineProperty(object, k, {
+      enumerable: true,
+      get: function() {
+        return this[secret];
+      },
+      set: function(v) {
+        this[secret] = v;
+      }
+    });
+  };
+
+  properties.forEach(makeOne);
+
+};
 
 export default _;

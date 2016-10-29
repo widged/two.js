@@ -4,10 +4,87 @@ import base from './base';
 import Array2   from '../../struct/Array';
 import MathExtras   from '../../util/math-extras';
 
-var {renderShape, transformation, Commands, canvas, ctx} = base;
+var {renderShape, transformation, Commands, canvas, ctx, drawTextureAndRect} = base;
 var {Multiply: multiplyMatrix} = Matrix;
 var {isNumber, isString} = is;
 var {mod, toFixed} = MathExtras;
+
+
+
+/**
+ * Returns the rect of a set of verts. Typically takes vertices that are
+ * "centered" around 0 and returns them to be anchored upper-left.
+ */
+var getBoundingClientRect = function(vertices, border, rect) {
+
+  var left = Infinity, right = -Infinity,
+      top = Infinity, bottom = -Infinity,
+      width, height;
+
+  vertices.forEach(function(v) {
+
+    var x = v.x, y = v.y, controls = v.controls;
+    var a, b, c, d, cl, cr;
+
+    top = Math.min(y, top);
+    left = Math.min(x, left);
+    right = Math.max(x, right);
+    bottom = Math.max(y, bottom);
+
+    if (!v.controls) {
+      return;
+    }
+
+    cl = controls.left;
+    cr = controls.right;
+
+    if (!cl || !cr) {
+      return;
+    }
+
+    a = v._relative ? cl.x + x : cl.x;
+    b = v._relative ? cl.y + y : cl.y;
+    c = v._relative ? cr.x + x : cr.x;
+    d = v._relative ? cr.y + y : cr.y;
+
+    if (!a || !b || !c || !d) {
+      return;
+    }
+
+    top = Math.min(b, d, top);
+    left = Math.min(a, c, left);
+    right = Math.max(a, c, right);
+    bottom = Math.max(b, d, bottom);
+
+  });
+
+  // Expand borders
+
+  if (isNumber(border)) {
+    top -= border;
+    left -= border;
+    right += border;
+    bottom += border;
+  }
+
+  width = right - left;
+  height = bottom - top;
+
+  rect.top = top;
+  rect.left = left;
+  rect.right = right;
+  rect.bottom = bottom;
+  rect.width = width;
+  rect.height = height;
+
+  if (!rect.centroid) {
+    rect.centroid = {};
+  }
+
+  rect.centroid.x = - left;
+  rect.centroid.y = - top;
+
+};
 
 var path = {
 
@@ -176,80 +253,6 @@ var path = {
 
     },
 
-    /**
-     * Returns the rect of a set of verts. Typically takes vertices that are
-     * "centered" around 0 and returns them to be anchored upper-left.
-     */
-    getBoundingClientRect: function(vertices, border, rect) {
-
-      var left = Infinity, right = -Infinity,
-          top = Infinity, bottom = -Infinity,
-          width, height;
-
-      vertices.forEach(function(v) {
-
-        var x = v.x, y = v.y, controls = v.controls;
-        var a, b, c, d, cl, cr;
-
-        top = Math.min(y, top);
-        left = Math.min(x, left);
-        right = Math.max(x, right);
-        bottom = Math.max(y, bottom);
-
-        if (!v.controls) {
-          return;
-        }
-
-        cl = controls.left;
-        cr = controls.right;
-
-        if (!cl || !cr) {
-          return;
-        }
-
-        a = v._relative ? cl.x + x : cl.x;
-        b = v._relative ? cl.y + y : cl.y;
-        c = v._relative ? cr.x + x : cr.x;
-        d = v._relative ? cr.y + y : cr.y;
-
-        if (!a || !b || !c || !d) {
-          return;
-        }
-
-        top = Math.min(b, d, top);
-        left = Math.min(a, c, left);
-        right = Math.max(a, c, right);
-        bottom = Math.max(b, d, bottom);
-
-      });
-
-      // Expand borders
-
-      if (isNumber(border)) {
-        top -= border;
-        left -= border;
-        right += border;
-        bottom += border;
-      }
-
-      width = right - left;
-      height = bottom - top;
-
-      rect.top = top;
-      rect.left = left;
-      rect.right = right;
-      rect.bottom = bottom;
-      rect.width = width;
-      rect.height = height;
-
-      if (!rect.centroid) {
-        rect.centroid = {};
-      }
-
-      rect.centroid.x = - left;
-      rect.centroid.y = - top;
-
-    },
 
     render: function(gl, program, forcedParent) {
 
@@ -301,7 +304,7 @@ var path = {
 
         this._renderer.opacity = this._opacity * parent._renderer.opacity;
 
-        path.getBoundingClientRect(this._vertices, this._linewidth, this._renderer.rect);
+        getBoundingClientRect(this._vertices, this._linewidth, this._renderer.rect);
         base.getTriangles(this._renderer.rect, this._renderer.triangles);
 
         base.updateBuffer.call(base, gl, this, program);
@@ -317,24 +320,17 @@ var path = {
         return;
       }
 
-      // Draw Texture
+      drawTextureAndRect({
+        gl: gl,
+        coordBind: this._renderer.textureCoordsBuffer, 
+        coordVertex: program.textureCoords, 
+        textureBind: this._renderer.texture,
+        rectMatrixBuffer: program.matrix, 
+        rectMatrix: this._renderer.matrix,
+        rectBind: this._renderer.buffer,
+        rectVertex: program.position
+      });
 
-      gl.bindBuffer(gl.ARRAY_BUFFER, this._renderer.textureCoordsBuffer);
-
-      gl.vertexAttribPointer(program.textureCoords, 2, gl.FLOAT, false, 0, 0);
-
-      gl.bindTexture(gl.TEXTURE_2D, this._renderer.texture);
-
-
-      // Draw Rect
-
-      gl.uniformMatrix3fv(program.matrix, false, this._renderer.matrix);
-
-      gl.bindBuffer(gl.ARRAY_BUFFER, this._renderer.buffer);
-
-      gl.vertexAttribPointer(program.position, 2, gl.FLOAT, false, 0, 0);
-
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
 
       return this.flagReset();
 

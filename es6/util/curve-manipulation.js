@@ -216,6 +216,40 @@ FN.getCurveLength = (x1, y1, x2, y2, x3, y3, x4, y4, limit)  => {
 }
 
 /**
+ * Utility functions
+ */
+
+FN.getCurveLengthAB = (a, b, limit) => {
+  // TODO: DRYness
+  var x1, x2, x3, x4, y1, y2, y3, y4;
+
+  var right = b.controls && b.controls.right;
+  var left = a.controls && a.controls.left;
+
+  x1 = b.x;
+  y1 = b.y;
+  x2 = (right || b).x;
+  y2 = (right || b).y;
+  x3 = (left || a).x;
+  y3 = (left || a).y;
+  x4 = a.x;
+  y4 = a.y;
+
+  if (right && b._relative) {
+    x2 += b.x;
+    y2 += b.y;
+  }
+
+  if (left && a._relative) {
+    x3 += a.x;
+    y3 += a.y;
+  }
+
+  return _.getCurveLength(x1, y1, x2, y2, x3, y3, x4, y4, limit);
+
+}
+
+/**
  * Integration for `getCurveLength` calculations. Referenced from
  * Paper.js: https://github.com/paperjs/paper.js/blob/master/src/util/Numerical.js#L101
  */
@@ -330,7 +364,9 @@ FN.getControlPoints = (a, b, c)  => {
 
   return b;
 
-},
+};
+
+
 
 /**
  * Get the reflection of a point "b" about point "a". Where "a" is in
@@ -347,6 +383,104 @@ FN.getReflection = (a, b, relative)  => {
 
 }
 
+FN.getSubdivisions = (a, b, limit) => {
+    var {subdivide} = curve;
+    // TODO: DRYness
+    var x1, x2, x3, x4, y1, y2, y3, y4;
+
+    var right = b.controls && b.controls.right;
+    var left = a.controls && a.controls.left;
+
+    x1 = b.x;
+    y1 = b.y;
+    x2 = (right || b).x;
+    y2 = (right || b).y;
+    x3 = (left || a).x;
+    y3 = (left || a).y;
+    x4 = a.x;
+    y4 = a.y;
+
+    if (right && b._relative) {
+      x2 += b.x;
+      y2 += b.y;
+    }
+
+    if (left && a._relative) {
+      x3 += a.x;
+      y3 += a.y;
+    }
+
+    return subdivide(x1, y1, x2, y2, x3, y3, x4, y4, limit).map((d) => {
+      return new Anchor(d);
+    });
+
+  }
+
+FN.subdvideTo = (limit, pth) => {
+  var {getSubdivisions} = FN;
+  var last = pth.vertices.length - 1;
+      var b = pth.vertices[last];
+      var closed = pth._closed || pth.vertices[last]._command === Commands.close;
+      var points = [];
+      _.each(pth.vertices, function(a, i) {
+
+        if (i <= 0 && !closed) {
+          b = a;
+          return;
+        }
+
+        if (a.command === Commands.move) {
+          points.push(new Anchor(b.x, b.y));
+          if (i > 0) {
+            points[points.length - 1].command = Commands.line;
+          }
+          b = a;
+          return;
+        }
+
+        var verts = getSubdivisions(a, b, limit);
+        points = points.concat(verts);
+
+        // Assign commands to all the verts
+        _.each(verts, function(v, i) {
+          if (i <= 0 && b.command === Commands.move) {
+            v.command = Commands.move;
+          } else {
+            v.command = Commands.line;
+          }
+        });
+
+        if (i >= last) {
+
+          // TODO: Add check if the two vectors in question are the same values.
+          if (this._closed && this._automatic) {
+
+            b = a;
+
+            verts = getSubdivisions(a, b, limit);
+            points = points.concat(verts);
+
+            // Assign commands to all the verts
+            _.each(verts, function(v, i) {
+              if (i <= 0 && b.command === Commands.move) {
+                v.command = Commands.move;
+              } else {
+                v.command = Commands.line;
+              }
+            });
+
+          } else if (closed) {
+            points.push(new Anchor(a.x, a.y));
+          }
+
+          points[points.length - 1].command = closed ? Commands.close : Commands.line;
+
+        }
+
+        b = a;
+
+      }, pth);
+}
 
 NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  => {
 
@@ -382,5 +516,72 @@ NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  =>
   });
 
 }
+
+/**
+ * Given a float `t` from 0 to 1, return a point or assign a passed `obj`'s
+ * coordinates to that percentage on this Path's curve.
+ */
+NotInUse.getPointAt = (t, obj, pth) => {
+      var x, x1, x2, x3, x4, y, y1, y2, y3, y4, left, right;
+      var target = pth.length * Math.min(Math.max(t, 0), 1);
+      var length = pth.vertices.length;
+      var last = length - 1;
+
+      var a = null;
+      var b = null;
+
+      for (var i = 0, l = pth._lengths.length, sum = 0; i < l; i++) {
+
+        if (sum + pth._lengths[i] > target) {
+          a = pth.vertices[this.closed ? _.mod(i, length) : i];
+          b = pth.vertices[Math.min(Math.max(i - 1, 0), last)];
+          target -= sum;
+          t = target / pth._lengths[i];
+          break;
+        }
+
+        sum += pth._lengths[i];
+
+      }
+
+      if (isNull(a) || isNull(b)) {
+        return null;
+      }
+
+      right = b.controls && b.controls.right;
+      left = a.controls && a.controls.left;
+
+      x1 = b.x;
+      y1 = b.y;
+      x2 = (right || b).x;
+      y2 = (right || b).y;
+      x3 = (left || a).x;
+      y3 = (left || a).y;
+      x4 = a.x;
+      y4 = a.y;
+
+      if (right && b._relative) {
+        x2 += b.x;
+        y2 += b.y;
+      }
+
+      if (left && a._relative) {
+        x3 += a.x;
+        y3 += a.y;
+      }
+
+      x = _.getPointOnCubicBezier(t, x1, x2, x3, x4);
+      y = _.getPointOnCubicBezier(t, y1, y2, y3, y4);
+
+      if (is.Object(obj)) {
+        obj.x = x;
+        obj.y = y;
+        return obj;
+      }
+
+      return new Vector(x, y);
+
+    }
+
 
 export default FN;    

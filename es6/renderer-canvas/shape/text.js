@@ -5,9 +5,7 @@ var {isDefaultMatrix, renderShape, isHidden, alignments} = base;
 
 var {isString, isNumber} = is;
 
-var text = {
-
-    render: function(ctx, forced, parentClipped) {
+var text = function(ctx, forced, parentClipped) {
 
       // TODO: Add a check here to only invoke _update if need be.
       this._update();
@@ -91,6 +89,5 @@ var text = {
 
     }
 
-  }
 
 export default text;

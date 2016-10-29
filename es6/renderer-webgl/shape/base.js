@@ -198,6 +198,26 @@ var base = {
 }
 
 
+base.drawTextureAndRect = ({
+    gl, 
+    coordBind, coordVertex, textureBind, 
+    rectMatrixBuffer, rectMatrix, rectBind, rectVertex
+  }) => {
+  // Draw Texture
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, coordBind);
+  gl.vertexAttribPointer(coordVertex, 2, gl.FLOAT, false, 0, 0);
+  gl.bindTexture(gl.TEXTURE_2D, textureBind);
+
+  // Draw Rect
+
+  gl.uniformMatrix3fv(rectMatrixBuffer, false, rectMatrix);
+  gl.bindBuffer(gl.ARRAY_BUFFER, rectBind);
+  gl.vertexAttribPointer(rectVertex, 2, gl.FLOAT, false, 0, 0);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+}
+
+
 base.ctx = base.canvas.getContext('2d');
 base.Commands = Commands;
 base.transformation = new Array2(9);

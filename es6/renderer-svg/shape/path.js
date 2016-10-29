@@ -2,9 +2,7 @@ import base from './base';
 
 var {renderShape} = base;
 
-var path = {
-
-      render: function(domElement) {
+var path = function(domElement) {
 
         this._update();
 
@@ -118,6 +116,5 @@ var path = {
 
       }
 
-    }
 
 export default path;

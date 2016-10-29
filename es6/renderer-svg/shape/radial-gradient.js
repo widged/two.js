@@ -1,9 +1,7 @@
 import base from './base';
 
 
-var radialGradient = {
-
-      render: function(domElement) {
+var radialGradient = function(domElement) {
 
         this._update();
 
@@ -78,7 +76,5 @@ var radialGradient = {
         return this.flagReset();
 
       }
-
-    }
 
 export default radialGradient;

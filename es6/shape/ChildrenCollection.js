@@ -13,11 +13,6 @@ class Children extends Collection {
 
     super(children);
 
-    Object.defineProperty(this, '_events', {
-      value : {},
-      enumerable: false
-    });
-
     this.ids = {};
 
     this.on(EventTypes.insert, (children) => {

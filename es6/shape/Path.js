@@ -8,19 +8,75 @@ import curveFN  from '../util/curve-manipulation';
 import Anchor from '../Anchor';
 import Shape from './Shape';
 
-/**
- * Constants
- */
-
-var {min, max, round} = Math;
-var {getComputedMatrix, getCurveLength} = curveFN;
 var {isUndefined, isNull} = is;
+var {copyKeys} = _;
+var {getComputedMatrix, getCurveLengthAB, subdivideTo} = curveFN;
+var {min, max, round} = Math;
 
-var commands = {};
 
-_.each(Commands, function(v, k) {
-  commands[k] = new RegExp(v);
-});
+const PROPS = [
+  'fill',
+  'stroke',
+  'linewidth',
+  'opacity',
+  'visible',
+  'cap',
+  'join',
+  'miter',
+
+  'closed',
+  'curved',
+  'automatic',
+  'beginning',
+  'ending',
+
+  'clip'
+];
+
+var FLAG_DEFAULTS = {
+      // Flags
+    // http://en.wikipedia.org/wiki/Flag
+
+    _flagVertices: true,
+    _flagLength: true,
+
+    _flagFill: true,
+    _flagStroke: true,
+    _flagLinewidth: true,
+    _flagOpacity: true,
+    _flagVisible: true,
+
+    _flagCap: true,
+    _flagJoin: true,
+    _flagMiter: true,
+
+    _flagClip: false,
+
+}
+
+var PROP_DEFAULTS = {
+  // Underlying Properties
+
+    _length: 0,
+
+    _fill: '#fff',
+    _stroke: '#000',
+    _linewidth: 1.0,
+    _opacity: 1.0,
+    _visible: true,
+
+    _cap: 'round',
+    _join: 'round',
+    _miter: 4,
+
+    _closed: true,
+    _curved: false,
+    _automatic: true,
+    _beginning: 0,
+    _ending: 1.0,
+
+    _clip: false,
+}
 
 class Path extends Shape {
 
@@ -56,221 +112,121 @@ class Path extends Shape {
     this.automatic = !manual;
 
   }
-}
+
+  get length() {
+    if (this._flagLength) {
+      this._updateLength();
+    }
+    return this._length;
+  }
+
+  get closed() {
+    return this._closed;
+  }
+  set closed(v) {
+    this._closed = !!v;
+    this._flagVertices = true;
+  }
+
+  get curved() {
+    return this._curved;
+  }
+  set curved(v) {
+    this._curved = !!v;
+    this._flagVertices = true;
+  }
+
+  get automatic() {
+    return this._automatic;
+  }
+  set automatic(v) {
+    if (v === this._automatic) {
+      return;
+    }
+    this._automatic = !!v;
+    var method = this._automatic ? 'ignore' : 'listen';
+    _.each(this.vertices, function(v) {
+      v[method]();
+    });
+  }
+
+  get beginning() {
+    return this._beginning;
+  }
+  set beginning(v) {
+    this._beginning = min(max(v, 0.0), this._ending);
+    this._flagVertices = true;
+  }
+
+  get ending() {
+    return this._ending;
+  }
+  set ending(v) {
+    this._ending = min(max(v, this._beginning), 1.0);
+    this._flagVertices = true;
+  }
 
 
-  _.extend(Path, {
+  get vertices() {
+    return this._collection;
+  }
+  set vertices(vertices) {
 
-    Properties: [
-      'fill',
-      'stroke',
-      'linewidth',
-      'opacity',
-      'visible',
-      'cap',
-      'join',
-      'miter',
+    var updateVertices = () => {
+        this._flagVertices = true;
+        this._flagLength = true;
+    };
 
-      'closed',
-      'curved',
-      'automatic',
-      'beginning',
-      'ending'
-    ],
+    var bindVerts = _.bind(function(items) {
 
-    FlagVertices: function() {
-      this._flagVertices = true;
-      this._flagLength = true;
-    },
+      // This function is called a lot
+      // when importing a large SVG
+      var i = items.length;
+      while(i--) {
+        items[i].on(EventTypes.change, updateVertices);
+      }
 
-    MakeObservable: function(object) {
+      updateVertices();
 
-      // Only the first 8 properties are flagged like this. The subsequent
-      // properties behave differently and need to be hand written.
-      _.each(Path.Properties.slice(0, 8), _.defineProperty, object);
+    }, this);
 
-      Object.defineProperty(object, 'length', {
-        get: function() {
-          if (this._flagLength) {
-            this._updateLength();
-          }
-          return this._length;
-        }
-      });
+    var unbindVerts = _.bind(function(items) {
 
-      Object.defineProperty(object, 'closed', {
-        enumerable: true,
-        get: function() {
-          return this._closed;
-        },
-        set: function(v) {
-          this._closed = !!v;
-          this._flagVertices = true;
-        }
-      });
+      _.each(items, function(v) {
+        v.off(EventTypes.change, updateVertices);
+      }, this);
 
-      Object.defineProperty(object, 'curved', {
-        enumerable: true,
-        get: function() {
-          return this._curved;
-        },
-        set: function(v) {
-          this._curved = !!v;
-          this._flagVertices = true;
-        }
-      });
+      updateVertices();
 
-      Object.defineProperty(object, 'automatic', {
-        enumerable: true,
-        get: function() {
-          return this._automatic;
-        },
-        set: function(v) {
-          if (v === this._automatic) {
-            return;
-          }
-          this._automatic = !!v;
-          var method = this._automatic ? 'ignore' : 'listen';
-          _.each(this.vertices, function(v) {
-            v[method]();
-          });
-        }
-      });
+    }, this);
 
-      Object.defineProperty(object, 'beginning', {
-        enumerable: true,
-        get: function() {
-          return this._beginning;
-        },
-        set: function(v) {
-          this._beginning = min(max(v, 0.0), this._ending);
-          this._flagVertices = true;
-        }
-      });
-
-      Object.defineProperty(object, 'ending', {
-        enumerable: true,
-        get: function() {
-          return this._ending;
-        },
-        set: function(v) {
-          this._ending = min(max(v, this._beginning), 1.0);
-          this._flagVertices = true;
-        }
-      });
-
-      Object.defineProperty(object, 'vertices', {
-
-        enumerable: true,
-
-        get: function() {
-          return this._collection;
-        },
-
-        set: function(vertices) {
-
-          var updateVertices = _.bind(Path.FlagVertices, this);
-
-          var bindVerts = _.bind(function(items) {
-
-            // This function is called a lot
-            // when importing a large SVG
-            var i = items.length;
-            while(i--) {
-              items[i].on(EventTypes.change, updateVertices);
-            }
-
-            updateVertices();
-
-          }, this);
-
-          var unbindVerts = _.bind(function(items) {
-
-            _.each(items, function(v) {
-              v.off(EventTypes.change, updateVertices);
-            }, this);
-
-            updateVertices();
-
-          }, this);
-
-          // Remove previous listeners
-          if (this._collection) {
-            this._collection.off();
-          }
-
-          // Create new Collection with copy of vertices
-          this._collection = new Collection((vertices || []).slice(0));
-
-          // Listen for Collection changes and bind / unbind
-          this._collection.on(EventTypes.insert, bindVerts);
-          this._collection.on(EventTypes.remove, unbindVerts);
-
-          // Bind Initial Vertices
-          bindVerts(this._collection);
-
-        }
-
-      });
-
-      Object.defineProperty(object, 'clip', {
-        enumerable: true,
-        get: function() {
-          return this._clip;
-        },
-        set: function(v) {
-          this._clip = v;
-          this._flagClip = true;
-        }
-      });
-
+    // Remove previous listeners
+    if (this._collection) {
+      this._collection.off();
     }
 
-  });
+    // Create new Collection with copy of vertices
+    this._collection = new Collection((vertices || []).slice(0));
 
-  _.extend(Path.prototype, Shape.prototype, {
+    // Listen for Collection changes and bind / unbind
+    this._collection.on(EventTypes.insert, bindVerts);
+    this._collection.on(EventTypes.remove, unbindVerts);
 
-    // Flags
-    // http://en.wikipedia.org/wiki/Flag
+    // Bind Initial Vertices
+    bindVerts(this._collection);
 
-    _flagVertices: true,
-    _flagLength: true,
+  }
 
-    _flagFill: true,
-    _flagStroke: true,
-    _flagLinewidth: true,
-    _flagOpacity: true,
-    _flagVisible: true,
 
-    _flagCap: true,
-    _flagJoin: true,
-    _flagMiter: true,
+  get clip() {
+    return this._clip;
+  }
+  set clip(v) {
+    this._clip = v;
+    this._flagClip = true;
+  }  
 
-    _flagClip: false,
-
-    // Underlying Properties
-
-    _length: 0,
-
-    _fill: '#fff',
-    _stroke: '#000',
-    _linewidth: 1.0,
-    _opacity: 1.0,
-    _visible: true,
-
-    _cap: 'round',
-    _join: 'round',
-    _miter: 4,
-
-    _closed: true,
-    _curved: false,
-    _automatic: true,
-    _beginning: 0,
-    _ending: 1.0,
-
-    _clip: false,
-
-    clone: function(parent) {
+clone(parent) {
 
       parent = parent || this.parent;
 
@@ -279,10 +235,7 @@ class Path extends Shape {
       });
 
       var clone = new Path(points, this.closed, this.curved, !this.automatic);
-
-      _.each(Path.Properties, function(k) {
-        clone[k] = this[k];
-      }, this);
+      copyKeys(Path.Properties, this, clone);
 
       clone.translation.copy(this.translation);
       clone.rotation = this.rotation;
@@ -292,19 +245,16 @@ class Path extends Shape {
 
       return clone;
 
-    },
+    }
 
-    toObject: function() {
+    toObject() {
 
       var result = {
         vertices: _.map(this.vertices, function(v) {
           return v.toObject();
         })
       };
-
-      _.each(Shape.Properties, function(k) {
-        result[k] = this[k];
-      }, this);
+      copyKeys(Shape.Properties, this, result);
 
       result.translation = this.translation.toObject;
       result.rotation = this.rotation;
@@ -312,23 +262,23 @@ class Path extends Shape {
 
       return result;
 
-    },
+    }
 
-    noFill: function() {
+    noFill() {
       this.fill = 'transparent';
       return this;
-    },
+    }
 
-    noStroke: function() {
+    noStroke() {
       this.stroke = 'transparent';
       return this;
-    },
+    }
 
     /**
      * Orient the vertices of the shape to the upper lefthand
      * corner of the path.
      */
-    corner: function() {
+    corner() {
 
       var rect = this.getBoundingClientRect(true);
 
@@ -343,13 +293,13 @@ class Path extends Shape {
 
       return this;
 
-    },
+    }
 
     /**
      * Orient the vertices of the shape to the center of the
      * path.
      */
-    center: function() {
+    center() {
 
       var rect = this.getBoundingClientRect(true);
 
@@ -366,12 +316,12 @@ class Path extends Shape {
 
       return this;
 
-    },
+    }
 
     /**
      * Remove self from the scene / parent.
      */
-    remove: function() {
+    remove() {
 
       if (!this.parent) {
         return this;
@@ -381,13 +331,13 @@ class Path extends Shape {
 
       return this;
 
-    },
+    }
 
     /**
      * Return an object with top, left, right, bottom, width, and height
      * parameters of the group.
      */
-    getBoundingClientRect: function(shallow) {
+    getBoundingClientRect(shallow) {
       var matrix, border, l, x, y, i, v;
 
       var left = Infinity, right = -Infinity,
@@ -435,79 +385,14 @@ class Path extends Shape {
         height: bottom - top
       };
 
-    },
+    }
 
-    /**
-     * Given a float `t` from 0 to 1, return a point or assign a passed `obj`'s
-     * coordinates to that percentage on this Path's curve.
-     */
-    getPointAt: function(t, obj) {
-      var x, x1, x2, x3, x4, y, y1, y2, y3, y4, left, right;
-      var target = this.length * Math.min(Math.max(t, 0), 1);
-      var length = this.vertices.length;
-      var last = length - 1;
-
-      var a = null;
-      var b = null;
-
-      for (var i = 0, l = this._lengths.length, sum = 0; i < l; i++) {
-
-        if (sum + this._lengths[i] > target) {
-          a = this.vertices[this.closed ? _.mod(i, length) : i];
-          b = this.vertices[Math.min(Math.max(i - 1, 0), last)];
-          target -= sum;
-          t = target / this._lengths[i];
-          break;
-        }
-
-        sum += this._lengths[i];
-
-      }
-
-      if (isNull(a) || isNull(b)) {
-        return null;
-      }
-
-      right = b.controls && b.controls.right;
-      left = a.controls && a.controls.left;
-
-      x1 = b.x;
-      y1 = b.y;
-      x2 = (right || b).x;
-      y2 = (right || b).y;
-      x3 = (left || a).x;
-      y3 = (left || a).y;
-      x4 = a.x;
-      y4 = a.y;
-
-      if (right && b._relative) {
-        x2 += b.x;
-        y2 += b.y;
-      }
-
-      if (left && a._relative) {
-        x3 += a.x;
-        y3 += a.y;
-      }
-
-      x = _.getPointOnCubicBezier(t, x1, x2, x3, x4);
-      y = _.getPointOnCubicBezier(t, y1, y2, y3, y4);
-
-      if (is.Object(obj)) {
-        obj.x = x;
-        obj.y = y;
-        return obj;
-      }
-
-      return new Vector(x, y);
-
-    },
-
+    
     /**
      * Based on closed / curved and sorting of vertices plot where all points
      * should be and where the respective handles should be too.
      */
-    plot: function() {
+    plot() {
 
       if (this.curved) {
         _.getCurveFromPoints(this._vertices, this.closed);
@@ -520,74 +405,13 @@ class Path extends Shape {
 
       return this;
 
-    },
+    }
 
-    subdivide: function(limit) {
+    subdivide(limit) {
       //TODO: DRYness (function below)
       this._update();
 
-      var last = this.vertices.length - 1;
-      var b = this.vertices[last];
-      var closed = this._closed || this.vertices[last]._command === Commands.close;
-      var points = [];
-      _.each(this.vertices, function(a, i) {
-
-        if (i <= 0 && !closed) {
-          b = a;
-          return;
-        }
-
-        if (a.command === Commands.move) {
-          points.push(new Anchor(b.x, b.y));
-          if (i > 0) {
-            points[points.length - 1].command = Commands.line;
-          }
-          b = a;
-          return;
-        }
-
-        var verts = getSubdivisions(a, b, limit);
-        points = points.concat(verts);
-
-        // Assign commands to all the verts
-        _.each(verts, function(v, i) {
-          if (i <= 0 && b.command === Commands.move) {
-            v.command = Commands.move;
-          } else {
-            v.command = Commands.line;
-          }
-        });
-
-        if (i >= last) {
-
-          // TODO: Add check if the two vectors in question are the same values.
-          if (this._closed && this._automatic) {
-
-            b = a;
-
-            verts = getSubdivisions(a, b, limit);
-            points = points.concat(verts);
-
-            // Assign commands to all the verts
-            _.each(verts, function(v, i) {
-              if (i <= 0 && b.command === Commands.move) {
-                v.command = Commands.move;
-              } else {
-                v.command = Commands.line;
-              }
-            });
-
-          } else if (closed) {
-            points.push(new Anchor(a.x, a.y));
-          }
-
-          points[points.length - 1].command = closed ? Commands.close : Commands.line;
-
-        }
-
-        b = a;
-
-      }, this);
+      subdivideTo(limit, pth);
 
       this._automatic = false;
       this._curved = false;
@@ -595,9 +419,9 @@ class Path extends Shape {
 
       return this;
 
-    },
+    }
 
-    _updateLength: function(limit) {
+    _updateLength(limit) {
       //TODO: DRYness (function above)
       this._update();
 
@@ -618,14 +442,14 @@ class Path extends Shape {
           return;
         }
 
-        this._lengths[i] = getCurveLength(a, b, limit);
+        this._lengths[i] = getCurveLengthAB(a, b, limit);
         sum += this._lengths[i];
 
         if (i >= last && closed) {
 
           b = a;
 
-          this._lengths[i + 1] = getCurveLength(a, b, limit);
+          this._lengths[i + 1] = getCurveLengthAB(a, b, limit);
           sum += this._lengths[i + 1];
 
         }
@@ -638,9 +462,9 @@ class Path extends Shape {
 
       return this;
 
-    },
+    }
 
-    _update: function() {
+    _update() {
 
       if (this._flagVertices) {
 
@@ -667,9 +491,9 @@ class Path extends Shape {
 
       return this;
 
-    },
+    }
 
-    flagReset: function() {
+    flagReset() {
 
       this._flagVertices =  this._flagFill =  this._flagStroke =
          this._flagLinewidth = this._flagOpacity = this._flagVisible =
@@ -680,78 +504,22 @@ class Path extends Shape {
 
       return this;
 
-    }
+    }  
+}
+Path.Properties = PROPS;
 
-  });
+Object.defineProperty(Path.prototype, 'closed', {enumerable: true});
+Object.defineProperty(Path.prototype, 'curved', {enumerable: true});
+Object.defineProperty(Path.prototype, 'automatic', {enumerable: true});
+Object.defineProperty(Path.prototype, 'beginning', {enumerable: true});
+Object.defineProperty(Path.prototype, 'ending', {enumerable: true});
+Object.defineProperty(Path.prototype, 'vertices', {enumerable: true});
+Object.defineProperty(Path.prototype, 'clip', {enumerable: true});
 
-  Path.MakeObservable(Path.prototype);
+_.defineFlaggedAccessors(Path.prototype, Path.Properties.slice(0, 8));
 
-  /**
-   * Utility functions
-   */
-
-  function getCurveLength(a, b, limit) {
-    // TODO: DRYness
-    var x1, x2, x3, x4, y1, y2, y3, y4;
-
-    var right = b.controls && b.controls.right;
-    var left = a.controls && a.controls.left;
-
-    x1 = b.x;
-    y1 = b.y;
-    x2 = (right || b).x;
-    y2 = (right || b).y;
-    x3 = (left || a).x;
-    y3 = (left || a).y;
-    x4 = a.x;
-    y4 = a.y;
-
-    if (right && b._relative) {
-      x2 += b.x;
-      y2 += b.y;
-    }
-
-    if (left && a._relative) {
-      x3 += a.x;
-      y3 += a.y;
-    }
-
-    return _.getCurveLength(x1, y1, x2, y2, x3, y3, x4, y4, limit);
-
-  }
-
-  function getSubdivisions(a, b, limit) {
-    var {subdivide} = curve;
-    // TODO: DRYness
-    var x1, x2, x3, x4, y1, y2, y3, y4;
-
-    var right = b.controls && b.controls.right;
-    var left = a.controls && a.controls.left;
-
-    x1 = b.x;
-    y1 = b.y;
-    x2 = (right || b).x;
-    y2 = (right || b).y;
-    x3 = (left || a).x;
-    y3 = (left || a).y;
-    x4 = a.x;
-    y4 = a.y;
-
-    if (right && b._relative) {
-      x2 += b.x;
-      y2 += b.y;
-    }
-
-    if (left && a._relative) {
-      x3 += a.x;
-      y3 += a.y;
-    }
-
-    return subdivide(x1, y1, x2, y2, x3, y3, x4, y4, limit).map((d) => {
-      return new Anchor(d);
-    });
-
-  }
+Object.assign(Path.prototype, FLAG_DEFAULTS);
+Object.assign(Path.prototype, PROP_DEFAULTS);
 
 export default Path;
 

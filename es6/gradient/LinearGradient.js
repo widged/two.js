@@ -4,6 +4,7 @@ import EventTypes    from '../constant/EventTypes';
 import Vector    from '../struct/Vector';
 import Gradient  from '../shape/Gradient';
 
+var {copyKeys} = _;
 var {isNumber} = is;
 
 class LinearGradient extends Gradient {
@@ -47,9 +48,7 @@ class LinearGradient extends Gradient {
     var clone = new LinearGradient(this.left._x, this.left._y,
       this.right._x, this.right._y, stops);
 
-    _.each(Gradient.Properties, function(k) {
-      clone[k] = this[k];
-    }, this);
+    copyKeys(Gradient.Properties, this, clone);
 
     parent.add(clone);
 
@@ -81,16 +80,8 @@ class LinearGradient extends Gradient {
 
 LinearGradient.Stop = Gradient.Stop;
 
-LinearGradient.MakeObservable = function(object) {
-    Gradient.MakeObservable(object);
-}
-
 LinearGradient.FlagEndPoints = function() {
   this._flagEndPoints = true;
 }
-
-
-
-LinearGradient.MakeObservable(LinearGradient.prototype);
 
 export default LinearGradient;

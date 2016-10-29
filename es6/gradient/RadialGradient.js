@@ -4,7 +4,11 @@ import EventTypes    from '../constant/EventTypes';
 import Vector    from '../struct/Vector';
 import Gradient  from '../shape/Gradient';
 
+var {copyKeys} = _;
+
 var {isNumber} = is;
+
+const PROPS = [ 'radius' ];
 
 class RadialGradient extends Gradient {
 
@@ -58,9 +62,7 @@ class RadialGradient extends Gradient {
     var clone = new RadialGradient(this.center._x, this.center._y,
         this._radius, stops, this.focal._x, this.focal._y);
 
-    _.each(Gradient.Properties.concat(RadialGradient.Properties), function(k) {
-      clone[k] = this[k];
-    }, this);
+    copyKeys(PROPS, this, clone);
 
     parent.add(clone);
 
@@ -72,9 +74,7 @@ class RadialGradient extends Gradient {
 
     var result = Gradient.prototype.toObject.call(this);
 
-    _.each(RadialGradient.Properties, function(k) {
-      result[k] = this[k];
-    }, this);
+    copyKeys(PROPS, this, result);
 
     result.center = this.center.toObject();
     result.focal = this.focal.toObject();
@@ -97,14 +97,6 @@ class RadialGradient extends Gradient {
 
 RadialGradient.Stop = Gradient.Stop;
 
-RadialGradient.Properties = [ 'radius' ];
-
-RadialGradient.MakeObservable = function(object) {
-  Gradient.MakeObservable(object);
-  _.each(RadialGradient.Properties, _.defineProperty, object);
-}
-
-
-RadialGradient.MakeObservable(RadialGradient.prototype);
+_.defineFlaggedAccessors(RadialGradient.prototype, PROPS);
 
 export default RadialGradient;

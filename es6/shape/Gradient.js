@@ -4,6 +4,11 @@ import Stop      from '../gradient/Stop';
 import Shape     from './Shape';
 import Collection  from '../struct/Collection';
 
+var {copyKeys} = _;
+
+const PROPS = [ 'spread' ];
+
+
 class Gradient extends Shape {
 
   constructor(stops) {
@@ -11,6 +16,21 @@ class Gradient extends Shape {
     this._renderer.type = 'gradient';
     this.spread = 'pad';
     this.stops = stops;
+  }
+
+  get stops() {
+    return this._stops;
+  }
+
+  set stops(stops) {
+    var updateStops = _.bind(Gradient.FlagStops, this);
+    // Remove previous listeners
+    if (this._stops) {
+      this._stops.off();
+    }
+    // Create new Collection with copy of Stops
+    this._stops = new Collection((stops || []).slice(0));
+    // :CHANGE: bindStops removed as Stop never dispaches a change event. 
   }
 
   clone(parent) {
@@ -22,11 +42,7 @@ class Gradient extends Shape {
     });
 
     var clone = new Gradient(stops);
-
-    _.each(Gradient.Properties, function(k) {
-      clone[k] = this[k];
-    }, this);
-
+    copyKeys(PROPS, this, clone);
     clone.translation.copy(this.translation);
     clone.rotation = this.rotation;
     clone.scale = this.scale;
@@ -45,10 +61,7 @@ class Gradient extends Shape {
       })
     };
 
-    _.each(Gradient.Properties, function(k) {
-      result[k] = this[k];
-    }, this);
-
+    copyKeys(PROPS, this, result);
     return result;
 
   }
@@ -67,49 +80,20 @@ class Gradient extends Shape {
 
 
 Gradient.Stop = Stop;
-
-Gradient.Properties = [ 'spread' ];
-
-Gradient.MakeObservable = function(object) {
-
-  _.each(Gradient.Properties, _.defineProperty, object);
-
-  Object.defineProperty(object, 'stops', {
-
-    enumerable: true,
-
-    get() {
-      return this._stops;
-    },
-
-    set(stops) {
-
-      var updateStops = _.bind(Gradient.FlagStops, this);
-
-      // Remove previous listeners
-      if (this._stops) {
-        this._stops.off();
-      }
-
-      // Create new Collection with copy of Stops
-      this._stops = new Collection((stops || []).slice(0));
-
-      // :CHANGE: bindStops removed as Stop never dispaches a change event. 
+Gradient.Properties = PROPS;
 
 
-    }
+Object.defineProperty(Gradient.prototype, 'stops', {enumerable: true});
 
-  });
-
-};
 
 Gradient.FlagStops = function() {
   this._flagStops = true;
 }
 
-_.extend(Gradient.prototype, Shape.prototype);
-  
 
-  Gradient.MakeObservable(Gradient.prototype);
+_.defineFlaggedAccessors(Gradient.prototype, PROPS);
+
+
+
 
 export default Gradient;
