@@ -1,4 +1,4 @@
-import EventEmitter   from '../util/EventEmitter.js';
+import EventEmitter   from '../util/EventEmitter';
 import EventTypes   from '../constant/EventTypes';
 
 class EventEmitter2 {

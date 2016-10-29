@@ -167,4 +167,24 @@ _.map = function(obj, iteratee, context) {
   return result;
 };
 
+
+_.defineProperty = function(property) {
+
+  var object = this;
+  var secret = '_' + property;
+  var flag = '_flag' + property.charAt(0).toUpperCase() + property.slice(1);
+
+  Object.defineProperty(object, property, {
+    enumerable: true,
+    get() {
+      return this[secret];
+    },
+    set(v) {
+      this[secret] = v;
+      this[flag] = true;
+    }
+  });
+
+} 
+
 export default _;

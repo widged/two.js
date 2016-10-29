@@ -1,16 +1,33 @@
 import _  from '../util/common';
 import EventTypes   from '../constant/EventTypes';
-import EventsDecorator   from '../util/emitter-decorator.js';
 import Identifier from '../constant/Identifier';
 import Matrix from '../struct/Matrix';
 import Vector from '../struct/Vector';
-import UniqueIds from '../util/UniqueIds';
+import UidGenerator from '../util/uid-generator';
 
-var uniqueId = UniqueIds();
+var uniqueId = UidGenerator();
+
+// Flags
+const FLAGS = {
+  _flagMatrix: true,
+  // _flagMask: false,
+  // _flagClip: false,
+}
+
+const PROPS = {
+  // Underlying Properties
+  _rotation: 0,
+  _scale: 1,
+  // _mask: null,
+  // _clip: false,
+}
 
 class Shape {
 
   constructor() {
+
+    Object.keys(FLAGS).forEach((k) => { this[k] = FLAGS[k] });
+    Object.keys(PROPS).forEach((k) => { this[k] = PROPS[k] });
 
     // Private object for renderer specific variables.
     this._renderer = {};
@@ -23,74 +40,36 @@ class Shape {
 
     this._matrix = new Matrix();
 
+    var flagMatrix = () => { this._flagMatrix = true; }
     this.translation = new Vector();
-    this.translation.on(EventTypes.change, _.bind(Shape.FlagMatrix, this));
+    this.translation.on(EventTypes.change, flagMatrix);
     this.rotation = 0;
     this.scale = 1;
 
   }
-}
 
-_.extend(Shape, EventsDecorator);
-
-_.extend(Shape, {
-
-  FlagMatrix: function() {
-    this._flagMatrix = true;
-  },
-
-  MakeObservable: function(object) {
-
-    Object.defineProperty(object, 'rotation', {
-      enumerable: true,
-      get: function() {
-        return this._rotation;
-      },
-      set: function(v) {
-        this._rotation = v;
-        this._flagMatrix = true;
-      }
-    });
-
-    Object.defineProperty(object, 'scale', {
-      enumerable: true,
-      get: function() {
-        return this._scale;
-      },
-      set: function(v) {
-        this._scale = v;
-        this._flagMatrix = true;
-        this._flagScale = true;
-      }
-    });
-
+  get rotation() {
+    return this._rotation;
   }
+  set rotation(v) {
+    this._rotation = v;
+    this._flagMatrix = true;
+  }
+  get scale() {
+    return this._scale;
+  }
+  set scale(v) {
+    this._scale = v;
+    this._flagMatrix = true;
+    this._flagScale = true;
+  }  
 
-});
-
-_.extend(Shape.prototype, {
-
-  // Flags
-
-  _flagMatrix: true,
-
-  // _flagMask: false,
-  // _flagClip: false,
-
-  // Underlying Properties
-
-  _rotation: 0,
-  _scale: 1,
-
-  // _mask: null,
-  // _clip: false,
-
-  addTo: function(group) {
+  addTo(group) {
     group.add(this);
     return this;
-  },
+  }
 
-  clone: function() {
+  clone() {
     var clone = new Shape();
     clone.translation.copy(this.translation);
     clone.rotation = this.rotation;
@@ -99,13 +78,13 @@ _.extend(Shape.prototype, {
       clone[k] = this[k];
     }, this);
     return clone._update();
-  },
+  }  
 
   /**
    * To be called before render that calculates and collates all information
    * to be as up-to-date as possible for the render. Called once a frame.
    */
-  _update: function(deep) {
+  _update(deep) {
 
     if (!this._matrix.manual && this._flagMatrix) {
       this._matrix
@@ -125,19 +104,16 @@ _.extend(Shape.prototype, {
 
     return this;
 
-  },
-
-  flagReset: function() {
-
-    this._flagMatrix = this._flagScale = false;
-
-    return this;
-
   }
 
-});
+  flagReset() {
+    this._flagMatrix = this._flagScale = false;
+    return this;
+  }  
+}
 
-Shape.MakeObservable(Shape.prototype);
+Object.defineProperty(Shape.prototype, 'rotation', {enumerable: true});
+Object.defineProperty(Shape.prototype, 'scale', {enumerable: true});
 
 export default Shape;
 

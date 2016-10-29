@@ -1,5 +1,5 @@
 import _ from '../util/common';
-import Emitter    from '../util/EventEmitter2.js';
+import Emitter    from '../util/EventEmitter2';
 import EventTypes from '../constant/EventTypes';
 
 /**

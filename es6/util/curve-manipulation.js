@@ -2,7 +2,7 @@ import Commands from '../constant/CommandTypes';
 import Resolution from '../constant/Resolution';
 import _ from './common';
 import is from './is';
-import MathExtras   from './math-extras.js';
+import MathExtras   from './math-extras';
 import Vector from '../struct/Vector';
 import Matrix from '../struct/Matrix';
 import Anchor from '../Anchor';
@@ -111,14 +111,15 @@ FN.deltaTransformPoint = (matrix, x, y) => {
  * https://gist.github.com/2052247
  */
 FN.decomposeMatrix = (matrix) => {
+  var {deltaTransformPoint} = FN;
 
   var PI = Math.PI;
 
   var atan2 = Math.atan2, sqrt = Math.sqrt;
 
   // calculate delta transform point
-  var px = Utils.deltaTransformPoint(matrix, 0, 1);
-  var py = Utils.deltaTransformPoint(matrix, 1, 0);
+  var px = deltaTransformPoint(matrix, 0, 1);
+  var py = deltaTransformPoint(matrix, 1, 0);
 
   // calculate skew
   var skewX = ((180 / PI) * Math.atan2(px.y, px.x) - 90);

@@ -49,8 +49,6 @@ _.extend(Text, {
 
   MakeObservable: function(object) {
 
-    Shape.MakeObservable(object);
-
     _.each(Text.Properties, _.defineProperty, object);
 
     Object.defineProperty(object, 'clip', {

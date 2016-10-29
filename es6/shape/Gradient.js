@@ -72,8 +72,6 @@ Gradient.Properties = [ 'spread' ];
 
 Gradient.MakeObservable = function(object) {
 
-  Shape.MakeObservable(object);
-
   _.each(Gradient.Properties, _.defineProperty, object);
 
   Object.defineProperty(object, 'stops', {

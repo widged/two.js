@@ -40,12 +40,13 @@ class Group extends Shape {
 
   constructor() {
     super(true);
+    Object.keys(FLAGS).forEach((k) => { this[k] = FLAGS[k] });
+    Object.keys(PROPS).forEach((k) => { this[k] = PROPS[k] });
+
     this._renderer.type = 'group';
     this.additions = [];
     this.subtractions = [];
     this.children = arguments;
-    Object.keys(FLAGS).forEach((k) => { this[k] = FLAGS[k] });
-    Object.keys(PROPS).forEach((k) => { this[k] = PROPS[k] });
   }
 
   /**
@@ -424,7 +425,6 @@ Group.MakeObservable =function(object) {
     properties.splice(oi, 1);
   }
 
-  Shape.MakeObservable(object);
   Group.MakeGetterSetters(object, properties);
 
   Object.defineProperty(Group.prototype, 'children', {enumerable: true});

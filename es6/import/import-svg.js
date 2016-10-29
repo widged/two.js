@@ -141,7 +141,7 @@ var applySvgAttributes = function(node, elem) {
 var read = {
 
   svg: function() {
-    return Utils.read.g.apply(this, arguments);
+    return read.g.apply(this, arguments);
   },
 
   g: function(node) {
@@ -158,8 +158,8 @@ var read = {
 
       var tagName = tag.replace(/svg\:/ig, '').toLowerCase();
 
-      if (tagName in Utils.read) {
-        var o = Utils.read[tagName].call(group, n);
+      if (tagName in read) {
+        var o = read[tagName].call(group, n);
         group.add(o);
       }
     }
@@ -186,7 +186,7 @@ var read = {
   },
 
   polyline: function(node) {
-    return Utils.read.polygon.call(this, node, true);
+    return read.polygon.call(this, node, true);
   },
 
   path: function(node) {

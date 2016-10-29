@@ -31,7 +31,6 @@ var RendrererTypes = require('./constant/RendererTypes').default;
 var is     = require('./util/is').default;
 var _     = require('./util/common').default;
 var EventDecorators = require('./util/emitter-decorator').default;
-var Utils = require('./utils').default;
 var dom   = require('./platform/dom').default;
 var perf  = require('./platform/Performance').default;
 var Anchor = require('./Anchor').default;
@@ -52,6 +51,16 @@ var ticker = dom.getRequestAnimationFrame(() => {
     if (t.playing) { t.update(); }
   }
 });
+
+/**
+ * Properly defer play calling until after all objects
+ * have been updated with their newest styles.
+ */
+var setPlaying = function(b) {
+  this.playing = !!b;
+  return this;
+}
+
 
 /**
  * @class
@@ -89,13 +98,13 @@ var Two = function(options) {
 
 
   var renderers = {};
-  renderers[RendrererTypes.webgl]  = './renderer/Webgl';
-  renderers[RendrererTypes.canvas] = './renderer/Canvas';
-  renderers[RendrererTypes.svg]    = './renderer/Svg';
+  renderers[RendrererTypes.webgl]  = './renderer-webgl/Renderer';
+  renderers[RendrererTypes.canvas] = './renderer-canvas/Renderer';
+  renderers[RendrererTypes.svg]    = './renderer-svg/Renderer';
   var Renderer = require(renderers[this.type]).default;
   
   this.renderer = new Renderer(this);
-  Utils.setPlaying.call(this, params.autostart);
+  setPlaying.call(this, params.autostart);
   this.frameCount = 0;
 
   if (params.fullscreen) {
@@ -141,7 +150,7 @@ Two.Version = 'v0.7.0',
 _.extend(Two.prototype, EventDecorators, {
 
   appendTo: function(elem) {
-
+    console.log(this.renderer)
     elem.appendChild(this.renderer.domElement);
     return this;
 
@@ -149,7 +158,7 @@ _.extend(Two.prototype, EventDecorators, {
 
   play: function() {
 
-    Utils.setPlaying.call(this, true);
+    setPlaying.call(this, true);
     return this.trigger(EventTypes.play);
 
   },
@@ -369,14 +378,15 @@ _.extend(Two.prototype, EventDecorators, {
    *                                    append all contents directly
    */
   interpret: function(svgNode, shallow) {
+    var read = require('./import/import-svg');
 
     var tag = svgNode.tagName.toLowerCase();
 
-    if (!(tag in Utils.read)) {
+    if (!(tag in read)) {
       return null;
     }
 
-    var node = Utils.read[tag].call(this, svgNode);
+    var node = read[tag].call(this, svgNode);
 
     var shape;
     if (shallow && node instanceof Group) {
@@ -401,7 +411,7 @@ _.extend(Two.prototype, EventDecorators, {
     if (/.*\.svg/ig.test(text)) {
       var xhr = require('./platform/xhr').default;
 
-      Utils.xhr(text, _.bind(function(data) {
+      xhr(text, _.bind(function(data) {
 
         dom.temp.innerHTML = data;
         for (i = 0; i < dom.temp.children.length; i++) {
@@ -445,5 +455,43 @@ function fitToWindow() {
 
 }
 
+
+// Not in use
+/**
+     * Release an arbitrary class' events from the two.js corpus and recurse
+     * through its children and or vertices.
+     */
+    /*
+    var release = (obj) => {
+
+      if (!is.Object(obj)) {
+        return;
+      }
+
+      if (isFunction(obj.unbind)) {
+        obj.unbind();
+      }
+
+      if (obj.vertices) {
+        if (isFunction(obj.vertices.unbind)) {
+          obj.vertices.unbind();
+        }
+        _.each(obj.vertices, function(v) {
+          if (isFunction(v.unbind)) {
+            v.unbind();
+          }
+        });
+      }
+
+      if (obj.children) {
+        _.each(obj.children, function(obj) {
+          FN.release(obj);
+        });
+      }
+
+    }
+
+
+    */
 
 export default Two;

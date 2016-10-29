@@ -4,7 +4,7 @@ import _  from '../util/common';
 import is  from '../util/is';
 import Collection  from '../struct/Collection';
 import Vector from '../struct/Vector';
-import curveFN  from '../util/curve-manipulation.js';
+import curveFN  from '../util/curve-manipulation';
 import Anchor from '../Anchor';
 import Shape from './Shape';
 
@@ -84,8 +84,6 @@ class Path extends Shape {
     },
 
     MakeObservable: function(object) {
-
-      Shape.MakeObservable(object);
 
       // Only the first 8 properties are flagged like this. The subsequent
       // properties behave differently and need to be hand written.
