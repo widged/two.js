@@ -6,6 +6,7 @@ import is  from '../util/is';
 import Path  from './Path';
 import Shape  from '../Shape';
 import shapeFN    from '../shape-fn';
+import groupFN  from './group-fn';
 import Children  from '../ChildrenCollection';
 
 var {isNumber, isArray} = is;
@@ -13,33 +14,36 @@ var {exclude}  = _;
 
 // Flags
 // http://en.wikipedia.org/wiki/Flag
-const FLAG_DEFAULTS = {
-  _flag_additions: false,
-  _flag_subtractions: false,
-  _flag_order: false,
-  _flag_opacity: true,
-  _flag_mask: false,
-
-};
+var FLAG = {};
+FLAG.additions = false;
+FLAG.subtractions = false;
+FLAG.order = false;
+FLAG.opacity = true;
+FLAG.mask = false;
 
 // Underlying Properties
+var default_style = {
+  fill: '#fff',
+  stroke: '#000',
+  linewidth: 1.0,
+  opacity: 1.0,
+  visible: true,
+  cap: 'round',
+  join: 'round',
+  miter: 4,
+};
+
 const PROP_DEFAULTS = {
-  _fill: '#fff',
-  _stroke: '#000',
-  _linewidth: 1.0,
-  _opacity: 1.0,
-  _visible: true,
-  _cap: 'round',
-  _join: 'round',
-  _miter: 4,
-  _closed: true,
-  _curved: false,
-  _automatic: true,
-  _beginning: 0,
-  _ending: 1.0,
+  closed: true,
+  curved: false,
+  automatic: true,
+  beginning: 0,
+  ending: 1.0,
   _mask: null
 };
 
+
+var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
 
 
 class Group extends Shape {
@@ -72,6 +76,7 @@ class Group extends Shape {
     return this._children;
   }
   set children(children) {
+
     if (this._children) { this._children.dispatcher.off(); }
     this._children = new Children(children);
     this._children.dispatcher.on(CollectionEvent.insert, this.bound.insertChildren);
@@ -90,20 +95,19 @@ class Group extends Shape {
     }
   }
 
-
   // --------------------
   // Main
   // --------------------
 
   insertChildren(children) {
     for (var i = 0; i < children.length; i++) {
-      replaceParent(this, children[i], this);
+      groupFN.replaceParent(this, children[i], this);
     }
   }
 
   removeChildren(children) {
     for (var i = 0; i < children.length; i++) {
-      replaceParent(this, children[i]);
+      groupFN.replaceParent(this, children[i]);
     }
   }
 
@@ -119,7 +123,7 @@ class Group extends Shape {
   corner() {
 
     var rect = this.getBoundingClientRect(true),
-     corner = { x: rect.left, y: rect.top };
+        corner = { x: rect.left, y: rect.top };
 
     this.children.forEach(function(child) {
       child.translation.subSelf(corner);
@@ -133,10 +137,11 @@ class Group extends Shape {
    * Anchors all children around the center of the group,
    * effectively placing the shape around the unit circle.
    */
+   // :TODO: :WARN: remove this or at the very least, make it optional,
+   // as it overwrites the user settings.
   center() {
 
     var rect = this.getBoundingClientRect(true);
-
     rect.centroid = {
       x: rect.left + rect.width / 2,
       y: rect.top + rect.height / 2
@@ -157,19 +162,10 @@ class Group extends Shape {
    * Returns null if none found.
    */
   getById (id) {
-    var search = function (node, id) {
-      if (node.id === id) {
-        return node;
-      } else if (node.children) {
-        var i = node.children.length;
-        while (i--) {
-          var found = search(node.children[i], id);
-          if (found) return found;
-        }
-      }
-
-    };
-    return search(this, id) || null;
+    return groupFN.findFirstMember(
+      this, groupFN.nodeChildren,
+      (node) => { return node.id === id; }
+    );
   }
 
   /**
@@ -177,18 +173,10 @@ class Group extends Shape {
    * Empty array if none found.
    */
   getByClassName (cl) {
-    var found = [];
-    var search = function (node, cl) {
-      if (node.classList.indexOf(cl) != -1) {
-        found.push(node);
-      } else if (node.children) {
-        node.children.forEach(function (child) {
-          search(child, cl);
-        });
-      }
-      return found;
-    };
-    return search(this, cl);
+    return groupFN.findAllMembers(
+      this, groupFN.nodeChildren,
+      (node) => { return node.classList.indexOf(cl) !== -1; }
+    );
   }
 
   /**
@@ -197,18 +185,10 @@ class Group extends Shape {
    * Returns an empty array if none found.
    */
   getByType(type) {
-    var found = [];
-    var search = function (node, type) {
-      for (var id in node.children) {
-        if (node.children[id] instanceof type) {
-          found.push(node.children[id]);
-        } else if (node.children[id] instanceof Group) {
-          search(node.children[id], type);
-        }
-      }
-      return found;
-    };
-    return search(this, type);
+    return groupFN.findAllMembers(
+      this, groupFN.nodeChildren,
+      (node) => { return node instanceof type; }
+    );
   }
 
   /**
@@ -269,51 +249,10 @@ class Group extends Shape {
 
   }
 
-  /**
-   * Return an object with top, left, right, bottom, width, and height
-   * parameters of the group.
-   */
   getBoundingClientRect(shallow) {
-    var rect;
-    var min = Math.min, max = Math.max;
-
-
     // TODO: Update this to not __always__ update. Just when it needs to.
     this._update(true);
-
-    // Variables need to be defined here, because of nested nature of groups.
-    var left = Infinity, right = -Infinity,
-        top = Infinity, bottom = -Infinity;
-
-    this.children.forEach(function(child) {
-
-      if (/(linear-gradient|radial-gradient|gradient)/.test(child._renderer.type)) {
-        return;
-      }
-
-      rect = child.getBoundingClientRect(shallow);
-
-      if (!isNumber(rect.top)   || !isNumber(rect.left)   ||
-          !isNumber(rect.right) || !isNumber(rect.bottom)) {
-        return;
-      }
-
-      top = min(rect.top, top);
-      left = min(rect.left, left);
-      right = max(rect.right, right);
-      bottom = max(rect.bottom, bottom);
-
-    }, this);
-
-    return {
-      top: top,
-      left: left,
-      right: right,
-      bottom: bottom,
-      width: right - left,
-      height: bottom - top
-    };
-
+    return groupFN.getEnclosingRect({shallow, children: this.children});
   }
 
   /**
@@ -406,69 +345,16 @@ class Group extends Shape {
 
 Group.Children = Children;
 
-var props = Object.keys(PROP_DEFAULTS);
-shapeFN.defineStyleAccessors(Group.prototype, props.filter(exclude(['opacity']))) ;
-shapeFN.defineFlaggedAccessors(Group.prototype, ['opacity'], false) ;
-Object.defineProperty(Group.prototype, 'children', {enumerable: true});
-Object.defineProperty(Group.prototype, 'mask',     {enumerable: true});
-Object.defineProperty(Group.prototype, 'opacity', {enumerable: true});
-Object.keys(FLAG_DEFAULTS).forEach((k) => { Group.prototype[k] = FLAG_DEFAULTS[k]; });
-Object.keys(PROP_DEFAULTS).forEach((k) => { Group.prototype[k] = PROP_DEFAULTS[k]; });
 
-/**
- * Helper function used to sync parent-child relationship within the
- * `Group.children` object.
- *
- * Set the parent of the passed object to another object
- * and updates parent-child relationships
- * Calling with one arguments will simply remove the parenting
- */
-var replaceParent = (that, child, newParent) => {
+var props = Object.keys(PROP_DEFAULTS).concat(Object.keys(default_style));
+// style
+shapeFN.defineSecretAccessors(Group.prototype, props.filter(exclude(['opacity'])), {});
+// flags
+shapeFN.defineSecretAccessors(Group.prototype, ['opacity'], {onlyWhenChanged: true, flags: FLAG }) ;
+// backup values
+Object.keys(PROP_DEFAULTS).forEach((k) => { Group.prototype['_'+k] = PROP_DEFAULTS[k]; });
+Object.keys(default_style).forEach((k) => { Group.prototype['_'+k] = default_style[k]; });
 
-  var parent = child.parent;
-  var index;
 
-  if (parent === newParent) {
-    that.additions.push(child);
-    that._flag_additions = true;
-    return;
-  }
-
-  if (parent && parent.children.ids[child.id]) {
-
-    index = (Array.from(parent.children) || []).indexOf(child);
-    parent.children.splice(index, 1);
-
-    // If we're passing from one parent to another...
-    index = parent.additions.indexOf(child);
-
-    if (index >= 0) {
-      parent.additions.splice(index, 1);
-    } else {
-      parent.subtractions.push(child);
-      parent._flag_subtractions = true;
-    }
-  }
-
-  if (newParent) {
-    child.parent = newParent;
-    that.additions.push(child);
-    that._flag_additions = true;
-    return;
-  }
-
-  // If we're passing from one parent to another...
-  index = that.additions.indexOf(child);
-
-  if (index >= 0) {
-    that.additions.splice(index, 1);
-  } else {
-    that.subtractions.push(child);
-    that._flag_subtractions = true;
-  }
-
-  delete child.parent;
-
-};
 
 export default Group;

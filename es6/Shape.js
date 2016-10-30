@@ -11,11 +11,10 @@ var uniqueId = UidGenerator();
 var {copyKeys} = _;
 
 // Flags
-const FLAG_DEFAULTS = {
-  _flag_matrix: true,
-  // _flag_mask: false,
-  // _flag_clip: false,
-};
+const FLAG = {};
+FLAG.matrix = true;
+// mask = false;
+// clip = false;
 
 const PROP_DEFAULTS = {
   // Underlying Properties
@@ -138,10 +137,6 @@ class Shape {
 }
 Shape.Identifier = 'sh_';
 
-
-Object.defineProperty(Shape.prototype, 'rotation', {enumerable: true});
-Object.defineProperty(Shape.prototype, 'scale', {enumerable: true});
-Object.keys(FLAG_DEFAULTS).forEach((k) => { Shape.prototype[k] = FLAG_DEFAULTS[k]; });
 Object.keys(PROP_DEFAULTS).forEach((k) => { Shape.prototype[k] = PROP_DEFAULTS[k]; });
 
 export default Shape;

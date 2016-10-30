@@ -29,7 +29,6 @@ class Gradient extends Shape {
     return this._stops;
   }
 
-
   set stops(stops) {
     // :CHANGE: bindStops removed as Stop never dispaches a change event.
     // Create new Collection with copy of Stops
@@ -41,13 +40,9 @@ class Gradient extends Shape {
   // -----------------
 
   flagReset() {
-
     this._flag_spread = this._flag_stops = false;
-
     Shape.prototype.flagReset.call(this);
-
     return this;
-
   }
 
   // -----------------
@@ -78,9 +73,7 @@ class Gradient extends Shape {
 Gradient.Stop = Stop;
 Gradient.Properties = PROPS;
 
-Object.defineProperty(Gradient.prototype, 'stops', {enumerable: true});
-
-shapeFN.defineFlaggedAccessors(Gradient.prototype, PROPS);
+shapeFN.defineSecretAccessors(Gradient.prototype, PROPS, {});
 
 
 export default Gradient;

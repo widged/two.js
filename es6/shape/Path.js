@@ -33,7 +33,7 @@ var config = {
   flags : {
     flag_vertices: true,
     flag_length: true,
-    flag_cClip: false,
+    flag_clip: false,
   },
 
   props : {
@@ -429,21 +429,14 @@ class Path extends Shape {
   }
 }
 
-Object.defineProperty(Path.prototype, 'closed', {enumerable: true});
-Object.defineProperty(Path.prototype, 'curved', {enumerable: true});
-Object.defineProperty(Path.prototype, 'automatic', {enumerable: true});
-Object.defineProperty(Path.prototype, 'beginning', {enumerable: true});
-Object.defineProperty(Path.prototype, 'ending', {enumerable: true});
-Object.defineProperty(Path.prototype, 'vertices', {enumerable: true});
-Object.defineProperty(Path.prototype, 'clip', {enumerable: true});
 
-var asFlag = (txt) => { return '_flag'+ txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); };
-
-shapeFN.defineFlaggedAccessors(Path.prototype, Object.keys(default_style));
+// flags
+var asFlag = (txt) => { return '_flag_'+ txt; };
+shapeFN.defineSecretAccessors(Path.prototype, Object.keys(default_style), {flags: config.flags});
 Object.keys(default_style).forEach((k) => { Path.prototype[asFlag(k)] = true; });
 
-Object.keys(config.flags).forEach((k) => { Path.prototype['_'+k] = config.flags[k]; });
+// backup value
 Object.keys(default_style).forEach((k) => { Path.prototype['_'+k] = default_style[k]; });
-Object.keys(config.props).forEach((k) => { Path.prototype['_'+k] = config.props[k]; });
+Object.keys(config.props ).forEach((k) => { Path.prototype['_'+k] = config.props[k]; });
 
 export default Path;

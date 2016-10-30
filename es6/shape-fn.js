@@ -26,50 +26,27 @@ FN.toObject = (source, target, extraProps) => {
 
 
 
-FN.defineFlaggedAccessors = (object, properties, always = true) => {
+FN.defineSecretAccessors = (object, properties, {onlyWhenChanged, flags}) => {
   if(!properties) { return; }
   if (properties && !isArray(properties)) { properties = [properties]; }
 
-  var each =   function(property) {
+  var each =   (k) => {
+    var secret = '_' + k;
 
-    var secret = '_' + property;
-    var flag = '_flag_' + property;
-
-    Object.defineProperty(object, property, {
+    Object.defineProperty(object, k, {
       enumerable: true,
       get() {
         return this[secret];
       },
       set(v) {
-        if(always || v !== this[secret]) {
+        if(!onlyWhenChanged || v !== this[secret]) {
           this[secret] = v;
-          this[flag] = true;
+          if(flags) { this['_flag_' + k] = flags[k] || true; }
         }
 
       }
     });
 
-  };
-
-  properties.forEach(each);
-
-};
-
-FN.defineStyleAccessors = function(object, properties) {
-
-  if (!isArray(properties)) { properties = [properties]; }
-
-  var each = (k) => {
-    var secret = '_' + k;
-    Object.defineProperty(object, k, {
-      enumerable: true,
-      get: function() {
-        return this[secret];
-      },
-      set: function(v) {
-        this[secret] = v;
-      }
-    });
   };
 
   properties.forEach(each);

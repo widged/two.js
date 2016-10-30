@@ -13,47 +13,47 @@ var getComputedMatrix = _.getComputedMatrix;
 // Flags
 // http://en.wikipedia.org/wiki/Flag
 var FLAG_DEFAULTS = {
-  _flag_value: true,
-  _flag_family: true,
-  _flag_size: true,
-  _flag_leading: true,
-  _flag_alignment: true,
-  _flag_baseline: true,
-  _flag_style: true,
-  _flag_weight: true,
-  _flag_decoration: true,
+  value: true,
+  family: true,
+  size: true,
+  leading: true,
+  alignment: true,
+  baseline: true,
+  style: true,
+  weight: true,
+  decoration: true,
 
-  _flag_fill: true,
-  _flag_stroke: true,
-  _flag_linewidth: true,
-  _flag_opacity: true,
-  _flag_visible: true,
+  fill: true,
+  stroke: true,
+  linewidth: true,
+  opacity: true,
+  visible: true,
 
-  _flag_clip: false,
+  clip: false,
 };
 
 // Underlying Properties
 var PROP_DEFAULTS = {
-  _value: '',
-  _family: 'sans-serif',
-  _size: 13,
-  _leading: 17,
-  _alignment: 'center',
-  _baseline: 'middle',
-  _style: 'normal',
-  _weight: 500,
-  _decoration: 'none',
+  value: '',
+  family: 'sans-serif',
+  size: 13,
+  leading: 17,
+  alignment: 'center',
+  baseline: 'middle',
+  style: 'normal',
+  weight: 500,
+  decoration: 'none',
 
-  _fill: '#000',
-  _stroke: 'transparent',
-  _linewidth: 1,
-  _opacity: 1,
-  _visible: true,
+  fill: '#000',
+  stroke: 'transparent',
+  linewidth: 1,
+  opacity: 1,
+  visible: true,
 
-  _clip: false
+  clip: false
 };
 
-var PROPS = Object.keys(PROP_DEFAULTS).map((k) => { return k.replace(/^_/,''); });
+var PROPS = Object.keys(PROP_DEFAULTS);
 
 
 class Text extends Shape {
@@ -82,7 +82,6 @@ class Text extends Shape {
       return this;
     }
 
-    copyKeys(styles, this, PROPS);
 
   }
 
@@ -184,9 +183,7 @@ class Text extends Shape {
   }
 }
 
-shapeFN.defineFlaggedAccessors(Text.prototype, PROPS);
-Object.defineProperty(Text.prototype, 'clip', {enumerable: true});
-Object.keys(FLAG_DEFAULTS).forEach((k) => { Text.prototype[k] = FLAG_DEFAULTS[k]; });
-Object.keys(PROP_DEFAULTS).forEach((k) => { Text.prototype[k] = PROP_DEFAULTS[k]; });
+shapeFN.defineSecretAccessors(Text.prototype, PROPS, {flags: FLAG_DEFAULTS});
+Object.keys(PROP_DEFAULTS).forEach((k) => { Text.prototype['_'+k] = PROP_DEFAULTS[k]; });
 
 export default Text;

@@ -130,10 +130,8 @@ Anchor.AppendCurveProperties = (anchor) => {
     left: new Vector(0, 0),
     right: new Vector(0, 0)
   };
-}
+};
 
-Object.defineProperty(Anchor.prototype, 'command', {enumerable: true});
-Object.defineProperty(Anchor.prototype, 'relative', {enumerable: true});
 
 
 export default Anchor;

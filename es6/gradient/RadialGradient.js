@@ -88,6 +88,6 @@ class RadialGradient extends Gradient {
 
 RadialGradient.Stop = Gradient.Stop;
 
-shapeFN.defineFlaggedAccessors(RadialGradient.prototype, PROPS);
+shapeFN.defineSecretAccessors(RadialGradient.prototype, PROPS, {});
 
 export default RadialGradient;
