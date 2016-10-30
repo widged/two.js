@@ -58,7 +58,7 @@ var group = function(domElement) {
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and
   // applied once the object is visible again
-  if (this._opacity === 0 && !this._flagOpacity) {
+  if (this._opacity === 0 && !this._flag_opacity) {
     return this;
   }
 
@@ -70,7 +70,7 @@ var group = function(domElement) {
   }
 
   // _Update styles for the <g>
-  var flagMatrix = this._matrix.manual || this._flagMatrix;
+  var flagMatrix = this._matrix.manual || this._flag_matrix;
   var context = {
     domElement: domElement,
     elem: this._renderer.elem
@@ -85,19 +85,19 @@ var group = function(domElement) {
     renderShape(child, domElement);
   }
 
-  if (this._flagOpacity) {
+  if (this._flag_opacity) {
     this._renderer.elem.setAttribute('opacity', this._opacity);
   }
 
-  if (this._flagAdditions) {
+  if (this._flag_additions) {
     this.additions.forEach(appendChild, context);
   }
 
-  if (this._flagSubtractions) {
+  if (this._flag_subtractions) {
     this.subtractions.forEach(removeChild, context);
   }
 
-  if (this._flagOrder) {
+  if (this._flag_order) {
     this.children.forEach(orderChild, context);
   }
 
@@ -107,7 +107,7 @@ var group = function(domElement) {
    * https://code.google.com/p/chromium/issues/detail?id=370951
    */
 
-  // if (this._flagClip) {
+  // if (this._flag_clip) {
 
   //   clip = svg.getClip(this);
   //   elem = this._renderer.elem;
@@ -124,7 +124,7 @@ var group = function(domElement) {
 
   // }
 
-  if (this._flagMask) {
+  if (this._flag_mask) {
     if (this._mask) {
       this._renderer.elem.setAttribute('clip-path', 'url(#' + this._mask.id + ')');
     } else {

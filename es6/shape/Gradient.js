@@ -3,6 +3,7 @@
 import _  from '../util/common';
 import Stop      from '../gradient/Stop';
 import Shape     from '../Shape';
+import shapeFN    from '../shape-fn';
 import Collection  from '../struct/Collection';
 
 const PROPS = [ 'spread' ];
@@ -41,7 +42,7 @@ class Gradient extends Shape {
 
   flagReset() {
 
-    this._flagSpread = this._flagStops = false;
+    this._flag_spread = this._flag_stops = false;
 
     Shape.prototype.flagReset.call(this);
 
@@ -58,13 +59,13 @@ class Gradient extends Shape {
     var stops = _.map(this.stops, function(s) {
       return s.clone();
     });
-    var clone = Shape.clone(this, new Gradient(), PROPS.concat('stops'));
+    var clone = shapeFN.clone(this, new Gradient(), PROPS.concat('stops'));
     parent.add(clone);
     return clone;
   }
 
   toObject() {
-    var obj = Shape.toObject(this, {}, PROPS);
+    var obj = shapeFN.toObject(this, {}, PROPS);
     obj.stops = _.map(this.stops, function(s) {
         return s.toObject();
     });
@@ -79,7 +80,7 @@ Gradient.Properties = PROPS;
 
 Object.defineProperty(Gradient.prototype, 'stops', {enumerable: true});
 
-_.defineFlaggedAccessors(Gradient.prototype, PROPS);
+shapeFN.defineFlaggedAccessors(Gradient.prototype, PROPS);
 
 
 export default Gradient;

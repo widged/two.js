@@ -9,14 +9,14 @@ var linearGradient = function(domElement) {
 
   var changed = {};
 
-  if (this._flagEndPoints) {
+  if (this._flag_endPoints) {
     changed.x1 = this.left._x;
     changed.y1 = this.left._y;
     changed.x2 = this.right._x;
     changed.y2 = this.right._y;
   }
 
-  if (this._flagSpread) {
+  if (this._flag_spread) {
     changed.spreadMethod = this._spread;
   }
 
@@ -36,7 +36,7 @@ var linearGradient = function(domElement) {
 
   }
 
-  if (this._flagStops) {
+  if (this._flag_stops) {
     dom.removeChildNodes(this._renderer.elem);
 
     for (var i = 0; i < this.stops.length; i++) {
@@ -44,13 +44,13 @@ var linearGradient = function(domElement) {
       var stop = this.stops[i];
       var attrs = {};
 
-      if (stop._flagOffset) {
+      if (stop._flag_offset) {
         attrs.offset = 100 * stop._offset + '%';
       }
-      if (stop._flagColor) {
+      if (stop._flag_color) {
         attrs['stop-color'] = stop._color;
       }
-      if (stop._flagOpacity) {
+      if (stop._flag_opacity) {
         attrs['stop-opacity'] = stop._opacity;
       }
 

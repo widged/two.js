@@ -14,52 +14,52 @@ var text = function(domElement) {
 
   var changed = {};
 
-  var flagMatrix = this._matrix.manual || this._flagMatrix;
+  var flagMatrix = this._matrix.manual || this._flag_matrix;
 
   if (flagMatrix) {
     changed.transform = 'matrix(' + this._matrix.toString() + ')';
   }
 
-  if (this._flagFamily) {
+  if (this._flag_family) {
     changed['font-family'] = this._family;
   }
-  if (this._flagSize) {
+  if (this._flag_size) {
     changed['font-size'] = this._size;
   }
-  if (this._flagLeading) {
+  if (this._flag_leading) {
     changed['line-height'] = this._leading;
   }
-  if (this._flagAlignment) {
+  if (this._flag_alignment) {
     changed['text-anchor'] = ALIGNMENTS[this._alignment] || this._alignment;
   }
-  if (this._flagBaseline) {
+  if (this._flag_baseline) {
     changed['alignment-baseline'] = changed['dominant-baseline'] = this._baseline;
   }
-  if (this._flagStyle) {
+  if (this._flag_style) {
     changed['font-style'] = this._style;
   }
-  if (this._flagWeight) {
+  if (this._flag_weight) {
     changed['font-weight'] = this._weight;
   }
-  if (this._flagDecoration) {
+  if (this._flag_decoration) {
     changed['text-decoration'] = this._decoration;
   }
 
-  if (this._flagFill) {
+  if (this._flag_fill) {
     changed.fill = this._fill && this._fill.id
       ? 'url(#' + this._fill.id + ')' : this._fill;
   }
-  if (this._flagStroke) {
+  if (this._flag_stroke) {
     changed.stroke = this._stroke && this._stroke.id
       ? 'url(#' + this._stroke.id + ')' : this._stroke;
   }
-  if (this._flagLinewidth) {
+  if (this._flag_linewidth) {
     changed['stroke-width'] = this._linewidth;
   }
-  if (this._flagOpacity) {
+  if (this._flag_opacity) {
     changed.opacity = this._opacity;
   }
-  if (this._flagVisible) {
+  if (this._flag_visible) {
     changed.visibility = this._visible ? 'visible' : 'hidden';
   }
 
@@ -76,7 +76,7 @@ var text = function(domElement) {
 
   }
 
-  if (this._flagClip) {
+  if (this._flag_clip) {
 
     var clip = base.getClip(this);
     var elem = this._renderer.elem;
@@ -93,7 +93,7 @@ var text = function(domElement) {
 
   }
 
-  if (this._flagValue) {
+  if (this._flag_value) {
     this._renderer.elem.textContent = this._value;
   }
 

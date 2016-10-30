@@ -12,7 +12,7 @@ var linearGradient = {
 
     this._update();
 
-    if (!this._renderer.gradient || this._flagEndPoints || this._flagStops) {
+    if (!this._renderer.gradient || this._flag_endPoints || this._flag_stops) {
 
       this._renderer.gradient = ctx.createLinearGradient(
         this.left._x, this.left._y,

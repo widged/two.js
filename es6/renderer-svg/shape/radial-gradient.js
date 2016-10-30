@@ -9,20 +9,20 @@ var radialGradient = function(domElement) {
 
   var changed = {};
 
-  if (this._flagCenter) {
+  if (this._flag_center) {
     changed.cx = this.center._x;
     changed.cy = this.center._y;
   }
-  if (this._flagFocal) {
+  if (this._flag_focal) {
     changed.fx = this.focal._x;
     changed.fy = this.focal._y;
   }
 
-  if (this._flagRadius) {
+  if (this._flag_radius) {
     changed.r = this._radius;
   }
 
-  if (this._flagSpread) {
+  if (this._flag_spread) {
     changed.spreadMethod = this._spread;
   }
 
@@ -42,7 +42,7 @@ var radialGradient = function(domElement) {
 
   }
 
-  if (this._flagStops) {
+  if (this._flag_stops) {
 
     dom.removeChildNodes(this._renderer.elem);
 
@@ -52,13 +52,13 @@ var radialGradient = function(domElement) {
       var stop = this.stops[i];
       var attrs = {};
 
-      if (stop._flagOffset) {
+      if (stop._flag_offset) {
         attrs.offset = 100 * stop._offset + '%';
       }
-      if (stop._flagColor) {
+      if (stop._flag_color) {
         attrs['stop-color'] = stop._color;
       }
-      if (stop._flagOpacity) {
+      if (stop._flag_opacity) {
         attrs['stop-opacity'] = stop._opacity;
       }
 

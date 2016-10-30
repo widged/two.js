@@ -263,16 +263,16 @@ var path = {
     // Calculate what changed
 
     var parent = this.parent;
-    var flagParentMatrix = parent._matrix.manual || parent._flagMatrix;
-    var flagMatrix = this._matrix.manual || this._flagMatrix;
-    var flagTexture = this._flagVertices || this._flagFill
-      || (this._fill instanceof LinearGradient && (this._fill._flagSpread || this._fill._flagStops || this._fill._flagEndPoints))
-      || (this._fill instanceof RadialGradient && (this._fill._flagSpread || this._fill._flagStops || this._fill._flagRadius || this._fill._flagCenter || this._fill._flagFocal))
-      || (this._stroke instanceof LinearGradient && (this._stroke._flagSpread || this._stroke._flagStops || this._stroke._flagEndPoints))
-      || (this._stroke instanceof RadialGradient && (this._stroke._flagSpread || this._stroke._flagStops || this._stroke._flagRadius || this._stroke._flagCenter || this._stroke._flagFocal))
-      || this._flagStroke || this._flagLinewidth || this._flagOpacity
-      || parent._flagOpacity || this._flagVisible || this._flagCap
-      || this._flagJoin || this._flagMiter || this._flagScale
+    var flagParentMatrix = parent._matrix.manual || parent._flag_matrix;
+    var flagMatrix = this._matrix.manual || this._flag_matrix;
+    var flagTexture = this._flag_vertices || this._flag_fill
+      || (this._fill instanceof LinearGradient && (this._fill._flag_spread || this._fill._flag_stops || this._fill._flag_endPoints))
+      || (this._fill instanceof RadialGradient && (this._fill._flag_spread || this._fill._flag_stops || this._fill._flag_radius || this._fill._flag_center || this._fill._flag_focal))
+      || (this._stroke instanceof LinearGradient && (this._stroke._flag_spread || this._stroke._flag_stops || this._stroke._flag_endPoints))
+      || (this._stroke instanceof RadialGradient && (this._stroke._flag_spread || this._stroke._flag_stops || this._stroke._flag_radius || this._stroke._flag_center || this._stroke._flag_focal))
+      || this._flag_stroke || this._flag_linewidth || this._flag_opacity
+      || parent._flag_opacity || this._flag_visible || this._flag_cap
+      || this._flag_join || this._flag_miter || this._flag_scale
       || !this._renderer.texture;
 
     this._update();

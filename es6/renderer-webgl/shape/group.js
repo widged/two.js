@@ -27,8 +27,8 @@ var group = {
       this._update();
 
       var parent = this.parent;
-      var flagParentMatrix = (parent._matrix && parent._matrix.manual) || parent._flagMatrix;
-      var flagMatrix = this._matrix.manual || this._flagMatrix;
+      var flagParentMatrix = (parent._matrix && parent._matrix.manual) || parent._flag_matrix;
+      var flagMatrix = this._matrix.manual || this._flag_matrix;
 
       if (flagParentMatrix || flagMatrix) {
 
@@ -43,7 +43,7 @@ var group = {
         this._renderer.scale = this._scale * parent._renderer.scale;
 
         if (flagParentMatrix) {
-          this._flagMatrix = true;
+          this._flag_matrix = true;
         }
 
       }
@@ -64,12 +64,12 @@ var group = {
 
       }
 
-      this._flagOpacity = parent._flagOpacity || this._flagOpacity;
+      this._flag_opacity = parent._flag_opacity || this._flag_opacity;
 
       this._renderer.opacity = this._opacity
         * (parent && parent._renderer ? parent._renderer.opacity : 1);
 
-      if (this._flagSubtractions) {
+      if (this._flag_subtractions) {
         for (var i = 0; i < this.subtractions.length; i++) {
           removeChild(this.subtractions[i], gl);
         }

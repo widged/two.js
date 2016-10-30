@@ -5,15 +5,16 @@ import VectorEvent   from './constant/VectorEvent';
 import Matrix from './struct/Matrix';
 import Vector from './struct/Vector';
 import UidGenerator from './util/uid-generator';
+import shapeFN    from './shape-fn';
 
 var uniqueId = UidGenerator();
 var {copyKeys} = _;
 
 // Flags
 const FLAG_DEFAULTS = {
-  _flagMatrix: true,
-  // _flagMask: false,
-  // _flagClip: false,
+  _flag_matrix: true,
+  // _flag_mask: false,
+  // _flag_clip: false,
 };
 
 const PROP_DEFAULTS = {
@@ -45,7 +46,7 @@ class Shape {
 
     this._matrix = new Matrix();
 
-    var flagMatrix = () => { this._flagMatrix = true; }
+    var flagMatrix = () => { this._flag_matrix = true; }
     this.translation = new Vector();
     this.translation.dispatcher.on(VectorEvent.change, flagMatrix);
     this.rotation = 0;
@@ -62,15 +63,15 @@ class Shape {
   }
   set rotation(v) {
     this._rotation = v;
-    this._flagMatrix = true;
+    this._flag_matrix = true;
   }
   get scale() {
     return this._scale;
   }
   set scale(v) {
     this._scale = v;
-    this._flagMatrix = true;
-    this._flagScale = true;
+    this._flag_matrix = true;
+    this._flag_scale = true;
   }
 
   // -----------------
@@ -83,7 +84,7 @@ class Shape {
   }
 
   flagReset() {
-    this._flagMatrix = this._flagScale = false;
+    this._flag_matrix = this._flag_scale = false;
     return this;
   }
 
@@ -98,7 +99,7 @@ class Shape {
    */
   _update(deep) {
 
-    if (!this._matrix.manual && this._flagMatrix) {
+    if (!this._matrix.manual && this._flag_matrix) {
       this._matrix
         .identity()
         .translate(this.translation.x, this.translation.y)
@@ -126,32 +127,16 @@ class Shape {
 
   clone() {
     var clone = new Shape();
-    Shape.clone(clone, this);
+    shapeFN.clone(clone, this);
     return clone._update();
   }
 
   toObject() {
-    return Shape.toObject({}, this);
+    return shapeFN.toObject({}, this);
   }
 
 }
 Shape.Identifier = 'sh_';
-
-Shape.clone = (source, target, extraProps) => {
-  target.translation.copy(source.translation);
-  target.rotation = source.rotation;
-  target.scale = source.scale;
-  copyKeys(source, target, extraProps);
-  return target;
-};
-
-Shape.toObject = (source, target, extraProps) => {
-  target.translation = source.translation.toObject();
-  target.rotation = source.rotation;
-  target.scale = source.scale;
-  copyKeys(source, target, extraProps);
-  return target;
-};
 
 
 Object.defineProperty(Shape.prototype, 'rotation', {enumerable: true});

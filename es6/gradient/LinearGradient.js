@@ -36,7 +36,7 @@ class LinearGradient extends Gradient {
       this.right.y = y2;
     }
 
-   this._flagEndPoints = false;
+   this._flag_endPoints = false;
 
   }
 
@@ -73,7 +73,7 @@ class LinearGradient extends Gradient {
 
   flagReset() {
 
-    this._flagEndPoints = false;
+    this._flag_endPoints = false;
 
     Gradient.prototype.flagReset.call(this);
 
@@ -85,7 +85,7 @@ class LinearGradient extends Gradient {
 LinearGradient.Stop = Gradient.Stop;
 
 LinearGradient.FlagEndPoints = function() {
-  this._flagEndPoints = true;
+  this._flag_endPoints = true;
 };
 
 export default LinearGradient;

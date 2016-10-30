@@ -3,6 +3,7 @@
 import _  from '../util/common';
 import is  from '../util/is';
 import Shape from '../Shape';
+import shapeFN    from '../shape-fn';
 
 var {isNumber, isObject} = is;
 var {copyKeys} = _;
@@ -12,23 +13,23 @@ var getComputedMatrix = _.getComputedMatrix;
 // Flags
 // http://en.wikipedia.org/wiki/Flag
 var FLAG_DEFAULTS = {
-  _flagValue: true,
-  _flagFamily: true,
-  _flagSize: true,
-  _flagLeading: true,
-  _flagAlignment: true,
-  _flagBaseline: true,
-  _flagStyle: true,
-  _flagWeight: true,
-  _flagDecoration: true,
+  _flag_value: true,
+  _flag_family: true,
+  _flag_size: true,
+  _flag_leading: true,
+  _flag_alignment: true,
+  _flag_baseline: true,
+  _flag_style: true,
+  _flag_weight: true,
+  _flag_decoration: true,
 
-  _flagFill: true,
-  _flagStroke: true,
-  _flagLinewidth: true,
-  _flagOpacity: true,
-  _flagVisible: true,
+  _flag_fill: true,
+  _flag_stroke: true,
+  _flag_linewidth: true,
+  _flag_opacity: true,
+  _flag_visible: true,
 
-  _flagClip: false,
+  _flag_clip: false,
 };
 
 // Underlying Properties
@@ -93,7 +94,7 @@ class Text extends Shape {
   }
   set clip(v) {
     this._clip = v;
-    this._flagClip = true;
+    this._flag_clip = true;
   }
 
   // -----------------
@@ -155,11 +156,11 @@ class Text extends Shape {
 
   flagReset() {
 
-    this._flagValue = this._flagFamily = this._flagSize =
-      this._flagLeading = this._flagAlignment = this._flagFill =
-      this._flagStroke = this._flagLinewidth = this._flagOpaicty =
-      this._flagVisible = this._flagClip = this._flagDecoration =
-      this._flagBaseline = false;
+    this._flag_value = this._flag_family = this._flag_size =
+      this._flag_leading = this._flag_alignment = this._flag_fill =
+      this._flag_stroke = this._flag_linewidth = this._flag_opaicty =
+      this._flag_visible = this._flag_clip = this._flag_decoration =
+      this._flag_baseline = false;
 
     Shape.prototype.flagReset.call(this);
 
@@ -173,17 +174,17 @@ class Text extends Shape {
 
   clone(parent) {
     if(!parent) { parent = this.parent; }
-    var clone = Shape.clone(this, new Text(this.value), PROPS);
+    var clone = shapeFN.clone(this, new Text(this.value), PROPS);
     parent.add(clone);
     return clone;
   }
 
   toObject() {
-    return Shape.toObject(this, {}, PROPS);
+    return shapeFN.toObject(this, {}, PROPS);
   }
 }
 
-_.defineFlaggedAccessors(Text.prototype, PROPS);
+shapeFN.defineFlaggedAccessors(Text.prototype, PROPS);
 Object.defineProperty(Text.prototype, 'clip', {enumerable: true});
 Object.keys(FLAG_DEFAULTS).forEach((k) => { Text.prototype[k] = FLAG_DEFAULTS[k]; });
 Object.keys(PROP_DEFAULTS).forEach((k) => { Text.prototype[k] = PROP_DEFAULTS[k]; });

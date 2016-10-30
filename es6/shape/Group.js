@@ -5,6 +5,7 @@ import _  from '../util/common';
 import is  from '../util/is';
 import Path  from './Path';
 import Shape  from '../Shape';
+import shapeFN    from '../shape-fn';
 import Children  from '../ChildrenCollection';
 
 var {isNumber, isArray} = is;
@@ -13,11 +14,11 @@ var {exclude}  = _;
 // Flags
 // http://en.wikipedia.org/wiki/Flag
 const FLAG_DEFAULTS = {
-  _flagAdditions: false,
-  _flagSubtractions: false,
-  _flagOrder: false,
-  _flagOpacity: true,
-  _flagMask: false,
+  _flag_additions: false,
+  _flag_subtractions: false,
+  _flag_order: false,
+  _flag_opacity: true,
+  _flag_mask: false,
 
 };
 
@@ -83,7 +84,7 @@ class Group extends Shape {
   }
   set mask(v) {
     this._mask = v;
-    this._flagMask = true;
+    this._flag_mask = true;
     if (!v.clip) {
       v.clip = true;
     }
@@ -107,7 +108,7 @@ class Group extends Shape {
   }
 
   orderChildren(children) {
-    this._flagOrder = true;
+    this._flag_order = true;
   }
 
 
@@ -348,17 +349,17 @@ class Group extends Shape {
 
   flagReset() {
 
-    if (this._flagAdditions) {
+    if (this._flag_additions) {
       this.additions.length = 0;
-      this._flagAdditions = false;
+      this._flag_additions = false;
     }
 
-    if (this._flagSubtractions) {
+    if (this._flag_subtractions) {
       this.subtractions.length = 0;
-      this._flagSubtractions = false;
+      this._flag_subtractions = false;
     }
 
-    this._flagOrder = this._flagMask = this._flagOpacity = false;
+    this._flag_order = this._flag_mask = this._flag_opacity = false;
 
     Shape.prototype.flagReset.call(this);
 
@@ -378,20 +379,13 @@ class Group extends Shape {
   clone(parent) {
 
     parent = parent || this.parent;
-
-    var group = new Group();
-    parent.add(group);
-
+    var clone = shapeFN.clone(this, new Group(), []);
+    parent.add(clone);
+    // now clone all children recursively
     var children = (this.children || []).map((child) => {
-      return child.clone(group);
+      return child.clone(clone);
     });
-
-    group.translation.copy(this.translation);
-    group.rotation = this.rotation;
-    group.scale = this.scale;
-
-    return group;
-
+    return clone;
   }
 
   /**
@@ -400,19 +394,12 @@ class Group extends Shape {
    * for turning into JSON and storing in a database.
    */
   toObject() {
-
-    var result = {
-      children: {},
-      translation: this.translation.toObject(),
-      rotation: this.rotation,
-      scale: this.scale
-    };
-
-    _.each(this.children, function(child, i) {
-      result.children[i] = child.toObject();
-    }, this);
-
-    return result;
+    var obj = shapeFN.toObject(this, {}, []);
+    // now copy all children recursively
+    obj.children =  (this.children || []).map((child) => {
+      return child.toObject();
+    });
+    return obj;
 
   }
 }
@@ -420,8 +407,8 @@ class Group extends Shape {
 Group.Children = Children;
 
 var props = Object.keys(PROP_DEFAULTS);
-_.defineStyleAccessors(Group.prototype, props.filter(exclude(['opacity']))) ;
-_.defineFlaggedAccessors(Group.prototype, ['opacity'], false) ;
+shapeFN.defineStyleAccessors(Group.prototype, props.filter(exclude(['opacity']))) ;
+shapeFN.defineFlaggedAccessors(Group.prototype, ['opacity'], false) ;
 Object.defineProperty(Group.prototype, 'children', {enumerable: true});
 Object.defineProperty(Group.prototype, 'mask',     {enumerable: true});
 Object.defineProperty(Group.prototype, 'opacity', {enumerable: true});
@@ -443,7 +430,7 @@ var replaceParent = (that, child, newParent) => {
 
   if (parent === newParent) {
     that.additions.push(child);
-    that._flagAdditions = true;
+    that._flag_additions = true;
     return;
   }
 
@@ -459,14 +446,14 @@ var replaceParent = (that, child, newParent) => {
       parent.additions.splice(index, 1);
     } else {
       parent.subtractions.push(child);
-      parent._flagSubtractions = true;
+      parent._flag_subtractions = true;
     }
   }
 
   if (newParent) {
     child.parent = newParent;
     that.additions.push(child);
-    that._flagAdditions = true;
+    that._flag_additions = true;
     return;
   }
 
@@ -477,7 +464,7 @@ var replaceParent = (that, child, newParent) => {
     that.additions.splice(index, 1);
   } else {
     that.subtractions.push(child);
-    that._flagSubtractions = true;
+    that._flag_subtractions = true;
   }
 
   delete child.parent;

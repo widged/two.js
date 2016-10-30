@@ -11,25 +11,25 @@ var path = function(domElement) {
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and
   // applied once the object is visible again
-  if (this._opacity === 0 && !this._flagOpacity) {
+  if (this._opacity === 0 && !this._flag_opacity) {
     return this;
   }
 
   // Collect any attribute that needs to be changed here
   var changed = {};
 
-  var flagMatrix = this._matrix.manual || this._flagMatrix;
+  var flagMatrix = this._matrix.manual || this._flag_matrix;
 
   if (flagMatrix) {
     changed.transform = 'matrix(' + this._matrix.toString() + ')';
   }
 
-  if (this._flagVertices) {
+  if (this._flag_vertices) {
     var vertices = base.toString(this._vertices, this._closed);
     changed.d = vertices;
   }
 
-  if (this._flagFill) {
+  if (this._flag_fill) {
     if (this._fill && this._fill._renderer) {
       renderShape(this._fill, domElement);
     }
@@ -37,7 +37,7 @@ var path = function(domElement) {
       ? 'url(#' + this._fill.id + ')' : this._fill;
   }
 
-  if (this._flagStroke) {
+  if (this._flag_stroke) {
     if (this._stroke && this._stroke._renderer) {
       renderShape(this._stroke, domElement);
     }
@@ -45,28 +45,28 @@ var path = function(domElement) {
       ? 'url(#' + this._stroke.id + ')' : this._stroke;
   }
 
-  if (this._flagLinewidth) {
+  if (this._flag_linewidth) {
     changed['stroke-width'] = this._linewidth;
   }
 
-  if (this._flagOpacity) {
+  if (this._flag_opacity) {
     changed['stroke-opacity'] = this._opacity;
     changed['fill-opacity'] = this._opacity;
   }
 
-  if (this._flagVisible) {
+  if (this._flag_visible) {
     changed.visibility = this._visible ? 'visible' : 'hidden';
   }
 
-  if (this._flagCap) {
+  if (this._flag_cap) {
     changed['stroke-linecap'] = this._cap;
   }
 
-  if (this._flagJoin) {
+  if (this._flag_join) {
     changed['stroke-linejoin'] = this._join;
   }
 
-  if (this._flagMiter) {
+  if (this._flag_miter) {
     changed['stroke-miterlimit'] = this._miter;
   }
 
@@ -83,7 +83,7 @@ var path = function(domElement) {
     base.setAttributes(this._renderer.elem, changed);
   }
 
-  if (this._flagClip) {
+  if (this._flag_clip) {
 
     var clip = base.getClip(this);
     var elem = this._renderer.elem;
@@ -106,7 +106,7 @@ var path = function(domElement) {
    * https://code.google.com/p/chromium/issues/detail?id=370951
    */
 
-  // if (this._flagMask) {
+  // if (this._flag_mask) {
   //   if (this._mask) {
   //     elem.setAttribute('clip-path', 'url(#' + this._mask.id + ')');
   //   } else {

@@ -31,7 +31,7 @@ class WebglRenderer extends Renderer {
       scale: 1,
       opacity: 1
     };
-    this._flagMatrix = true;
+    this._flag_matrix = true;
 
     // http://games.greggman.com/game/webgl-and-alpha/
     // http://www.khronos.org/registry/webgl/specs/latest/#5.2
@@ -103,7 +103,7 @@ class WebglRenderer extends Renderer {
     // Set for this.stage parent scaling to account for HDPI
     this._renderer.matrix[0] = this._renderer.matrix[4] = this._renderer.scale = this.ratio;
 
-    this._flagMatrix = true;
+    this._flag_matrix = true;
 
     this.ctx.viewport(0, 0, width, height);
 
@@ -121,7 +121,7 @@ class WebglRenderer extends Renderer {
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     }
     base.renderShape(this.scene, gl, this.program);
-    this._flagMatrix = false;
+    this._flag_matrix = false;
     return this;
   }
 }

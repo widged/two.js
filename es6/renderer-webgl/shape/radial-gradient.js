@@ -13,8 +13,8 @@ var radialGradient = {
 
     this._update();
 
-    if (!this._renderer.gradient || this._flagCenter || this._flagFocal
-        || this._flagRadius || this._flagStops) {
+    if (!this._renderer.gradient || this._flag_center || this._flag_focal
+        || this._flag_radius || this._flag_stops) {
 
       this._renderer.gradient = ctx.createRadialGradient(
         this.center._x, this.center._y, 0,

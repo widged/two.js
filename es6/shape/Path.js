@@ -10,6 +10,7 @@ import Vector from '../struct/Vector';
 import curveFN  from '../util/curve-manipulation';
 import Anchor from '../Anchor';
 import Shape from '../Shape';
+import shapeFN    from '../shape-fn';
 
 var {isUndefined, isNull} = is;
 var {arrayLast} = _;
@@ -30,9 +31,9 @@ var default_style = {
 
 var config = {
   flags : {
-    flagVertices: true,
-    flagLength: true,
-    flagClip: false,
+    flag_vertices: true,
+    flag_length: true,
+    flag_cClip: false,
   },
 
   props : {
@@ -84,7 +85,7 @@ class Path extends Shape {
   // --------------------
 
   get length() {
-    if (this._flagLength) {
+    if (this._flag_length) {
       this._updateLength();
     }
     return this._length;
@@ -95,7 +96,7 @@ class Path extends Shape {
   }
   set closed(v) {
     this._closed = !!v;
-    this._flagVertices = true;
+    this._flag_vertices = true;
   }
 
   get curved() {
@@ -103,7 +104,7 @@ class Path extends Shape {
   }
   set curved(v) {
     this._curved = !!v;
-    this._flagVertices = true;
+    this._flag_vertices = true;
   }
 
   get automatic() {
@@ -125,7 +126,7 @@ class Path extends Shape {
   }
   set beginning(v) {
     this._beginning = min(max(v, 0.0), this._ending);
-    this._flagVertices = true;
+    this._flag_vertices = true;
   }
 
   get ending() {
@@ -133,7 +134,7 @@ class Path extends Shape {
   }
   set ending(v) {
     this._ending = min(max(v, this._beginning), 1.0);
-    this._flagVertices = true;
+    this._flag_vertices = true;
   }
 
 
@@ -143,8 +144,8 @@ class Path extends Shape {
   set vertices(vertices) {
 
     var copyVertices = () => {
-        this._flagVertices = true;
-        this._flagLength = true;
+        this._flag_vertices = true;
+        this._flag_length = true;
     };
 
     var bindVerts = _.bind(function(items) {
@@ -189,7 +190,7 @@ class Path extends Shape {
   }
   set clip(v) {
     this._clip = v;
-    this._flagClip = true;
+    this._flag_clip = true;
   }
 
   // -----------------
@@ -377,7 +378,7 @@ class Path extends Shape {
 
   _update() {
 
-    if (this._flagVertices) {
+    if (this._flag_vertices) {
       this._vertices = copyVertices({
         vertices:  this.vertices,
         beginning: this._beginning,
@@ -394,10 +395,10 @@ class Path extends Shape {
 
   flagReset() {
 
-    this._flagVertices =  this._flagFill =  this._flagStroke =
-       this._flagLinewidth = this._flagOpacity = this._flagVisible =
-       this._flagCap = this._flagJoin = this._flagMiter =
-       this._flagClip = false;
+    this._flag_vertices =  this._flag_fill =  this._flag_stroke =
+       this._flag_linewidth = this._flag_opacity = this._flag_visible =
+       this._flag_cap = this._flag_join = this._flag_miter =
+       this._flag_clip = false;
 
     Shape.prototype.flagReset.call(this);
 
@@ -412,7 +413,7 @@ class Path extends Shape {
   clone(parent) {
     parent = parent || this.parent;
     var points = this.vertices.map((d) => { return d.clone(); });
-    var clone = Shape.clone(
+    var clone = shapeFN.clone(
       this,
       new Path(points, this.closed, this.curved, !this.automatic),
       Object.keys(config.props).concat( Object.keys(default_style))
@@ -422,7 +423,7 @@ class Path extends Shape {
   }
 
   toObject() {
-    var obj = Shape.toObject(this, {}, []);
+    var obj = shapeFN.toObject(this, {}, []);
     obj.vertices = this.vertices.map((d) => { return d.clone(); });
     return obj;
   }
@@ -438,7 +439,7 @@ Object.defineProperty(Path.prototype, 'clip', {enumerable: true});
 
 var asFlag = (txt) => { return '_flag'+ txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); };
 
-_.defineFlaggedAccessors(Path.prototype, Object.keys(default_style));
+shapeFN.defineFlaggedAccessors(Path.prototype, Object.keys(default_style));
 Object.keys(default_style).forEach((k) => { Path.prototype[asFlag(k)] = true; });
 
 Object.keys(config.flags).forEach((k) => { Path.prototype['_'+k] = config.flags[k]; });
