@@ -4,7 +4,7 @@
 
 // var script = document.createElement('script');
 // script.type = 'text/javascript';
-// script.src = '../build/two.js';    
+// script.src = '../build/two.js';
 // document.getElementsByTagName('head')[0].appendChild(script);
 
 
@@ -17,8 +17,8 @@ var Two = require('../es6/Two').default;
 var Types = require('../es6/constant/RendererTypes').default;
 
 var two = new Two({
-  width: 800,
-  height: 800,
+  width: 600,
+  height: 400,
   type: Types.canvas
 }).appendTo(document.getElementById('app'));
 
@@ -51,11 +51,11 @@ sine.fill = "red";
 sine.opacity = 0.25;
 
 var RoundedRectangle = require('../es6/geometry/RoundedRectangle').default;
-var rrect = two.addShape(RoundedRectangle(315, 390, 150, 100, 9));
+var rrect = two.addShape(RoundedRectangle(390, 300, 150, 100, 9));
 rrect.fill = "pink";
 rrect.opacity = 0.25;
 rrect.noStroke();
- 
+
 var Line = require('../es6/geometry/Line').default;
 var line = two.addShape(Line(10,20,300,300));
 line.fill = "green";
@@ -78,7 +78,7 @@ var txt = two.makeText('hello there', 200,200);
 txt.opacity = 0.25;
 
 // ----------- gradients ------
-// 
+//
 var RadialGradient = require('../es6/gradient/RadialGradient').default;
 var radius = Math.max(150, 100);
 var radialGradient = two.makeRadialGradient(
@@ -88,9 +88,8 @@ var radialGradient = two.makeRadialGradient(
 	new RadialGradient.Stop(0.5, 'rgba(255, 0, 0, 0)', 0)
 );
 var stop = new RadialGradient.Stop(0,  'rgba(255, 0, 0, 1)', 1);
-console.log(stop.toObject())
 
-var vignette = two.addShape(RoundedRectangle(215, 290, 150, 100, 10))
+var vignette = two.addShape(RoundedRectangle(390, 70, 150, 100, 10))
 vignette.fill = radialGradient;
 
 
@@ -115,7 +114,7 @@ var linearGradient = two.makeLinearGradient(
   new LinearGradient.Stop(1, colors[2])
 );
 
-var rectangle = two.addShape(Rectangle(315, 390, 150, 100));
+var rectangle = two.addShape(Rectangle(390, 185, 150, 100));
 rectangle.noStroke();
 
 rectangle.fill = linearGradient;
@@ -124,5 +123,3 @@ two.update();
 
 }
 main();
-
-

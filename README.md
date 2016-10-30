@@ -1,6 +1,15 @@
 !!WIP!!
 
-Porting the Two.js library to es6. Tests and bundling are broken until further notice. 
+Porting the Two.js library to es6. Tests and bundling are broken until further notice.
+
+For es6, I prefer to develop with electron+babel rather than webpack-dev-server.
+
+* For electron `npm install -g electron` or `yarn global add electron`
+* For babel `npm install babel-register`
+
+No other packages required (this is why I use electron for development).
+
+Then head to `path/to/two.js/dev-electron/`. If you are on a Unix like system, click on `electron.command`. Otherwise, run `electron ./lib/electron-dev` from the command line.
 
 ----------------------------
 
