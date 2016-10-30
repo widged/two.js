@@ -1,5 +1,12 @@
 /* jshint esnext: true */
 
+/**
+ * makeLine two.makeLine(x1, y1, x2, y2);
+ *
+ * Draws a line between two coordinates to the instance's drawing space where x1, y1
+ * are the x, y values for the first coordinate and x2, y2 are the x, y values for
+ * the second coordinate.
+ */
 export default function(x1, y1, x2, y2) {
 
   var width = x2 - x1;

@@ -326,6 +326,8 @@ class Path extends Shape {
   /**
    * Based on closed / curved and sorting of vertices plot where all points
    * should be and where the respective handles should be too.
+   * If curved goes through the vertices and calculates the curve.
+   * If not, then goes through the vertices and calculates the lines.
    */
   plot() {
 

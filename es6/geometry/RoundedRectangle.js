@@ -2,11 +2,17 @@
 
 import _  from '../util/common';
 import is  from '../util/is';
+import Resolution from '../constant/Resolution';
 
 var {isNumber} = is;
 
-import Resolution from '../constant/Resolution';
-
+/**
+ * makeRoundedRectangle two.makeRoundedRectangle(x, y, width, height, radius);
+ * Draws a rounded rectangle to the instance's drawing space where x, y are the
+ * x, y values for the center point of the rectangle and width, height represents
+ * the width and height of the rectangle. Lastly, the radius parameter defines
+ * what the miter radius of the rounded corner is. 
+ */
 function roundedRectangle(ox, oy, width, height, radius) {
 
     var w2 = width / 2;

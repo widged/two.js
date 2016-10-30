@@ -7,6 +7,13 @@ var {isNumber} = is;
 
 var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
 
+/**
+ * makeStar two.makeStar(ox, oy, or, ir, sides);
+ *
+ * Draws a star to the instance's drawing space where ox, oy are the x, y values
+ * for the center point of the star and or, ir are the outer and inner radii for
+ * the star, and sides are how many points the star has.
+ */
 export default function(ox, oy, or, ir, sides) {
 
   if (!isNumber(ir)) {

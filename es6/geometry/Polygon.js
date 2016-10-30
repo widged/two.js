@@ -2,9 +2,16 @@
 
 import _  from '../util/common';
 
-var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
-
+/**
+ * makePolygon two.makePolygon(ox, oy, r, sides);
+ *
+ * Draws a polygon to the instance's drawing space where ox, oy are the x, y
+ * values for the center of the polygon, r is the radius, and sides are how many
+ * sides the polygon has.
+ */
 export default function(ox, oy, r, sides) {
+
+  var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
 
   sides = Math.max(sides || 0, 3);
 

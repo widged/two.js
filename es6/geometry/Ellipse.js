@@ -6,9 +6,17 @@ import Resolution from '../constant/Resolution';
 
 var {isNumber} = is;
 
-var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
+/**
+ *  makeEllipse two.makeEllipse(x, y, width, height);
+ *
+ * Draws an ellipse to the instance's drawing space where x, y are the x, y values
+ * for the center point of the ellipse and width, height are the dimensions of
+ * the ellipse.
+ */
 
 export default function(ox, oy, rx, ry, res) {
+
+	var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
 
 	if (!isNumber(ry)) { ry = rx; }
 
