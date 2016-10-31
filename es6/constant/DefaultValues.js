@@ -6,12 +6,15 @@ var FN = {};
 
 // https://two.js.org/#documentation
 
-/*
-type params.type
-Set the type of renderer for the instance: svg, webgl, canvas, etc.. Applicable types are carried within Two.Types. Default type is Two.Types.svg.
 
-width params.width
-Set the width of the drawing space. Disregarded if params.fullscreen is set to true. Default width is 640 pixels.
+
+/*
+type
+A string representing which type of renderer: svg, webgl, canvas, etc.. Applicable types are carried within `constant/RendererTypes`.
+Default type is `RendererTypes.svg`.
+
+width
+Set the width of the drawing space.Disregarded if params.fullscreen is set to true. Default width is 640 pixels.
 
 height params.height
 Set the height of the drawing space. Disregarded if params.fullscreen is set to true. Default height is 480 pixels.
@@ -26,11 +29,30 @@ ratio params.ratio
 Set the resolution ratio for canvas and webgl renderers. If left blank two.js automatically infers the ratio based on the devicePixelRatio api.
 */
 FN.Two = {
-  fullscreen: false,
   width: 640,
   height: 480,
   type: RendererTypes.svg,
+  fullscreen: false,
   autostart: false
+};
+
+FN.documentBodyStyle = {
+  overflow: 'hidden',
+  margin: 0,
+  padding: 0,
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  position: 'fixed'
+};
+FN.sceneNodeBodyStyle = {
+  display: 'block',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  position: 'fixed'
 };
 
 /*
@@ -54,6 +76,8 @@ FN.Shape = {
   // _translation
   // _mask: null,
 };
+
+FN.ShapeIdentifier = 'two_';
 
 /*
 stroke group.stroke
@@ -136,7 +160,7 @@ FN.Path = {
   beginning: 0,
   ending: 1.0,
   clip: false,
-  
+
 };
 // rotation, translation, scale, mask from Shape
 

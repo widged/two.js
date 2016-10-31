@@ -151,6 +151,22 @@ var applySvgAttributes = function(node, elem) {
 };
 
 
+/**
+interpret two.interpret(svgNode);
+Reads an svg node and draws the svg object by creating `Paths` and `Groups`
+from the reference. It then adds it to the instance's drawing space. It returns
+a `Group` object.
+*/
+/**
+ * Interpret an SVG Node and add it to this instance's scene. The
+ * distinction should be made that this doesn't `import` svg's, it solely
+ * interprets them into something compatible for Two.js — this is slightly
+ * different than a direct transcription.
+ *
+ * @param {Object} svgNode - The node to be parsed
+ * @param {Boolean} shallow - Don't create a top-most group but
+ *                                    append all contents directly
+ */
 var interpret = function(svgNode, shallow) {
   // check wether this is actually a svg file
   var tag = svgNode.tagName.toLowerCase();
@@ -167,6 +183,10 @@ var interpret = function(svgNode, shallow) {
   return {node, shape};
 };
 
+
+/**
+ * Load an SVG file / text and interpret.
+ */
 var load = function(text, callback) {
 
   var dom = require('./platform/dom').default;

@@ -7,15 +7,17 @@ import Vector from './struct/Vector';
 import UidGenerator from './util/uid-generator';
 import shapeFN    from './shape-fn';
 import DefaultValues from './constant/DefaultValues';
+import Store from './util/Store';
 
 var uniqueId = UidGenerator();
 var {cloneProperties, serializeProperties} = shapeFN;
 
-
 var shapeDefaults = DefaultValues.Shape;
 
-/**
+var store = Store.create(() => {});
 
+/**
+*
 */
 class Shape {
 
@@ -27,8 +29,9 @@ class Shape {
 
     // Private object for renderer specific variables.
     this._renderer = {};
+    this.stateManager =
 
-    this.id = Shape.Identifier + uniqueId();
+    this.id = DefaultValues.ShapeIdentifier + uniqueId();
     this.classList = [];
 
     // Define matrix properties which all inherited
@@ -36,7 +39,7 @@ class Shape {
 
     this._matrix = new Matrix();
 
-    var flagMatrix = () => { this._flag_matrix = true; }
+    var flagMatrix = () => { this._flag_matrix = true; };
     this.translation = new Vector();
     this.translation.dispatcher.on(VectorEvent.change, flagMatrix);
     this.rotation = 0;
@@ -126,7 +129,6 @@ class Shape {
   }
 
 }
-Shape.Identifier = 'sh_';
 Shape.Properties = Object.keys(shapeDefaults);
 
 // Flags

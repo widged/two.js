@@ -28,52 +28,8 @@ dom.onWindowResize = function(func, bool) {
   return dom;
 };
 
-dom.unbind= function(func, bool) {
-  var elem = document;
-  if (dom.hasEventListeners) {
-    elem.removeEventListeners('resize', func, !!bool);
-  } else {
-    elem.detachEvent('onresize', func);
-  }
-  return dom;
-};
 
-dom.getRequestAnimationFrame = function(onTick) {
 
-  var lastTime = 0;
-  var vendors = ['ms', 'moz', 'webkit', 'o'];
-  var request, cancel;
-
-  for (var i = 0; i < vendors.length; i++) {
-    request = global[vendors[i] + 'RequestAnimationFrame'] || request;
-    cancel = global[vendors[i] + 'CancelAnimationFrame']
-      || global[vendors[i] + 'CancelRequestAnimationFrame'] || cancel;
-  }
-
-  request = request || function(callback, element) {
-    var currTime = new Date().getTime();
-    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-    var id = global.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
-    lastTime = currTime + timeToCall;
-    return id;
-  };
-  // cancel = cancel || function(id) {
-  //   clearTimeout(id);
-  // };
-
-  function recurse() {
-    // console.log('loop')
-    onTick()
-    request(recurse);
-  }
-
-  request.init = () => {
-    recurse();
-  }
-
-  return request;
-
-};
 
 
 dom.getWindowSize = () => {
