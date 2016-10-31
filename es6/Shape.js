@@ -71,6 +71,9 @@ class Shape {
   // Main
   // -----------------
 
+  /**
+   * Adds the instance to a `Group`.
+   */
   addTo(group) {
     group.add(this);
     return this;

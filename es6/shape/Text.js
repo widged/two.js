@@ -12,23 +12,13 @@ var {isNumber, isObject} = is;
 var {shimBoundingClientRect, defineSecretAccessors, serializeProperties, cloneProperties} = shapeFN;
 var {getComputedMatrix} = pathFN;
 
-// Underlying Properties
-var textDefaults = DefaultValues.Text;
 
 /**
- * This is a class for creating, manipulating, and rendering text dynamically
+ * A class for creating, manipulating, and rendering text dynamically
  * It is rather primitive. You can use custom fonts through @Font Face spec.
  * However, you do not have control over the glyphs themselves. If you'd like
  * to manipulate that specifically it is recommended to use a SVG Interpreter.
  */
-
-/*
-
-noFill text.noFill();
-Removes the fill.
-noStroke text.noStroke();
-Removes the stroke.
-*/
 class Text extends Shape {
 
   // --------------------
@@ -91,11 +81,17 @@ class Text extends Shape {
 
   }
 
+ /**
+ * Removes the stroke.
+ */
   noStroke() {
     this.stroke = 'transparent';
     return this;
   }
 
+  /**
+   * Removes the fill.
+   */
   noFill() {
     this.fill = 'transparent';
     return this;
@@ -135,16 +131,17 @@ class Text extends Shape {
   */
   clone(parent) {
     if(!parent) { parent = this.parent; }
-    var clone = cloneProperties(this, new Text(this.value), Object.keys(textDefaults));
+    var clone = cloneProperties(this, new Text(this.value), Text.Properties);
     parent.add(clone);
     return clone;
   }
 
   toObject() {
-    return serializeProperties(this, {}, Object.keys(textDefaults));
+    return serializeProperties(this, {}, Text.Properties);
   }
 }
 
-defineSecretAccessors({proto: Text.prototype, accessors: Object.keys(textDefaults), raisedFlags: 'family,size,leading,alignment,baseline,style,weight,decoration'.split(''), secrets: textDefaults} );
+Text.Properties = Object.keys(DefaultValues.Text);
+defineSecretAccessors({proto: Text.prototype, accessors: Text.Properties, raisedFlags: 'family,size,leading,alignment,baseline,style,weight,decoration'.split(''), secrets: DefaultValues.Text} );
 
 export default Text;

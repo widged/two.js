@@ -23,11 +23,9 @@ class Renderer {
 }
 
 var defaultToType = (type, domElement) => {
-  console.log('defaultToType')
   // Specified domElement overrides type declaration only if the element does not support declared renderer type.
   if (dom.isElement(domElement)) {
     var tagName = domElement.tagName.toLowerCase();
-    console.log(tagName, domElement)
     // TODO: Reconsider this if statement's logic.
     if (!/^(CanvasRenderer-canvas|WebGLRenderer-canvas|SVGRenderer-svg)$/.test(this.state.type+'-'+tagName)) {
       type = tagName;

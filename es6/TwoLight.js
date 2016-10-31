@@ -1,13 +1,15 @@
+/* jshint esnext: true */
+
 import DefaultValues from './constant/DefaultValues';
 import makeShape from './shape/factories';
 
 /**
  * @class
  */
-class Two {
+class TwoLight {
 
   constructor(config) {
-    var {width, height, RendererDelegate, beforeRender} = Object.assign(DefaultValues.Two, config);
+    var {width, height, RendererDelegate, beforeRender} = Object.assign(DefaultValues.TwoLight, config);
 
     /**
     renderer- The instantiated rendering class for the instance. For a list of possible rendering types check out RendererTypes.
@@ -115,13 +117,6 @@ class Two {
     return pth;
   }
 
-  addImport(nodes, shape) {
-    if(!Array.isArray(nodes)) { nodes = [nodes]; }
-    var group = this.add(makeShape.group());
-    nodes.forEach((node) => { group.add(shape); });
-    return group;
-  }
-
   addShape(shape, centerIt) {
     if(centerIt) {
       // can only be applied to path?
@@ -140,6 +135,14 @@ class Two {
      return gp;
    }
 
+   addImport(nodes, shape) {
+     if(!Array.isArray(nodes)) { nodes = [nodes]; }
+     var group = this.add(makeShape.group());
+     nodes.forEach((node) => { group.add(shape); });
+     return group;
+   }
+
+
 }
 
-export default Two;
+export default TwoLight;

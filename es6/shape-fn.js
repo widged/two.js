@@ -7,12 +7,6 @@ var {isArray} = is;
 
 var FN = {};
 
-FN.copyKeys = (source, target, keys) => {
-  if(!Array.isArray(keys)) { return target; }
-  keys.forEach((k) => { target[k] = source[k]; });
-  return target;
-};
-
 FN.cloneProperties = (source, target, extraProps) => {
   target.translation.copy(source.translation);
   target.rotation = source.rotation;
@@ -29,7 +23,7 @@ FN.serializeProperties = (source, target, extraProps) => {
   return target;
 };
 
-FN.cloned     = (shape) => {
+FN.cloned = (shape) => {
   if(!shape) { return; }
   var clone;
   if (typeof shape.clone === 'function') {
@@ -113,7 +107,7 @@ FN.shimBoundingClientRect = (matrix) => {
 
 };
 
-FN.getBoundingPathRect = (matrix, border, length, vertices) => {
+FN.getPathBoundingRect = (matrix, border, length, vertices) => {
   var {min, max} = Math;
   var x, y, i, v;
 

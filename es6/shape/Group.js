@@ -18,56 +18,17 @@ var nodeChildren = (node) => { return (node instanceof Group) ? node.children : 
 
 /**
  * This is a container object — it can hold shapes as well as other groups.
- *  At a technical level it can be considered an empty transformation matrix.
+ * At a technical level it can be considered an empty transformation matrix.
  * It is recommended to use two.makeGroup() in order to add groups to your instance
  * of two, but it's not necessary. Unless specified methods return their instance
  * of Group for the purpose of chaining.
-*/
-
-/*
-construction var group = new Two.Group();
- If you are constructing groups this way instead of two.makeGroup(), then don't forget to add the group to the instance's scene, two.add(group).
-
-id group.id
-The id of the group. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if group.id = 5 then document.querySelector('#two-' + group.id) will return the corresponding node.
-
-
-children group.children
-A map of all the children of the group.
-
-parent group.parent
-A reference to the Two.Group that contains this instance.
-
-mask group.mask
-A reference to the Two.Path that masks the content within the group. Automatically sets the referenced Two.Path.clip to true.
-
-clone group.clone();
-Returns a new instance of a Two.Group with the same settings.
- This will copy the children as well, which can be computationally expensive.
-
-center group.center();
-Anchors all children around the centroid of the group.
-
-addTo group.addTo(group);
-Adds the instance to a Two.Group. In many ways the inverse of two.add(object).
-
-add group.add(objects);
-Add one or many shapes / groups to the instance. Objects can be added as arguments, two.add(o1, o2, oN), or as an array depicted above.
-
-remove group.remove(objects);
-Remove one or many shapes / groups to the instance. Objects can be removed as arguments, two.remove(o1, o2, oN), or as an array depicted above.
-
-getBoundingClientRect group.getBoundingClientRect(shallow);
-Returns an object with top, left, right, bottom, width, and height parameters representing the bounding box of the path. Pass true if you're interested in the shallow positioning, i.e in the space directly affecting the object and not where it is nested.
-
-noFill group.noFill();
-Remove the fill from all children of the group.
-
-noStroke group.noStroke();
-Remove the stroke from all children of the group.
-*/
+ */
 class Group extends Shape {
 
+  /**
+   * If you are constructing groups this way instead of two.makeGroup(), then don't
+   * forget to add the group to the instance's scene, two.add(group).
+   */
   constructor() {
     super(true);
 
@@ -77,6 +38,12 @@ class Group extends Shape {
       orderChildren: this.orderChildren.bind(this),
     };
 
+    /**
+    * id - The id of the group. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if group.id = 5 then document.querySelector('#two-' + group.id) will return the corresponding node.
+    * children - A Collection of all the children of the group.
+    * parent - A reference to the Two.Group that contains this instance.
+    * mask - A reference to the Two.Path that masks the content within the group. Automatically sets the referenced Two.Path.clip to true.
+    */
     this._renderer.type = 'group';
     this.additions = [];
     this.subtractions = [];
@@ -150,7 +117,7 @@ class Group extends Shape {
   }
 
   /**
-   * Anchors all children around the center of the group,
+   * Anchors all children around the centroid of the group,
    * effectively placing the shape around the unit circle.
    */
    // :TODO: :WARN: remove this or at the very least, make it optional,
@@ -208,7 +175,8 @@ class Group extends Shape {
   }
 
   /**
-   * Add objects to the group.
+   * Add one or many shapes / groups to the instance. Objects can be added as
+   * arguments, two.add(o1, o2, oN), or as an Array.
    */
   add(objects) {
 
@@ -231,8 +199,10 @@ class Group extends Shape {
 
   }
 
+
   /**
-   * Remove objects from the group.
+   * Remove one or many shapes / groups to the instance. Objects can be removed as
+   * arguments, two.remove(o1, o2, oN), or as an array.
    */
   remove(objects) {
 
@@ -266,7 +236,7 @@ class Group extends Shape {
   }
 
   /**
-   * Trickle down of noFill
+   * Trickle down of noFill. Remove the fill from all children of the group.
    */
   noFill() {
     this.children.forEach(function(child) {
@@ -276,8 +246,9 @@ class Group extends Shape {
   }
 
   /**
-   * Trickle down of noStroke
+   * Trickle down of noStroke. Remove the stroke from all children of the group.
    */
+
   noStroke() {
     this.children.forEach(function(child) {
       child.noStroke();
@@ -300,6 +271,12 @@ class Group extends Shape {
   // IBounded
   // -----------------
 
+  /**
+   * Returns an object with top, left, right, bottom, width, and height parameters
+   * representing the bounding box of the path. Pass true if you're interested in
+   * the shallow positioning, i.e in the space directly affecting the object and
+   * not where it is nested.
+   */
   getBoundingClientRect(shallow) {
     // TODO: Update this to not __always__ update. Just when it needs to.
     this._update(true);
@@ -332,6 +309,9 @@ class Group extends Shape {
   }
 
   /**
+   * Returns a new instance of a Two.Group with the same settings.
+   * This will copy the children as well, which can be computationally expensive.
+   *
    * TODO: Group has a gotcha in that it's at the moment required to be bound to
    * an instance of two in order to add elements correctly. This needs to
    * be rethought and fixed.
