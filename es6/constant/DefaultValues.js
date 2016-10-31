@@ -28,12 +28,18 @@ A boolean to set the drawing space of the instance to be fullscreen or not. If s
 ratio params.ratio
 Set the resolution ratio for canvas and webgl renderers. If left blank two.js automatically infers the ratio based on the devicePixelRatio api.
 */
-FN.Two = {
+FN.TwoClassic = {
   width: 640,
   height: 480,
   type: RendererTypes.svg,
   fullscreen: false,
   autostart: false
+};
+
+FN.Two = {
+  width: 640,
+  height: 480,
+  RendererDelegate: undefined,
 };
 
 FN.documentBodyStyle = {

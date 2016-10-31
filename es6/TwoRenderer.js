@@ -5,10 +5,10 @@ import dom from './platform/dom';
 
 class Renderer {
 
-  constructor(options) {
-    this.domElement = options.domElement;
+  constructor({domElement, scene}) {
+    this.domElement = domElement;
     // Everything drawn on the canvas needs to come from the stage.
-    this.scene = options.scene;
+    this.scene = scene;
     this.scene.parent = this;
   }
 
