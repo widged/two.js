@@ -140,7 +140,7 @@ var setPlaying = function(b) {
  * @class
  */
 
-unction dropUndefinedProperties(obj) {
+function dropUndefinedProperties(obj) {
   Object.keys({fullscreen, width, height, type, autostart}).re
 
 }
@@ -415,6 +415,7 @@ class Two {
     return this;
   }
 }
+
 
 function fitToWindow() {
 
