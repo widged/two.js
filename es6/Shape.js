@@ -11,12 +11,6 @@ import DefaultValues from './constant/DefaultValues';
 var uniqueId = UidGenerator();
 var {cloneProperties, serializeProperties} = shapeFN;
 
-// Flags
-const FLAG = {};
-FLAG.matrix = true;
-FLAG.scale = true;
-// FLAG.mask = false;
-// FLAG.clip = false;
 
 var shapeDefaults = DefaultValues.Shape;
 
@@ -134,6 +128,10 @@ class Shape {
 }
 Shape.Identifier = 'sh_';
 Shape.Properties = Object.keys(shapeDefaults);
+
+// Flags
+var raisedFlags = 'matrix,scale'.split(',');
+// unraisedFlags: mask, clip
 
 Shape.Properties.forEach((k) => { Shape.prototype[k] = shapeDefaults[k]; });
 

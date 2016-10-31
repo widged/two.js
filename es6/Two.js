@@ -42,8 +42,6 @@ import factories from './shape/factories';
 
 var TwoDefaults = DefaultValues.Two;
 
-var root = this;
-
 var {isNumber, isArray} = is;
 
 
@@ -142,9 +140,7 @@ var setPlaying = function(b) {
  * @class
  */
 
-
-
-function dropUndefinedProperties(obj) {
+unction dropUndefinedProperties(obj) {
   Object.keys({fullscreen, width, height, type, autostart}).re
 
 }
@@ -213,7 +209,7 @@ class Two {
         bottom: 0,
         position: 'fixed'
       });
-      dom.bind(root, 'resize', fitted);
+      dom.onWindowResize(fitted);
       fitted();
 
 
@@ -419,10 +415,6 @@ class Two {
     return this;
   }
 }
-
-Two.Version = 'v0.7.0',
-
-
 
 function fitToWindow() {
 

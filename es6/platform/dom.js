@@ -16,23 +16,24 @@ dom.isElement = (obj) =>  {
   return !!(obj && obj.nodeType === 1);
 };
 
-
 dom.hasEventListeners = isFunction(global.addEventListener);
 
-dom.bind = function(elem, event, func, bool) {
-  if (this.hasEventListeners) {
-    elem.addEventListener(event, func, !!bool);
+dom.onWindowResize = function(func, bool) {
+  var elem = document;
+  if (dom.hasEventListeners) {
+    elem.addEventListener('resize', func, !!bool);
   } else {
-    elem.attachEvent('on' + event, func);
+    elem.attachEvent('onresize', func);
   }
   return dom;
 };
 
-dom.unbind= function(elem, event, func, bool) {
+dom.unbind= function(func, bool) {
+  var elem = document;
   if (dom.hasEventListeners) {
-    elem.removeEventListeners(event, func, !!bool);
+    elem.removeEventListeners('resize', func, !!bool);
   } else {
-    elem.detachEvent('on' + event, func);
+    elem.detachEvent('onresize', func);
   }
   return dom;
 };
