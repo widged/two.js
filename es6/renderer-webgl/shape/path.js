@@ -4,12 +4,12 @@ import is  from '../../util/is';
 import Matrix   from '../../struct/Matrix';
 import base from './base';
 import Array2   from '../../struct/Array';
-import MathExtras   from '../../util/math-extras';
+import _ from '../../util/common';
 
 var {renderShape, transformation, Commands, canvas, ctx, drawTextureAndRect} = base;
 var {Multiply: multiplyMatrix} = Matrix;
 var {isNumber, isString} = is;
-var {mod, toFixed} = MathExtras;
+var {mod, toFixed} = _;
 
 /**
  * Returns the rect of a set of verts. Typically takes vertices that are

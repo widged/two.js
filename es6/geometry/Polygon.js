@@ -16,13 +16,14 @@ export default function(ox, oy, r, sides) {
 
   sides = Math.max(sides || 0, 3);
 
-  var points = _.map(_.range(sides), function(i) {
+  var points = [];
+  for (var i = 0; i < sides; i++) {
     var pct = (i + 0.5) / sides;
     var theta = TWO_PI * pct + Math.PI / 2;
     var x = r * cos(theta);
     var y = r * sin(theta);
-    return [x, y];
-  });
+    points.push([x, y]);
+  }
 
   return {points, translation: [ox, oy]};
 

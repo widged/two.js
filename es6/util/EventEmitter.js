@@ -37,43 +37,14 @@ class EventEmitter {
 
     emit(uid, ...data) {
       if(!this.state.events) { return this; }
-	  var subscribers = this.state.events[uid];
-	  if (subscribers) { trigger(this, subscribers, data) };
-	  return this;
+	  	var subscribers = this.state.events[uid];
+	  	if (subscribers) {
+				for (var i = 0, ni = subscribers.length; i < ni; i++) {
+			    subscribers[i].apply(this, data);
+				}
+			}
+	  	return this;
     }
-}
-
-function trigger(obj, events, args) {
-  var method;
-  switch (args.length) {
-  case 0:
-    method = function(i) {
-      events[i].call(obj, args[0]);
-    };
-    break;
-  case 1:
-    method = function(i) {
-      events[i].call(obj, args[0], args[1]);
-    };
-    break;
-  case 2:
-    method = function(i) {
-      events[i].call(obj, args[0], args[1], args[2]);
-    };
-    break;
-  case 3:
-    method = function(i) {
-      events[i].call(obj, args[0], args[1], args[2], args[3]);
-    };
-    break;
-  default:
-    method = function(i) {
-      events[i].apply(obj, args);
-    };
-  }
-  for (var i = 0; i < events.length; i++) {
-    method(i);
-  }
 }
 
 export default EventEmitter;

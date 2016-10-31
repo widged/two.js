@@ -19,7 +19,7 @@ var Types = require('../es6/constant/RendererTypes').default;
 var two = new TwoClassic({
   width: 600,
   height: 400,
-  type: Types.canvas
+  type: Types.webgl
 }).appendTo(document.getElementById('app'));
 
 

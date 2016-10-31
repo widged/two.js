@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-class StateManager {
+class ChangeTracker {
 
   constructor() {
     var state =  {
@@ -42,4 +42,4 @@ class StateManager {
 }
 
 
-export default StateManager;
+export default ChangeTracker;

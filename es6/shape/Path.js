@@ -105,7 +105,7 @@ class Path extends Shape {
     }
     this._automatic = !!v;
     var method = this._automatic ? 'ignore' : 'listen';
-    _.each(this.vertices, function(v) {
+    (this.vertices || []).forEach(function(v) {
       v[method]();
     });
   }
@@ -137,7 +137,7 @@ class Path extends Shape {
         this._flag_length = true;
     };
 
-    var bindVerts = _.bind(function(items) {
+    var bindVerts = ((items) => {
 
       // This function is called a lot
       // when importing a large SVG
@@ -146,15 +146,15 @@ class Path extends Shape {
         items[i].dispatcher.on(VectorEvent.change, copyVertices);
       }
       copyVertices();
-    }, this);
+    }).bind(this);
 
-    var unbindVerts = _.bind(function(items) {
+    var unbindVerts = ((items) => {
       var i = items.length;
       while(i--) {
         items[i].dispatcher.off(VectorEvent.change, copyVertices);
       }
       copyVertices();
-    }, this);
+    }).bind(this);
 
     // Remove previous listeners
     if (this._collection) {
@@ -219,7 +219,7 @@ class Path extends Shape {
       y: rect.top + rect.height / 2
     };
 
-    _.each(this.vertices, function(v) {
+    (this.vertices || []).forEach(function(v) {
       v.addSelf(rect.centroid);
     });
 
@@ -240,7 +240,7 @@ class Path extends Shape {
       y: rect.top + rect.height / 2
     };
 
-    _.each(this.vertices, function(v) {
+    (this.vertices || []).forEach(function(v) {
       v.subSelf(rect.centroid);
     });
 

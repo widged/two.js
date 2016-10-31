@@ -196,7 +196,7 @@ var load = function(text, callback) {
   if (/.*\.svg/ig.test(text)) {
     var xhr = require('./platform/xhr').default;
 
-    xhr(text, _.bind(function(data) {
+    xhr(text, (data) => {
 
       dom.temp.innerHTML = data;
       for (i = 0; i < dom.temp.children.length; i++) {
@@ -207,7 +207,7 @@ var load = function(text, callback) {
       callback(nodes.length <= 1 ? nodes[0] : nodes,
         dom.temp.children.length <= 1 ? dom.temp.children[0] : dom.temp.children);
 
-    }, this));
+    });
 
     return;
 
@@ -295,7 +295,7 @@ var tags = {
 
     // Split up polybeziers
 
-    _.each(commands.slice(0), function(command, i) {
+    commands.slice(0).forEach(function(command, i) {
 
       var type = command[0];
       var lower = type.toLowerCase();
@@ -372,7 +372,7 @@ var tags = {
     // Create the vertices for our Path
 
     var points = [];
-    _.each(commands, function(command, i) {
+    commands.forEach(function(command, i) {
 
       var result, x, y;
       var type = command[0];
@@ -602,8 +602,8 @@ var tags = {
           var my = (y4 - y1) / 2;
 
           // Calculate x1' y1' F.6.5.1
-          var _x = mx * Math.cos(xAxisRotation) + my * Math.sin(xAxisRotation);
-          var _y = - mx * Math.sin(xAxisRotation) + my * Math.cos(xAxisRotation);
+          var _x = mx * cos(xAxisRotation) + my * sin(xAxisRotation);
+          var _y = - mx * sin(xAxisRotation) + my * cos(xAxisRotation);
 
           var rx2 = rx * rx;
           var ry2 = ry * ry;
@@ -630,15 +630,15 @@ var tags = {
           var _cy = - amp * ry * _x / rx;
 
           // Calculate cx cy F.6.5.3
-          var cx = _cx * Math.cos(xAxisRotation) - _cy * Math.sin(xAxisRotation) + (x1 + x4) / 2;
-          var cy = _cx * Math.sin(xAxisRotation) + _cy * Math.cos(xAxisRotation) + (y1 + y4) / 2;
+          var cx = _cx * cos(xAxisRotation) - _cy * sin(xAxisRotation) + (x1 + x4) / 2;
+          var cy = _cx * sin(xAxisRotation) + _cy * cos(xAxisRotation) + (y1 + y4) / 2;
 
           // vector magnitude
           var m = function(v) { return Math.sqrt(Math.pow(v[0], 2) + Math.pow(v[1], 2)); };
           // ratio between two vectors
           var r = function(u, v) { return (u[0] * v[0] + u[1] * v[1]) / (m(u) * m(v)); };
           // angle between two vectors
-          var a = function(u, v) { return (u[0] * v[1] < u[1] * v[0] ? - 1 : 1) * Math.acos(r(u,v)); }
+          var a = function(u, v) { return (u[0] * v[1] < u[1] * v[0] ? - 1 : 1) * Math.acos(r(u,v)); };
 
           // Calculate theta1 and delta theta F.6.5.4 + F.6.5.5
           var t1 = a([1, 0], [(_x - _cx) / rx, (_y - _cy) / ry]);
@@ -668,15 +668,17 @@ var tags = {
 
           // Create a resulting array of Anchor's to export to the
           // the path.
-          result = _.map(_.range(length), function(i) {
+
+
+          result = [];
+          for (var i = 0; i < length; i++) {
             var pct = 1 - (i / (length - 1));
             var theta = pct * dt + t1;
-            var x = rx * Math.cos(theta);
-            var y = ry * Math.sin(theta);
-            var projected = projection.multiply(x, y, 1);
-            return new Anchor(projected.x, projected.y, false, false, false, false, Commands.line);
-          });
-
+            var xx = rx * cos(theta);
+            var yy = ry * sin(theta);
+            var projected = projection.multiply(xx, yy, 1);
+            result.push(new Anchor(projected.x, projected.y, false, false, false, false, Commands.line));
+          }
           result.push(new Anchor(x4, y4, false, false, false, false, Commands.line));
 
           coord = result[result.length - 1];
@@ -715,13 +717,12 @@ var tags = {
     var r = parseFloat(node.getAttribute('r'));
 
     var amount = Resolution;
-    var points = _.map(_.range(amount), function(i) {
+    var points = [];
+    for (var i = 0; i < amount; i++) {
       var pct = i / amount;
       var theta = pct * TWO_PI;
-      var x = r * cos(theta);
-      var y = r * sin(theta);
-      return new Anchor(x, y);
-    });
+      points.push(Anchor(r * cos(theta), r * sin(theta)));
+    }
 
     var circle = new Path(points, true, true).noStroke();
     circle.translation.set(x, y);
@@ -741,13 +742,14 @@ var tags = {
     var height = parseFloat(node.getAttribute('ry'));
 
     var amount = Resolution;
-    var points = _.map(_.range(amount), function(i) {
+    var points = [];
+    for (var i = 0; i < amount; i++) {
       var pct = i / amount;
       var theta = pct * TWO_PI;
-      var x = width * cos(theta);
-      var y = height * sin(theta);
-      return new Anchor(x, y);
-    });
+      var xx = width * cos(theta);
+      var yy = height * sin(theta);
+      points.push(Anchor(xx, yy));
+    }
 
     var ellipse = new Path(points, true, true).noStroke();
     ellipse.translation.set(x, y);

@@ -22,13 +22,14 @@ export default function(ox, oy, rx, ry, res) {
 
 	var amount = res || Resolution;
 
-	var points = _.range(amount).map((i) => {
+	var points = [];
+  for (var i = 0; i < amount; i++) {
 		var pct = i / amount;
 		var theta = pct * TWO_PI;
 		var x = rx * cos(theta);
 		var y = ry * sin(theta);
-		return [x,y];
-	});
+		points.push([x,y]);
+	}
 
 	return {points, translation: [ox, oy]};
 

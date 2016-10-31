@@ -38,9 +38,7 @@ FN.createElement = function(name, attrs) {
   var tag = name;
   var elem = document.createElementNS(ns, tag);
   if (tag === 'svg') {
-    attrs = _.defaults(attrs || {}, {
-      version: this.version
-    });
+    attrs = Object.assign(attrs || {}, { version: this.version });
   }
   FN.setAttributes(elem, attrs);
   return elem;

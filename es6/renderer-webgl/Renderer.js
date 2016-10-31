@@ -35,7 +35,7 @@ class WebglRenderer extends Renderer {
 
     // http://games.greggman.com/game/webgl-and-alpha/
     // http://www.khronos.org/registry/webgl/specs/latest/#5.2
-    params = _.defaults(options || {}, {
+    params = Object.assign(options || {}, {
       antialias: false,
       alpha: true,
       premultipliedAlpha: true,
@@ -184,7 +184,7 @@ var createProgram = function(gl, shaders) {
 
     var program, linked, error;
     program = gl.createProgram();
-    _.each(shaders, function(s) {
+    shaders.forEach(function(s) {
       gl.attachShader(program, s);
     });
 

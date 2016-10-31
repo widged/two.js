@@ -27,14 +27,15 @@ export default function(ox, oy, or, ir, sides) {
 
   var length = sides * 2;
 
-  var points = _.map(_.range(length), function(i) {
+  var points = [];
+  for (var i = 0; i < length; i++) {
     var pct = (i - 0.5) / length;
     var theta = pct * TWO_PI;
     var r = (i % 2 ? ir : or);
     var x = r * cos(theta);
     var y = r * sin(theta);
-    return [x,y];
-  });
+    points.push([x,y]);
+ }
 
   return {points, translation: [ox, oy]};
 

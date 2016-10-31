@@ -4,12 +4,13 @@ import Commands from '../constant/CommandTypes';
 import Resolution from '../constant/Resolution';
 import _ from '../util/common';
 import is from '../util/is';
-import MathExtras   from '../util/math-extras';
 import Vector from '../struct/Vector';
 import Matrix from '../struct/Matrix';
 import Anchor from '../Anchor';
 
-var {isObject, isNumber} = is;
+var {mod} = _;
+var {isObject, isNumber, isNull} = is;
+var {atan2, sqrt, sin, cos, pow, PI, round, min, max} = Math;
 
 /**
 * A collection of utility functions and variables used throughout the project.
@@ -18,7 +19,7 @@ var {isObject, isNumber} = is;
 */
 var Curve = {
 
-  CollinearityEpsilon: Math.pow(10, -30),
+  CollinearityEpsilon: pow(10, -30),
 
   RecursionLimit: 16,
 
@@ -71,6 +72,7 @@ var Curve = {
 
 };
 
+
 var FN = {};
 var NotInUse = {};
 
@@ -90,12 +92,10 @@ FN.getComputedMatrix = (object, matrix) => {
 
   matrices.reverse();
 
-  _.each(matrices, function(m) {
-
+  matrices.forEach(function(m) {
     var e = m.elements;
     matrix.multiply(
       e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7], e[8], e[9]);
-
   });
 
   return matrix;
@@ -118,23 +118,19 @@ FN.deltaTransformPoint = (matrix, x, y) => {
 FN.decomposeMatrix = (matrix) => {
   var {deltaTransformPoint} = FN;
 
-  var PI = Math.PI;
-
-  var atan2 = Math.atan2, sqrt = Math.sqrt;
-
   // calculate delta transform point
   var px = deltaTransformPoint(matrix, 0, 1);
   var py = deltaTransformPoint(matrix, 1, 0);
 
   // calculate skew
-  var skewX = ((180 / PI) * Math.atan2(px.y, px.x) - 90);
-  var skewY = ((180 / PI) * Math.atan2(py.y, py.x));
+  var skewX = ((180 / PI) * atan2(px.y, px.x) - 90);
+  var skewY = ((180 / PI) * atan2(py.y, py.x));
 
   return {
       translateX: matrix.e,
       translateY: matrix.f,
-      scaleX: Math.sqrt(matrix.a * matrix.a + matrix.b * matrix.b),
-      scaleY: Math.sqrt(matrix.c * matrix.c + matrix.d * matrix.d),
+      scaleX: sqrt(matrix.a * matrix.a + matrix.b * matrix.b),
+      scaleY: sqrt(matrix.c * matrix.c + matrix.d * matrix.d),
       skewX: skewX,
       skewY: skewY,
       rotation: skewX // rotation is the same as skew x
@@ -161,15 +157,14 @@ FN.subdivide = (x1, y1, x2, y2, x3, y3, x4, y4, limit) => {
     return [[x4, y4]];
   }
 
-  return _.map(_.range(0, amount), function(i) {
-
+  var points = [];
+  for (var i = 0; i < amount; i++) {
     var t = i / amount;
     var x = getPointOnCubicBezier(t, x1, x2, x3, x4);
     var y = getPointOnCubicBezier(t, y1, y2, y3, y4);
-
-    return [x, y];
-
-  });
+    points.push([x, y]);
+  }
+  return points;
 
 };
 
@@ -177,7 +172,7 @@ FN.getPointOnCubicBezier = (t, a, b, c, d)  => {
   var k = 1 - t;
   return (k * k * k * a) + (3 * k * k * t * b) + (3 * k * t * t * c) +
      (t * t * t * d);
-},
+};
 
 /**
  * Given 2 points (a, b) and corresponding control point for each
@@ -188,7 +183,7 @@ FN.getCurveLength = (x1, y1, x2, y2, x3, y3, x4, y4, limit)  => {
 
   var {integrate} = FN;
 
-  var sqrt = Math.sqrt;
+  var sqrt = sqrt;
 
   // TODO: Better / fuzzier equality check
   // Linear calculation
@@ -214,9 +209,10 @@ FN.getCurveLength = (x1, y1, x2, y2, x3, y3, x4, y4, limit)  => {
     return sqrt(dx * dx + dy * dy);
   };
 
-  return integrate(
+  var out = integrate(
     integrand, 0, 1, limit || Curve.RecursionLimit
   );
+  return out;
 
 };
 
@@ -278,8 +274,7 @@ FN.integrate = (f, a, b, n)  => {
  */
 FN.getCurveFromPoints = (points, closed)  => {
 
-  var {getControlPoints, mod} = FN;
-  var {min,max, mod} = Math;
+  var {getControlPoints} = FN;
 
   var l = points.length, last = l - 1;
 
@@ -311,15 +306,35 @@ FN.getCurveFromPoints = (points, closed)  => {
 
 };
 
+
+FN.angleBetween = (A, B)  => {
+  var dx, dy;
+  if (arguments.length >= 4) {
+    dx = arguments[0] - arguments[2];
+    dy = arguments[1] - arguments[3];
+    return atan2(dy, dx);
+  }
+  dx = A.x - B.x;
+  dy = A.y - B.y;
+  return atan2(dy, dx);
+};
+
+
+FN.distanceBetween = (p1, p2)  => {
+  var dx = p1.x - p2.x;
+  var dy = p1.y - p2.y;
+  var squared = dx * dx + dy * dy;
+  return sqrt(squared);
+};
+
 /**
  * Given three coordinates return the control points for the middle, b,
  * vertex.
  */
 FN.getControlPoints = (a, b, c)  => {
-  var {angleBetween, distanceBetween} = MathExtras;
-  var {sin, cos} = Math;
+  var {angleBetween, distanceBetween} = FN;
 
-  var PI = Math.PI, HALF_PI = PI / 2;
+  var HALF_PI = PI / 2;
 
   var a1 = angleBetween(a, b);
   var a2 = angleBetween(c, b);
@@ -389,7 +404,7 @@ FN.getReflection = (a, b, relative)  => {
 };
 
 FN.getSubdivisions = (a, b, limit) => {
-    var {subdivide} = curve;
+    var {subdivide} = FN;
     // TODO: DRYness
     var x1, x2, x3, x4, y1, y2, y3, y4;
 
@@ -453,7 +468,7 @@ FN.getSubdivisions = (a, b, limit) => {
       points = points.concat(verts);
 
       // Assign commands to all the verts
-      _.each(verts, function(v, i) {
+      verts.forEach(function(v, i) {
         if (i <= 0 && b.command === Commands.move) {
           v.command = Commands.move;
         } else {
@@ -472,7 +487,7 @@ FN.getSubdivisions = (a, b, limit) => {
           points = points.concat(verts);
 
           // Assign commands to all the verts
-          _.each(verts, function(v, i) {
+          verts.forEach(function(v, i) {
             if (i <= 0 && b.command === Commands.move) {
               v.command = Commands.move;
             } else {
@@ -535,8 +550,6 @@ FN.updateLength = ({limit, vertices, pathClosed, lastClosed, lengths}) => {
 
 FN.copyVertices = ({vertices, beginning, ending}) => {
 
-  var round = Math.round;
-
   var l = vertices.length;
   var last = l - 1, v;
 
@@ -553,11 +566,7 @@ FN.copyVertices = ({vertices, beginning, ending}) => {
 
 };
 
-
-
 NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  => {
-
-  var {sin, cos} = Math;
 
   var matrix = new Matrix()
     .translate(center.x, center.y)
@@ -567,8 +576,8 @@ NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  =>
 
   // console.log(arguments);
 
-  return _.map(_.range(l), function(i) {
-
+  var points = [];
+  for (var i = 0; i < l; i++) {
     var pct = (i + 1) / l;
     if (!!ccw) {
       pct = 1 - pct;
@@ -581,14 +590,13 @@ NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  =>
     // x += center.x;
     // y += center.y;
 
-
     // TODO: Calculate control points here...
+    points.push([x, y, 0, 0, 0, 0, Commands.line]);
 
-    return [x, y, 0, 0, 0, 0, Commands.line];
+  }
+  return points;
 
-  });
-
-}
+};
 
 /**
  * Given a float `t` from 0 to 1, return a point or assign a passed `obj`'s
@@ -596,7 +604,7 @@ NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  =>
  */
 NotInUse.getPointAt = (t, obj, pth) => {
       var x, x1, x2, x3, x4, y, y1, y2, y3, y4, left, right;
-      var target = pth.length * Math.min(Math.max(t, 0), 1);
+      var target = pth.length * min(max(t, 0), 1);
       var length = pth.vertices.length;
       var last = length - 1;
 
@@ -606,8 +614,8 @@ NotInUse.getPointAt = (t, obj, pth) => {
       for (var i = 0, l = pth._lengths.length, sum = 0; i < l; i++) {
 
         if (sum + pth._lengths[i] > target) {
-          a = pth.vertices[this.closed ? _.mod(i, length) : i];
-          b = pth.vertices[Math.min(Math.max(i - 1, 0), last)];
+          a = pth.vertices[this.closed ? mod(i, length) : i];
+          b = pth.vertices[min(max(i - 1, 0), last)];
           target -= sum;
           t = target / pth._lengths[i];
           break;
@@ -656,5 +664,8 @@ NotInUse.getPointAt = (t, obj, pth) => {
 
 };
 
+NotInUse.ratioBetween = (A, B)  => {
+  return (A.x * B.x + A.y * B.y) / (A.length() * B.length());
+};
 
 export default FN;

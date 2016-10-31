@@ -4,6 +4,8 @@ import is  from '../../util/is';
 import base from './base';
 import Matrix   from '../../struct/Matrix';
 import Array2   from '../../struct/Array';
+import LinearGradient   from '../../shape/gradient/LinearGradient';
+import RadialGradient   from '../../shape/gradient/RadialGradient';
 
 var {isString, isNumber} = is;
 

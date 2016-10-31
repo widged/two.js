@@ -77,7 +77,7 @@ class Matrix {
 
     if (l <= 1) {
 
-      _.each(this.elements, function(v, i) {
+      (this.elements || []).each(function(v, i) {
         this.elements[i] = v * a;
       }, this);
 

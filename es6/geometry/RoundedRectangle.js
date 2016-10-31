@@ -89,18 +89,15 @@ function roundCorner(points, x, y, radius, quadrant) {
       break;
   }
 
-  var curve = _.map(_.range(length), function(i) {
-
+  var curve = [];
+  for (var i = 0; i < length; i++) {
     var theta = map(length - i, 0, length, start, end);
     var tx = radius * Math.cos(theta) + x - xr;
     var ty = radius * Math.sin(theta) + y - yr;
-    var anchor = [tx, ty];
+    curve.push([tx, ty]);
+  }
 
-    return anchor;
-
-  }).reverse();
-
-  return points.concat(curve);
+  return points.concat(curve.reverse());
 
 }
 

@@ -55,9 +55,7 @@ class Gradient extends Shape {
 
   toObject() {
     var obj = serializeProperties(this, {}, Gradient.Properties);
-    obj.stops = _.map(this.stops, function(s) {
-        return s.toObject();
-    });
+    obj.stops = this.stops.map(function(s) { return s.toObject(); });
     return obj;
   }
 
