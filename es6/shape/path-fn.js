@@ -2,15 +2,20 @@
 
 import Commands from '../constant/CommandTypes';
 import Resolution from '../constant/Resolution';
-import _ from './common';
-import is from './is';
-import MathExtras   from './math-extras';
+import _ from '../util/common';
+import is from '../util/is';
+import MathExtras   from '../util/math-extras';
 import Vector from '../struct/Vector';
 import Matrix from '../struct/Matrix';
 import Anchor from '../Anchor';
 
 var {isObject, isNumber} = is;
 
+/**
+* A collection of utility functions and variables used throughout the project.
+* This is where much of the algorithmic computation lies: computing curve handles,
+* subdividing cubic bezier curves, interpretting svg nodes.
+*/
 var Curve = {
 
   CollinearityEpsilon: Math.pow(10, -30),

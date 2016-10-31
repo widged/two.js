@@ -335,30 +335,34 @@ class Two {
   }
 
   /**
-   * Convenience methods to various shape types to the scene
+   * Convenience methods to add to the scene various shape types
    */
+   makeGroup(objects) {
+     var gp = factories.makeGroup();
+     this.scene.add(gp);
+     if (!(objects instanceof Array)) {
+       objects = Array.from(arguments);
+     }
+     gp.add(objects);
+     return gp;
+   }
+
   makeCurve(p) {
-    var shape = factories.makeCurve(p);
-    var rect = shape.getBoundingClientRect();
-    // :WARN: consider making this optional as make this optional
-    shape.center().translation
-      .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    this.scene.add(shape);
-    return shape;
+    var pth = factories.makeCurve(p);
+    factories.centerPath(pth); // :WARN: consider making this optional as make this optional
+    this.scene.add(pth);
+    return pth;
   }
   makePath(p) {
-    var shape = factories.makePath(p);
-    var rect = shape.getBoundingClientRect();
-    // :WARN: consider making this optional as make this optional
-    shape.center().translation
-      .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    this.scene.add(shape);
-    return shape;
+    var pth = factories.makePath(p);
+    factories.centerPath(pth); // :WARN: consider making this optional as make this optional
+    this.scene.add(pth);
+    return pth;
   }
   makeText(...args) {
-    var shape = factories.makeText(...args);
-    this.add(shape);
-    return shape;
+    var txt = factories.makeText(...args);
+    this.add(txt);
+    return txt;
   }
   makeLinearGradient(x1, y1, x2, y2, ...stops) {
     var gradient = factories.makeLinearGradient(x1, y1, x2, y2, stops);
@@ -372,25 +376,15 @@ class Two {
   }
 
   /**
-   * Let the user load predefined geometries defined as a Path
+   * Draws a custom geometry to the instance's drawing space.
+   * Geometries defined as a Path
    */
   addGeometry({points, translation, rotation}) {
-    var shape = factories.makeGeometry(points);
-    shape.translation.set(...translation);
-    if(rotation) { shape.rotation = rotation; }
-    this.scene.add(shape);
-    return shape;
-  }
-
-
-  makeGroup(objects) {
-    var shape = factories.makeGroup();
-    this.scene.add(shape);
-    if (!(objects instanceof Array)) {
-      objects = Array.from(arguments);
-    }
-    shape.add(objects);
-    return shape;
+    var pth = factories.makeGeometry(points);
+    pth.translation.set(...translation);
+    if(rotation) { pth.rotation = rotation; }
+    this.scene.add(pth);
+    return pth;
   }
 
 

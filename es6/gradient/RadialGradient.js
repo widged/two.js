@@ -7,12 +7,30 @@ import Vector    from '../struct/Vector';
 import shapeFN    from '../shape-fn';
 import Gradient  from '../shape/Gradient';
 
-var {copyKeys} = _;
+var {cloned, serialized} = shapeFN;
 
 var {isNumber} = is;
 
-const PROPS = [ 'radius' ];
 
+/*
+
+Two.RadialGradient
+This is a class for creating a RadialGradient in two.js. By itself a Two.RadialGradient doesn't render anything specifically to the screen. However, in conjunction with a Two.Path you can style Two.Path.fill or Two.Path.stroke with a Two.RadialGradient to render a gradient for that part of the Two.Path. Check the examples page for exact usage.
+construction var radialGradient = new Two.radialGradient(x, y, radius, stops, fx, fy);
+A radial gradient takes a set of x, y coordinates to define the center of the styling. These coordinates are relative to the origin of a Two.Path. This typically means you'll want to set these to 0, 0. Next define how large the radius for the radial gradient is. Lastly, pass an array of Two.Stops to define the coloring of the radial gradient. Optionally, you can pass a set of x, y coordinates to define the focal position of the radial gradient's trajectory.
+center radialGradient.center
+A Two.Vector that represents the position of the x, y coordinates at the center of the gradient.
+radius radialGradient.radius
+A number representing the radius of the radialGradient.
+focal linearGradient.focal
+A Two.Vector that represents the position of the x, y coordinates as the focal point for the gradient's trajectory.
+spread radialGradient.spread
+Defines how the gradient is rendered by the renderer. For more details see the w3c svg spec.
+stops radialGradient.stops
+A Two.Utils.Collection of Two.Stops that is two-way databound. Individual stops may be manipulated.
+clone radialGradient.clone();
+A function to clone a radialGradient. Also, clones each Two.Stop in the radialGradient.stops array.
+*/
 class RadialGradient extends Gradient {
 
   constructor(cx, cy, r, stops, fx, fy) {
@@ -54,28 +72,24 @@ class RadialGradient extends Gradient {
 
   }
 
-
   clone(parent) {
     parent = parent || this.parent;
-    var gradient = new RadialGradient(
+    var stops = (this.stops || []).map(cloned);
+    var clone = new RadialGradient(
       this.center._x,  this.center._y,
       this._radius, stops,
       this.focal._x, this.focal._y
     );
-    var clone = copyKeys(this, gradient, PROPS);
-    var stops = _.map(this.stops, function(stop) {
-      return stop.clone();
-    });
+    Object.keys(RadialGradient.Properties).forEach((k) => { clone[k] = this[k]; });
     parent.add(clone);
     return clone;
 
   }
 
   toObject() {
-    var result = copyKeys( this, Gradient.prototype.toObject.call(this), PROPS);
-    result.center = this.center.toObject();
-    result.focal = this.focal.toObject();
-    return result;
+    var obj = Gradient.prototype.toObject.call(this);
+    Object.keys(RadialGradient.Properties).forEach((k) => { obj[k] = serialized(this[k]); });
+    return obj;
   }
 
   flagReset() {
@@ -87,7 +101,7 @@ class RadialGradient extends Gradient {
 }
 
 RadialGradient.Stop = Gradient.Stop;
-
-shapeFN.defineSecretAccessors(RadialGradient.prototype, PROPS, {});
+RadialGradient.Properties = [ 'radius' ];
+shapeFN.defineSecretAccessors({proto: RadialGradient.prototype, accessors: RadialGradient.Properties});
 
 export default RadialGradient;

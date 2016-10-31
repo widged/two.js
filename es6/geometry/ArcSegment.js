@@ -1,11 +1,11 @@
 /* jshint esnext: true */
 
 /**
- * makeArcSegment two.makeArcSegment(ox, oy, ir, or, sa, ea, res);
+ * arcSegment
  *
  * Defines an arc segment from center point ox, oy with an inner and outer radius
  * of ir, or. Lastly, you need to supply a start and ending angle sa, ea. Optionally,
- * pass the resolution for how many points on the arc are desired. 
+ * pass the resolution for how many points on the arc are desired.
  */
 
 import Commands from '../constant/CommandTypes';

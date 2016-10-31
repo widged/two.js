@@ -7,11 +7,13 @@ import Resolution from '../constant/Resolution';
 var {isNumber} = is;
 
 /**
- * makeRoundedRectangle two.makeRoundedRectangle(x, y, width, height, radius);
- * Draws a rounded rectangle to the instance's drawing space where x, y are the
- * x, y values for the center point of the rectangle and width, height represents
- * the width and height of the rectangle. Lastly, the radius parameter defines
- * what the miter radius of the rounded corner is. 
+ * roundedRectangle
+ *
+ * A rounded rectangle takes a set of x, y coordinates as its origin (the center
+ * of the rounded rectangle by default) and width, height parameters to define
+ * the width and height of the rectangle. Lastly, it takes an optional radius
+ * number representing the radius of the curve along the corner of the rectangle.
+ * radius defaults to 1/12th the of the smaller value between width, height.
  */
 function roundedRectangle(ox, oy, width, height, radius) {
 

@@ -7,27 +7,19 @@ import _  from '../util/common';
 import is  from '../util/is';
 import Collection  from '../struct/Collection';
 import Vector from '../struct/Vector';
-import curveFN  from '../util/curve-manipulation';
 import Anchor from '../Anchor';
 import Shape from '../Shape';
 import shapeFN    from '../shape-fn';
+import pathFN  from './path-fn';
+import DefaultValues from '../constant/DefaultValues';
 
 var {isUndefined, isNull} = is;
 var {arrayLast} = _;
-var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertices} = curveFN;
+var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertices} = pathFN;
 var {min, max, round} = Math;
 
-
-var default_style = {
-  fill: '#fff',
-  stroke: '#000',
-  linewidth: 1.0,
-  opacity: 1.0,
-  visible: true,
-  cap: 'round',  // set to 'butt' in Path constructor
-  join: 'round', // set to 'miter' in Path constructor
-  miter: 4,
-};
+// Underlying Properties
+var pathDefaults = DefaultValues.Path;
 
 var config = {
   flags : {
@@ -47,7 +39,76 @@ var config = {
   }
 };
 
+/**
+ * This is the base class for creating all drawable shapes in two.js. By default,
+ * methods return their instance of Path for the purpose of chaining.
+ *
+ * A path takes an array of vertices which are made up of Two.Anchors. This is
+ * essential for the two-way databinding. It then takes two booleans, closed and
+ * curved which delineate whether the shape should be closed (lacking endpoints)
+ * and whether the shape should calculate curves or straight lines between the
+ * vertices. Finally, manual is an optional argument if you'd like to override
+ * the default behavior of two.js and handle anchor positions yourself. Generally
+ * speaking, this isn't something you need to deal with, although some great
+ * usecases arise from this customability, e.g: advanced curve manipulation.
+ *
+ * NB. If you are constructing groups this way instead of two.makePath(), then
+ * don't forget to add the group to the instance's scene, two.add(group).
+ *
+ */
+ /*
 
+id path.id
+The id of the path. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if path.id = 4 then document.querySelector('#two-' + group.id) will return the corresponding svg node.
+
+parent path.parent
+A reference to the Two.Group that contains this instance.
+
+vertices path.vertices
+A Two.Utils.Collection of Two.Anchors that is two-way databound. Individual vertices may be manipulated.
+
+closed path.closed
+Boolean that describes whether the path is closed or not.
+
+curved path.curved
+Boolean that describes whether the path is curved or not.
+
+automatic path.automatic
+Boolean that describes whether the path should automatically dictate how Two.Anchors behave. This defaults to true.
+
+beginning path.beginning
+A number, 0-1, that is mapped to the layout and order of vertices. It represents which of the vertices from beginning to end should start the shape. Exceedingly helpful for animating strokes. Defaults to 0.
+
+ending path.ending
+A number, 0-1, that is mapped to the layout and order of vertices. It represents which of the vertices from beginning to end should end the shape. Exceedingly helpful for animating strokes. Defaults to 1.
+
+clone path.clone();
+Returns a new instance of a Two.Path with the same settings.
+
+center path.center();
+Anchors all vertices around the centroid of the group.
+
+addTo path.addTo(group);
+Adds the instance to a Two.Group.
+
+remove path.remove();
+If added to a two.scene this method removes itself from it.
+
+getBoundingClientRect path.getBoundingClientRect(shallow);
+Returns an object with top, left, right, bottom, width, and height parameters representing the bounding box of the path. Pass true if you're interested in the shallow positioning, i.e in the space directly affecting the object and not where it is nested.
+
+noFill path.noFill();
+Removes the fill.
+
+noStroke path.noStroke();
+Removes the stroke.
+
+plot path.plot();
+If curved goes through the vertices and calculates the curve. If not, then goes through the vertices and calculates the lines.
+
+subdivide path.subdivide();
+Creates a new set of vertices that are lineTo anchors. For previously straight lines the anchors remain the same. For curved lines, however, Two.Utils.subdivide is used to generate a new set of straight lines that are perceived as a curve.
+*/
 class Path extends Shape {
 
   // --------------------
@@ -66,7 +127,7 @@ class Path extends Shape {
     this.ending = 1;
 
     // Style properties
-    Object.keys(default_style).forEach((k) => { this[k] = default_style[k]; });
+    Object.keys(pathDefaults).forEach((k) => { this[k] = pathDefaults[k]; });
     this.cap = 'butt';      // Default of Adobe Illustrator
     this.join = 'miter';    // Default of Adobe Illustrator
 
@@ -418,7 +479,7 @@ class Path extends Shape {
     var clone = shapeFN.clone(
       this,
       new Path(points, this.closed, this.curved, !this.automatic),
-      Object.keys(config.props).concat( Object.keys(default_style))
+      Object.keys(config.props).concat( Object.keys(pathDefaults))
     );
     parent.add(clone);
     return clone;
@@ -434,11 +495,11 @@ class Path extends Shape {
 
 // flags
 var asFlag = (txt) => { return '_flag_'+ txt; };
-shapeFN.defineSecretAccessors(Path.prototype, Object.keys(default_style), {flags: config.flags});
-Object.keys(default_style).forEach((k) => { Path.prototype[asFlag(k)] = true; });
+shapeFN.defineSecretAccessors({proto: Path.prototype,accessors: Object.keys(pathDefaults), flags: config.flags});
+Object.keys(pathDefaults).forEach((k) => { Path.prototype[asFlag(k)] = true; });
 
 // backup value
-Object.keys(default_style).forEach((k) => { Path.prototype['_'+k] = default_style[k]; });
+Object.keys(pathDefaults).forEach((k) => { Path.prototype['_'+k] = pathDefaults[k]; });
 Object.keys(config.props ).forEach((k) => { Path.prototype['_'+k] = config.props[k]; });
 
 export default Path;

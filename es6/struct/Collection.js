@@ -8,6 +8,7 @@ import CollectionEvent from '../constant/CollectionEvent';
  * Array like collection that triggers inserted and removed events
  * removed : pop / shift / splice
  * inserted : push / unshift / splice (with > 2 arguments)
+ * e.g: used for vertices attribute of a Path.
  */
 class Collection  {
 

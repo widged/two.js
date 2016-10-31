@@ -3,9 +3,9 @@
 /**
  * makeRectangle two.makeRectangle(x, y, width, height);
  *
- * Draws a rectangle to the instance's drawing space where x, y are the x, y
- * values for the center point of the rectangle and width, height represents the
- * width and height of the rectangle.
+ * A rectangle takes a set of x, y coordinates as its origin (the center of the
+ * rectangle by default) and width, height parameters to define the width and
+ * height of the rectangle.
  */
 export default function(ox, oy, width, height) {
 

@@ -41,17 +41,6 @@ FN.defaults = function(base) {
   return base;
 };
 
-FN.copyKeys = (source, target, keys) => {
-  if(Array.isArray(keys)) {
-    for(var i = 0, ni = keys.length, k = ''; i < ni; i++) {
-        k = keys[i];
-        target[k] = source[k];
-    }
-  }
-  return target;
-};
-
-
 
 // ------------------------
 // Arrays, Iterables

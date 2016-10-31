@@ -11,11 +11,11 @@ import RadialGradient from '../gradient/RadialGradient';
 import LinearGradient from '../gradient/RadialGradient';
 import Vector from '../struct/Vector';
 import Matrix from '../struct/Matrix';
-import curveFN  from '../util/curve-manipulation';
+import pathFN  from '../shape/path-fn';
 import Anchor from '../Anchor';
 
 var {isObject, isUndefined, isNotNumber, isArray, isNull} = is;
-var {getReflection, decomposeMatrix} = curveFN;
+var {getReflection, decomposeMatrix} = pathFN;
 var {mod} = _;
 var {pow, cos, sin} = Math;
 var TWO_PI = Math.PI * 2;

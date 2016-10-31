@@ -73,7 +73,7 @@ class Gradient extends Shape {
 Gradient.Stop = Stop;
 Gradient.Properties = PROPS;
 
-shapeFN.defineSecretAccessors(Gradient.prototype, PROPS, {});
+shapeFN.defineSecretAccessors({proto: Gradient.prototype, accessors: PROPS});
 
 
 export default Gradient;

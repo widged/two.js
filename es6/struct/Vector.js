@@ -4,6 +4,59 @@ import _  from '../util/common';
 import EventEmitter  from '../util/EventEmitter';
 import VectorEvent    from '../constant/VectorEvent';
 
+/*
+
+This is the atomic coordinate representation for two.js. A Two.Vector is different and specific to two.js because its main properties, x and y, trigger events which allow the renderers to efficiently change only when they need to. Unless specified methods return their instance of Two.Vector for the purpose of chaining.
+construction var vector = new Two.Vector(x, y);
+x vector.x
+The x value of the vector.
+y vector.y
+The y value of the vector.
+set vector.set(x, y);
+Set the x, y properties of the vector to the arguments x, y.
+copy vector.copy(v);
+Set the x, y properties of the vector from another vector, v.
+clear vector.clear();
+Set the x, y properties of the vector to 0.
+clone vector.clone();
+Returns a new instance of a Two.Vector with the same x, y values as the instance.
+add vector.add(v1, v2);
+Add to vectors together. The sum of the x, y values will be set to the instance.
+addSelf vector.addSelf(v);
+Add the x, y values of the instance to the values of another vector. Set the sum to the instance's values.
+sub vector.sub(v1, v2);
+Subtract two vectors. Set the difference to the instance.
+subSelf vector.subSelf(v);
+Subtract a vector, v, from the instance.
+multiplySelf vector.multiplySelf(v);
+Multiply the x, y values of the instance by another vector's, v, x, y values.
+multiplyScalar vector.multiplyScalar(value);
+Multiply the x, y values of the instance by another number, value.
+divideScalar vector.divideScalar(value);
+Divide the x, y values of the instance by another number, value.
+negate vector.negate();
+Toggle the sign of the instance's x, y values.
+dot vector.dot(v);
+Return the dot product of the instance and a vector, v.
+lengthSquared vector.lengthSquared();
+Return the length of the vector squared.
+length vector.length();
+Return the length of the vector.
+normalize vector.normalize();
+Reduce the length of the vector to the unit circle.
+distanceTo vector.distanceTo(v);
+Return the distance from the instance to another vector, v.
+distanceToSquared vector.distanceToSquared(v);
+Return the distance squared from the instance to another vector, v.
+setLength vector.setLength(length);
+Set the length of a vector to a specified distance, length.
+equals vector.equals(v);
+Return a boolean representing whether or not the vectors are within 0.0001 of each other. This fuzzy equality helps with Physics libraries.
+lerp vector.lerp(v, t);
+Linear interpolation of the instance's current x, y values to the destination vector, v, by an amount, t. Where t is a value 0-1.
+isZero vector.isZero();
+Returns a boolean describing the length of the vector less than 0.0001.
+*/
 class Vector  {
 
   constructor(x, y) {

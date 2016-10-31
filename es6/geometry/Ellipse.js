@@ -7,11 +7,11 @@ import Resolution from '../constant/Resolution';
 var {isNumber} = is;
 
 /**
- *  makeEllipse two.makeEllipse(x, y, width, height);
+ * ellipse
  *
- * Draws an ellipse to the instance's drawing space where x, y are the x, y values
- * for the center point of the ellipse and width, height are the dimensions of
- * the ellipse.
+ * An ellipse takes a set of x, y coordinates as its origin (the center of the
+ * ellipse by default) and width, height parameters to define the width and
+ * height of the ellipse.
  */
 
 export default function(ox, oy, rx, ry, res) {

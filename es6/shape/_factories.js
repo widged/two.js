@@ -70,4 +70,13 @@ FN.makeGroup = () => {
   return new Group();
 };
 
+FN.centerPath = (pth) => {
+  var rect = pth.getBoundingClientRect();
+  pth.center().translation
+    .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  return pth;
+};
+
+
+
 export default FN;

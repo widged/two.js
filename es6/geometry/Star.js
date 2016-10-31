@@ -8,11 +8,12 @@ var {isNumber} = is;
 var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
 
 /**
- * makeStar two.makeStar(ox, oy, or, ir, sides);
+ * star
  *
- * Draws a star to the instance's drawing space where ox, oy are the x, y values
- * for the center point of the star and or, ir are the outer and inner radii for
- * the star, and sides are how many points the star has.
+ * A star takes a set of x, y coordinates as its origin (the center of the star
+ * by default) and or parameter to define the outer radius of the star. Optionally
+ * you can define an ir inner radius for the star and sides for how many sides
+ * the star has. By default he ir is half the or and there are 5 sides.
  */
 export default function(ox, oy, or, ir, sides) {
 

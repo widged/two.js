@@ -2,6 +2,10 @@
 
 // Custom Error Throwing for Two.js
 
+/**
+ * A two.js specific custom error handler. Takes a message, string, to display
+ * in the console to developers.
+ */
 class TwoError extends Error {
 	constructor(message) {
 		super(message);

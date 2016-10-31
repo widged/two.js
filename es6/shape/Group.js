@@ -8,6 +8,7 @@ import Shape  from '../Shape';
 import shapeFN    from '../shape-fn';
 import groupFN  from './group-fn';
 import Children  from '../ChildrenCollection';
+import DefaultValues from '../constant/DefaultValues';
 
 var {isNumber, isArray} = is;
 var {exclude}  = _;
@@ -22,30 +23,60 @@ FLAG.opacity = true;
 FLAG.mask = false;
 
 // Underlying Properties
-var default_style = {
-  fill: '#fff',
-  stroke: '#000',
-  linewidth: 1.0,
-  opacity: 1.0,
-  visible: true,
-  cap: 'round',
-  join: 'round',
-  miter: 4,
-};
-
-const PROP_DEFAULTS = {
-  closed: true,
-  curved: false,
-  automatic: true,
-  beginning: 0,
-  ending: 1.0,
-  _mask: null
-};
-
+var groupDefaults = DefaultValues.Group;
 
 var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
 
+/**
+ * This is a container object — it can hold shapes as well as other groups.
+ *  At a technical level it can be considered an empty transformation matrix.
+ * It is recommended to use two.makeGroup() in order to add groups to your instance
+ * of two, but it's not necessary. Unless specified methods return their instance
+ * of Group for the purpose of chaining.
+*/
 
+/*
+construction var group = new Two.Group();
+ If you are constructing groups this way instead of two.makeGroup(), then don't forget to add the group to the instance's scene, two.add(group).
+
+id group.id
+The id of the group. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if group.id = 5 then document.querySelector('#two-' + group.id) will return the corresponding node.
+
+
+children group.children
+A map of all the children of the group.
+
+parent group.parent
+A reference to the Two.Group that contains this instance.
+
+mask group.mask
+A reference to the Two.Path that masks the content within the group. Automatically sets the referenced Two.Path.clip to true.
+
+clone group.clone();
+Returns a new instance of a Two.Group with the same settings.
+ This will copy the children as well, which can be computationally expensive.
+
+center group.center();
+Anchors all children around the centroid of the group.
+
+addTo group.addTo(group);
+Adds the instance to a Two.Group. In many ways the inverse of two.add(object).
+
+add group.add(objects);
+Add one or many shapes / groups to the instance. Objects can be added as arguments, two.add(o1, o2, oN), or as an array depicted above.
+
+remove group.remove(objects);
+Remove one or many shapes / groups to the instance. Objects can be removed as arguments, two.remove(o1, o2, oN), or as an array depicted above.
+
+getBoundingClientRect group.getBoundingClientRect(shallow);
+Returns an object with top, left, right, bottom, width, and height parameters representing the bounding box of the path. Pass true if you're interested in the shallow positioning, i.e in the space directly affecting the object and not where it is nested.
+
+noFill group.noFill();
+Remove the fill from all children of the group.
+
+noStroke group.noStroke();
+Remove the stroke from all children of the group.
+*/
 class Group extends Shape {
 
   // --------------------
@@ -345,16 +376,8 @@ class Group extends Shape {
 
 Group.Children = Children;
 
-
-var props = Object.keys(PROP_DEFAULTS).concat(Object.keys(default_style));
-// style
-shapeFN.defineSecretAccessors(Group.prototype, props.filter(exclude(['opacity'])), {});
-// flags
-shapeFN.defineSecretAccessors(Group.prototype, ['opacity'], {onlyWhenChanged: true, flags: FLAG }) ;
-// backup values
-Object.keys(PROP_DEFAULTS).forEach((k) => { Group.prototype['_'+k] = PROP_DEFAULTS[k]; });
-Object.keys(default_style).forEach((k) => { Group.prototype['_'+k] = default_style[k]; });
-
+// var excluded = 'closed,curved,automatic,beginning,ending,mask'.split(',')
+shapeFN.defineSecretAccessors({proto: Group.prototype, accessors: Object.keys(groupDefaults), flags: FLAG, secrets: groupDefaults, onlyWhenChanged: ['opacity'] });
 
 
 export default Group;

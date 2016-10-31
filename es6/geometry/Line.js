@@ -1,11 +1,10 @@
 /* jshint esnext: true */
 
 /**
- * makeLine two.makeLine(x1, y1, x2, y2);
+ * line
  *
- * Draws a line between two coordinates to the instance's drawing space where x1, y1
- * are the x, y values for the first coordinate and x2, y2 are the x, y values for
- * the second coordinate.
+ * A line takes two sets of x, y coordinates. x1, y1 to define the left endpoint
+ * and x2, y2 to define the right endpoint.
  */
 export default function(x1, y1, x2, y2) {
 

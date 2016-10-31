@@ -1,16 +1,8 @@
 /* jshint esnext: true */
 
-import _  from '../util/common';
 import is  from '../util/is';
 
-var {copyKeys} = _;
 var {isNumber, isString} = is;
-
-const PROPS = [
-  'offset',
-  'opacity',
-  'color'
-];
 
 var stopIndex = 0;
 
@@ -32,13 +24,24 @@ class Stop {
   }
 
   clone() {
-    return copyKeys(this, new Stop(), PROPS);
+    var clone = new Stop();
+    Stop.Properties.forEach((k) => {  clone[k] = this[k]; });
+    return clone;
   }
 
   toObject() {
-    return copyKeys(this, {}, PROPS);
+    var obj = {};
+    Stop.Properties.forEach((k) => {  obj[k] = this[k]; });
+    return obj;
   }
 
 }
+
+Stop.Properties = [
+  'offset',
+  'opacity',
+  'color'
+];
+
 
 export default Stop;

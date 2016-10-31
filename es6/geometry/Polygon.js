@@ -3,11 +3,12 @@
 import _  from '../util/common';
 
 /**
- * makePolygon two.makePolygon(ox, oy, r, sides);
+ * polygon
  *
- * Draws a polygon to the instance's drawing space where ox, oy are the x, y
- * values for the center of the polygon, r is the radius, and sides are how many
- * sides the polygon has.
+ * A polygon takes a set of x, y coordinates as its origin (the center of the
+ * polygon by default) and radius, sides parameters to define the radius of the
+ * polygon and how many sides the polygon has. By default there are 3 sides,
+ * a triangle.
  */
 export default function(ox, oy, r, sides) {
 

@@ -6,26 +6,24 @@ import Matrix from './struct/Matrix';
 import Vector from './struct/Vector';
 import UidGenerator from './util/uid-generator';
 import shapeFN    from './shape-fn';
+import DefaultValues from './constant/DefaultValues';
 
 var uniqueId = UidGenerator();
-var {copyKeys} = _;
+var {flagAccessor, secretAccessor} = shapeFN;
 
 // Flags
 const FLAG = {};
 FLAG.matrix = true;
-// mask = false;
-// clip = false;
+FLAG.scale = true;
+// FLAG.mask = false;
+// FLAG.clip = false;
 
-const PROP_DEFAULTS = {
-  // Underlying Properties
-  _rotation: 0,
-  _scale: 1,
-  // _translation
-  // _mask: null,
-  // _clip: false,
-};
+// Underlying Properties
+var shapeDefaults = DefaultValues.Shape;
 
+/**
 
+*/
 class Shape {
 
   // --------------------
@@ -137,6 +135,6 @@ class Shape {
 }
 Shape.Identifier = 'sh_';
 
-Object.keys(PROP_DEFAULTS).forEach((k) => { Shape.prototype[k] = PROP_DEFAULTS[k]; });
+Object.keys(shapeDefaults).forEach((k) => { Shape.prototype[k] = shapeDefaults[k]; });
 
 export default Shape;
