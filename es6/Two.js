@@ -38,7 +38,7 @@ import dom from './platform/dom';
 import perf from './platform/Performance';
 import Shape from './Shape';
 import Group from './shape/Group';
-import factories from './shape/_factories';
+import factories from './shape/factories';
 
 var TwoDefaults = DefaultValues.Two;
 

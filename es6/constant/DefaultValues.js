@@ -38,17 +38,16 @@ rotation
 A number that represents the rotation of the path in the drawing space, in radians.
 
 scale
-A number that represents the uniform scale of the path in the drawing space.
+A `number` that represents the uniform scale of the path in the drawing space.
 
 translation
 A `Vector` that represents x, y translation of the path in the drawing space.
 
 clip path.clip
-A boolean describing whether to render this shape as a clipping mask.
+A `boolean` describing whether to render this shape as a clipping mask.
 This property is set automatically in correspondence with Two.Group.mask. Defaults to false.
 */
 FN.Shape = {
-  // Underlying Properties
   rotation: 0,
   scale: 1,
   clip: false
@@ -78,7 +77,6 @@ A string representing the type of stroke join to render for all child shapes. Us
 miter group.miter
 A number representing the miter limit for the stroke of all child objects. Use strictly for setting. Defaults to 1.
 */
-// extends Shape
 FN.Group = {
    fill: '#fff',
    stroke: '#000',
@@ -96,6 +94,7 @@ FN.Group = {
 
    mask: null
  };
+ // rotation, translation, scale, mask from Shape
 
 
 /*
@@ -120,7 +119,6 @@ A string representing the type of stroke join to render. All applicable values c
 miter path.miter
 A number representing the miter limit for the stroke. Defaults to 1.
 */
-// extends Shape
 FN.Path = {
   fill: '#fff',
   stroke: '#000',
@@ -130,8 +128,62 @@ FN.Path = {
   cap: 'round',  // set to 'butt' in Path constructor
   join: 'round', // set to 'miter' in Path constructor
   miter: 4,
-};
 
+  length: 0,
+  closed: true,
+  curved: false,
+  automatic: true,
+  beginning: 0,
+  ending: 1.0,
+  clip: false,
+  
+};
+// rotation, translation, scale, mask from Shape
+
+
+/**
+value text.value
+A string representing the text that will be rendered to the stage.
+
+family text.family
+A string representing the css font-family to be applied to the rendered text. Default value is 'sans-serif'.
+
+size text.size
+A number representing the text's size to be applied to the rendered text. Default value is 13.
+
+leading text.leading
+A number representing the leading, a.k.a. line-height, to be applied to the rendered text. Default value is 17.
+
+alignment text.alignment
+A string representing the horizontal alignment to be applied to the rendered text. e.g: 'left', 'right', or 'center'. Default value is 'middle'.
+
+fill text.fill
+A string representing the color for the text area to be filled. All valid css representations of color are accepted. Default value is '#000'.
+
+stroke text.stroke
+A string representing the color for the text area to be stroked. All valid css representations of color are accepted. Default value is 'transparent'.
+
+linewidth text.linewidth
+A number representing the linewidth to be applied to the rendered text. Default value is 1.
+
+style text.style
+A string representing the font style to be applied to the rendered text. e.g: 'normal' or 'italic'. Default value is 'normal'.
+
+weight text.weight
+A number or string representing the weight to be applied to the rendered text. e.g: 500 or 'normal'. For more information see the Font Weight Specification. Default value is 500.
+
+decoration text.decoration
+A string representing the text decoration to be applied to the rendered text. e.g: 'none', 'underlined', or 'strikethrough'. Default value is 'none'
+
+baseline text.baseline
+A string representing the vertical aligment to be applied to the rendered text. e.g: 'middle', 'baseline', or 'top'. Default value is 'middle'.
+
+opacity text.opacity
+A number representing the opacity of the path. Use strictly for setting. Must be a number 0-1.
+
+visible text.visible
+A boolean representing whether the text object is visible or not.
+*/
  // extends Shape
  FN.Text = {
    value: '',
@@ -152,5 +204,6 @@ FN.Path = {
 
    clip: false
  };
+ // rotation, translation, scale, mask, clip from Shape
 
 export default FN;

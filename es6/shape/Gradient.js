@@ -1,12 +1,12 @@
 /* jshint esnext: true */
 
 import _  from '../util/common';
-import Stop      from '../gradient/Stop';
+import Stop      from './gradient/Stop';
 import Shape     from '../Shape';
 import shapeFN    from '../shape-fn';
 import Collection  from '../struct/Collection';
 
-const PROPS = [ 'spread' ];
+var {cloned, serializeProperties, cloneProperties, defineSecretAccessors} = shapeFN;
 
 class Gradient extends Shape {
 
@@ -36,7 +36,7 @@ class Gradient extends Shape {
   }
 
   // -----------------
-  // Main
+  // IRenderable
   // -----------------
 
   flagReset() {
@@ -45,22 +45,16 @@ class Gradient extends Shape {
     return this;
   }
 
-  // -----------------
-  // Utils
-  // -----------------
-
   clone(parent) {
     parent = parent || this.parent;
-    var stops = _.map(this.stops, function(s) {
-      return s.clone();
-    });
-    var clone = shapeFN.clone(this, new Gradient(), PROPS.concat('stops'));
+    var clone = cloneProperties(this, new Gradient(), Gradient.Properties);
+    clone.stops = this.stops.map(cloned);
     parent.add(clone);
     return clone;
   }
 
   toObject() {
-    var obj = shapeFN.toObject(this, {}, PROPS);
+    var obj = serializeProperties(this, {}, Gradient.Properties);
     obj.stops = _.map(this.stops, function(s) {
         return s.toObject();
     });
@@ -71,9 +65,9 @@ class Gradient extends Shape {
 }
 
 Gradient.Stop = Stop;
-Gradient.Properties = PROPS;
+Gradient.Properties = [ 'spread' ];
 
-shapeFN.defineSecretAccessors({proto: Gradient.prototype, accessors: PROPS});
+defineSecretAccessors({proto: Gradient.prototype, accessors: Gradient.Properties});
 
 
 export default Gradient;

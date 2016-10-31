@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
 import is   from '../util/is';
-import LinearGradient from '../gradient/LinearGradient';
-import RadialGradient from '../gradient/RadialGradient';
+import LinearGradient from './gradient/LinearGradient';
+import RadialGradient from './gradient/RadialGradient';
 import Group from './Group';
 import Path from './Path';
 import Text from './Text';
@@ -19,7 +19,6 @@ FN.makeText = (message, x, y, styles) => {
 FN.makeLinearGradient = (x1, y1, x2, y2, stops) => {
   return new LinearGradient(x1, y1, x2, y2, stops);
 };
-
 
 FN.makeRadialGradient = (x1, y1, r, stops) => {
   return new RadialGradient(x1, y1, r, stops);
@@ -76,7 +75,5 @@ FN.centerPath = (pth) => {
     .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
   return pth;
 };
-
-
 
 export default FN;

@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import is  from '../util/is';
+import is  from '../../util/is';
 
 var {isNumber, isString} = is;
 
@@ -22,6 +22,10 @@ class Stop {
 
     stopIndex = (stopIndex + 1) % 2;
   }
+
+  // -----------------
+  // IRenderable
+  // -----------------
 
   clone() {
     var clone = new Stop();

@@ -17,27 +17,8 @@ var {isUndefined, isNull} = is;
 var {arrayLast} = _;
 var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertices} = pathFN;
 var {min, max, round} = Math;
+var {cloneProperties, serializeProperties, getBoundingPathRect, defineSecretAccessors} = shapeFN;
 
-// Underlying Properties
-var pathDefaults = DefaultValues.Path;
-
-var config = {
-  flags : {
-    flag_vertices: true,
-    flag_length: true,
-    flag_clip: false,
-  },
-
-  props : {
-      length: 0,
-      closed: true,
-      curved: false,
-      automatic: true,
-      beginning: 0,
-      ending: 1.0,
-      clip: false,
-  }
-};
 
 /**
  * This is the base class for creating all drawable shapes in two.js. By default,
@@ -94,9 +75,6 @@ Adds the instance to a Two.Group.
 remove path.remove();
 If added to a two.scene this method removes itself from it.
 
-getBoundingClientRect path.getBoundingClientRect(shallow);
-Returns an object with top, left, right, bottom, width, and height parameters representing the bounding box of the path. Pass true if you're interested in the shallow positioning, i.e in the space directly affecting the object and not where it is nested.
-
 noFill path.noFill();
 Removes the fill.
 
@@ -111,9 +89,6 @@ Creates a new set of vertices that are lineTo anchors. For previously straight l
 */
 class Path extends Shape {
 
-  // --------------------
-  // Constructor
-  // --------------------
 
   constructor(vertices, closed, curved, manual) {
     super();
@@ -127,7 +102,6 @@ class Path extends Shape {
     this.ending = 1;
 
     // Style properties
-    Object.keys(pathDefaults).forEach((k) => { this[k] = pathDefaults[k]; });
     this.cap = 'butt';      // Default of Adobe Illustrator
     this.join = 'miter';    // Default of Adobe Illustrator
 
@@ -331,58 +305,8 @@ class Path extends Shape {
 
   }
 
-  /**
-   * Return an object with top, left, right, bottom, width, and height
-   * parameters of the group.
-   */
-  getBoundingClientRect(shallow) {
-    var matrix, border, l, x, y, i, v;
 
-    var left = Infinity, right = -Infinity,
-        top = Infinity, bottom = -Infinity;
 
-    // TODO: Update this to not __always__ update. Just when it needs to.
-    this._update(true);
-
-    matrix = !!shallow ? this._matrix : getComputedMatrix(this);
-
-    border = this.linewidth / 2;
-    l = this._vertices.length;
-
-    if (l <= 0) {
-      v = matrix.multiply(0, 0, 1);
-      return {
-        top: v.y,
-        left: v.x,
-        right: v.x,
-        bottom: v.y,
-        width: 0,
-        height: 0
-      };
-    }
-
-    for (i = 0; i < l; i++) {
-      v = this._vertices[i];
-
-      x = v.x;
-      y = v.y;
-
-      v = matrix.multiply(x, y, 1);
-      top = min(v.y - border, top);
-      left = min(v.x - border, left);
-      right = max(v.x + border, right);
-      bottom = max(v.y + border, bottom);
-    }
-
-    return {
-      top: top,
-      left: left,
-      right: right,
-      bottom: bottom,
-      width: right - left,
-      height: bottom - top
-    };
-  }
 
   /**
    * Based on closed / curved and sorting of vertices plot where all points
@@ -418,6 +342,8 @@ class Path extends Shape {
     });
     return this;
   }
+
+
 
   // -----------------
   // Private
@@ -456,6 +382,29 @@ class Path extends Shape {
 
   }
 
+  // -----------------
+  // IBounded
+  // -----------------
+
+  /**
+   * Return an object with top, left, right, bottom, width, and height
+   * parameters of the path. Pass true if you're interested in the shallow
+   * positioning, i.e in the space directly affecting the object and not where it is nested.
+   */
+  getBoundingClientRect(shallow) {
+    // TODO: Update this to not __always__ update. Just when it needs to.
+    this._update(true);
+    var matrix = !!shallow ? this._matrix : getComputedMatrix(this);
+    var border = this.linewidth / 2;
+    var length = this._vertices.length;
+    var vertices = this._vertices;
+    return getBoundingPathRect(matrix, border, length, vertices);
+  }
+
+  // -----------------
+  // IRenderable
+  // -----------------
+
   flagReset() {
 
     this._flag_vertices =  this._flag_fill =  this._flag_stroke =
@@ -469,37 +418,40 @@ class Path extends Shape {
 
   }
 
-  // -----------------
-  // Utils
-  // -----------------
-
   clone(parent) {
     parent = parent || this.parent;
     var points = this.vertices.map((d) => { return d.clone(); });
-    var clone = shapeFN.clone(
+    var clone = cloneProperties(
       this,
       new Path(points, this.closed, this.curved, !this.automatic),
-      Object.keys(config.props).concat( Object.keys(pathDefaults))
+      Path.Properties
     );
     parent.add(clone);
     return clone;
   }
 
   toObject() {
-    var obj = shapeFN.toObject(this, {}, []);
+    var obj = serializeProperties(this, {}, []);
     obj.vertices = this.vertices.map((d) => { return d.clone(); });
     return obj;
   }
 }
 
 
-// flags
-var asFlag = (txt) => { return '_flag_'+ txt; };
-shapeFN.defineSecretAccessors({proto: Path.prototype,accessors: Object.keys(pathDefaults), flags: config.flags});
-Object.keys(pathDefaults).forEach((k) => { Path.prototype[asFlag(k)] = true; });
+Path.Properties = Object.keys(DefaultValues.Path);
 
-// backup value
-Object.keys(pathDefaults).forEach((k) => { Path.prototype['_'+k] = pathDefaults[k]; });
-Object.keys(config.props ).forEach((k) => { Path.prototype['_'+k] = config.props[k]; });
+// unraisedFlag: clip
+// don't require???
+defineSecretAccessors({
+  proto: Path.prototype,
+  accessors: Path.Properties.filter((d) => { return true || !'length,closed,curved,automatic,beginning,ending,clip'.includes(d); }),
+  raisedFlags: ['vertices,length'],
+  secrets: Path.Properties
+});
+
+// direct, not secreted
+Path.Properties.forEach((k) => { Path.prototype[k] = DefaultValues.Path[k]; });
+
+
 
 export default Path;

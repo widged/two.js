@@ -79,7 +79,7 @@ txt.opacity = 0.25;
 
 // ----------- gradients ------
 //
-var RadialGradient = require('../es6/gradient/RadialGradient').default;
+var RadialGradient = require('../es6/shape/gradient/RadialGradient').default;
 var radius = Math.max(150, 100);
 var radialGradient = two.makeRadialGradient(
 	0, 0,
@@ -93,7 +93,7 @@ var vignette = two.addGeometry(RoundedRectangle(390, 70, 150, 100, 10))
 vignette.fill = radialGradient;
 
 
-var LinearGradient = require('../es6/gradient/LinearGradient').default;
+var LinearGradient = require('../es6/shape/gradient/LinearGradient').default;
 // Two.js colors from main.css
 var colors = [
   'rgb(255, 64, 64)',

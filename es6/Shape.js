@@ -9,7 +9,7 @@ import shapeFN    from './shape-fn';
 import DefaultValues from './constant/DefaultValues';
 
 var uniqueId = UidGenerator();
-var {flagAccessor, secretAccessor} = shapeFN;
+var {cloneProperties, serializeProperties} = shapeFN;
 
 // Flags
 const FLAG = {};
@@ -18,7 +18,6 @@ FLAG.scale = true;
 // FLAG.mask = false;
 // FLAG.clip = false;
 
-// Underlying Properties
 var shapeDefaults = DefaultValues.Shape;
 
 /**
@@ -124,17 +123,18 @@ class Shape {
 
   clone() {
     var clone = new Shape();
-    shapeFN.clone(clone, this);
+    cloneProperties(clone, this, Shape.Properties);
     return clone._update();
   }
 
   toObject() {
-    return shapeFN.toObject({}, this);
+    return serializeProperties({}, this);
   }
 
 }
 Shape.Identifier = 'sh_';
+Shape.Properties = Object.keys(shapeDefaults);
 
-Object.keys(shapeDefaults).forEach((k) => { Shape.prototype[k] = shapeDefaults[k]; });
+Shape.Properties.forEach((k) => { Shape.prototype[k] = shapeDefaults[k]; });
 
 export default Shape;

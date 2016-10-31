@@ -1,11 +1,11 @@
 /* jshint esnext: true */
 
-import _  from '../util/common';
-import is  from '../util/is';
-import VectorEvent    from '../constant/VectorEvent';
-import Vector    from '../struct/Vector';
-import Gradient  from '../shape/Gradient';
-import shapeFN    from '../shape-fn';
+import _  from '../../util/common';
+import is  from '../../util/is';
+import VectorEvent    from '../../constant/VectorEvent';
+import Vector    from '../../struct/Vector';
+import Gradient  from '../Gradient';
+import shapeFN    from '../../shape-fn';
 
 var {bind, map} = _;
 var {cloned} = shapeFN;
@@ -57,6 +57,19 @@ class LinearGradient extends Gradient {
 
   }
 
+  // -----------------
+  // IRenderable
+  // -----------------
+
+  flagReset() {
+
+    this._flag_endPoints = false;
+
+    Gradient.prototype.flagReset.call(this);
+
+    return this;
+
+  }
 
   clone(parent) {
 
@@ -85,18 +98,9 @@ class LinearGradient extends Gradient {
 
   }
 
-  flagReset() {
 
-    this._flag_endPoints = false;
-
-    Gradient.prototype.flagReset.call(this);
-
-    return this;
-
-  }
 }
 
-LinearGradient.Stop = Gradient.Stop;
 
 LinearGradient.FlagEndPoints = function() {
   this._flag_endPoints = true;

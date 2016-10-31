@@ -12,18 +12,7 @@ import DefaultValues from '../constant/DefaultValues';
 
 var {isNumber, isArray} = is;
 var {exclude}  = _;
-
-// Flags
-// http://en.wikipedia.org/wiki/Flag
-var FLAG = {};
-FLAG.additions = false;
-FLAG.subtractions = false;
-FLAG.order = false;
-FLAG.opacity = true;
-FLAG.mask = false;
-
-// Underlying Properties
-var groupDefaults = DefaultValues.Group;
+var {cloneProperties, serializeProperties, defineSecretAccessors} = shapeFN;
 
 var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
 
@@ -78,10 +67,6 @@ noStroke group.noStroke();
 Remove the stroke from all children of the group.
 */
 class Group extends Shape {
-
-  // --------------------
-  // Constructor
-  // --------------------
 
   constructor() {
     super(true);
@@ -280,12 +265,6 @@ class Group extends Shape {
 
   }
 
-  getBoundingClientRect(shallow) {
-    // TODO: Update this to not __always__ update. Just when it needs to.
-    this._update(true);
-    return groupFN.getEnclosingRect({shallow, children: this.children});
-  }
-
   /**
    * Trickle down of noFill
    */
@@ -317,6 +296,21 @@ class Group extends Shape {
     return this;
   }
 
+  // -----------------
+  // IBounded
+  // -----------------
+
+  getBoundingClientRect(shallow) {
+    // TODO: Update this to not __always__ update. Just when it needs to.
+    this._update(true);
+    return groupFN.getEnclosingRect({shallow, children: this.children});
+  }
+
+  // -----------------
+  // IRenderable
+  // -----------------
+
+
   flagReset() {
 
     if (this._flag_additions) {
@@ -337,10 +331,6 @@ class Group extends Shape {
 
   }
 
-// --------------------
-// Utils
-// --------------------
-
   /**
    * TODO: Group has a gotcha in that it's at the moment required to be bound to
    * an instance of two in order to add elements correctly. This needs to
@@ -349,7 +339,7 @@ class Group extends Shape {
   clone(parent) {
 
     parent = parent || this.parent;
-    var clone = shapeFN.clone(this, new Group(), []);
+    var clone = cloneProperties(this, new Group(), []);
     parent.add(clone);
     // now clone all children recursively
     var children = (this.children || []).map((child) => {
@@ -364,7 +354,7 @@ class Group extends Shape {
    * for turning into JSON and storing in a database.
    */
   toObject() {
-    var obj = shapeFN.toObject(this, {}, []);
+    var obj = serializeProperties(this, {}, []);
     // now copy all children recursively
     obj.children =  (this.children || []).map((child) => {
       return child.toObject();
@@ -375,9 +365,11 @@ class Group extends Shape {
 }
 
 Group.Children = Children;
+Group.Properties = Object.keys(DefaultValues.Group);
 
 // var excluded = 'closed,curved,automatic,beginning,ending,mask'.split(',')
-shapeFN.defineSecretAccessors({proto: Group.prototype, accessors: Object.keys(groupDefaults), flags: FLAG, secrets: groupDefaults, onlyWhenChanged: ['opacity'] });
+// unraised flags: 'additions,substractions,order,mask'
+defineSecretAccessors({proto: Group.prototype, accessors: Group.Properties, raisedFlags: ['opacity'] , secrets: DefaultValues.Group, onlyWhenChanged: ['opacity'] });
 
 
 export default Group;
