@@ -12,8 +12,7 @@ var FN = {};
 var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
 FN.renderShape = (elm, ctx, condi, clip) => {
-  var type = elm._renderer.type;
-  shapeCache.get(type).call(elm, ctx, condi, clip);
+  shapeCache.get(elm.rendererType).call(elm, ctx, condi, clip);
 };
 
 // ------------------------------------

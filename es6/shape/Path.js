@@ -15,7 +15,7 @@ import pathFN  from './path-fn';
 
 var {isUndefined, isNull} = is;
 var {arrayLast} = _;
-var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertices} = pathFN;
+var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertices, rectTopLeft, rectCentroid} = pathFN;
 var {min, max, round} = Math;
 var {cloneProperties, serializeProperties, getPathBoundingRect, defineSecretAccessors} = shapeFN;
 
@@ -42,11 +42,6 @@ class Path extends Shape {
   constructor(vertices, closed, curved, manual) {
     super();
 
-    /*
-     id - The id of the path. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if path.id = 4 then document.querySelector('#two-' + group.id) will return the corresponding svg node.
-     parent  - A reference to the `Group` that contains this instance.
-     vertices - A `Collection` of `Anchors` that is two-way databound. Individual vertices may be manipulated.
-     */
     this._renderer.type = 'path';
 
     this._closed = !!closed;
@@ -126,34 +121,37 @@ class Path extends Shape {
     this._flag_vertices = true;
   }
 
-
+  /**
+   * A `Collection` of `Anchors` that is two-way databound.
+   * Individual vertices may be manipulated.
+   */
   get vertices() {
     return this._collection;
   }
   set vertices(vertices) {
 
-    var copyVertices = () => {
+    var whenVerticesChange = (() => {
         this._flag_vertices = true;
         this._flag_length = true;
-    };
+    }).bind(this);
 
-    var bindVerts = ((items) => {
+    var whenVerticesInserted = ((items) => {
 
       // This function is called a lot
       // when importing a large SVG
       var i = items.length;
       while(i--) {
-        items[i].dispatcher.on(VectorEvent.change, copyVertices);
+        items[i].dispatcher.on(VectorEvent.change, whenVerticesChange);
       }
-      copyVertices();
+      whenVerticesChange();
     }).bind(this);
 
-    var unbindVerts = ((items) => {
+    var whenVerticesRemoved = ((items) => {
       var i = items.length;
       while(i--) {
-        items[i].dispatcher.off(VectorEvent.change, copyVertices);
+        items[i].dispatcher.off(VectorEvent.change, whenVerticesChange);
       }
-      copyVertices();
+      whenVerticesChange();
     }).bind(this);
 
     // Remove previous listeners
@@ -165,11 +163,11 @@ class Path extends Shape {
     this._collection = new Collection((vertices || []).slice(0));
 
     // Listen for Collection changes and bind / unbind
-    this._collection.dispatcher.on(CollectionEvent.insert, bindVerts);
-    this._collection.dispatcher.on(CollectionEvent.remove, unbindVerts);
+    this._collection.dispatcher.on(CollectionEvent.insert, whenVerticesInserted);
+    this._collection.dispatcher.on(CollectionEvent.remove, whenVerticesRemoved);
 
     // Bind Initial Vertices
-    bindVerts(this._collection);
+    whenVerticesInserted(this._collection);
 
   }
 
@@ -211,20 +209,10 @@ class Path extends Shape {
    * corner of the path.
    */
   corner() {
-
-    var rect = this.getBoundingClientRect(true);
-
-    rect.centroid = {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2
-    };
-
-    (this.vertices || []).forEach(function(v) {
-      v.addSelf(rect.centroid);
-    });
-
+    // :NOTE: this.getBoundingClientRect will call this._update first
+    var {x,y} = rectTopLeft(this.getBoundingClientRect(true));
+    (this.vertices || []).forEach(function(v) { v.subSelf(x,y); });
     return this;
-
   }
 
   /**
@@ -232,37 +220,21 @@ class Path extends Shape {
    * path.
    */
   center() {
-
-    var rect = this.getBoundingClientRect(true);
-
-    rect.centroid = {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2
-    };
-
-    (this.vertices || []).forEach(function(v) {
-      v.subSelf(rect.centroid);
-    });
-
-    // this.translation.addSelf(rect.centroid);
-
+    // :NOTE: this.getBoundingClientRect will call this._update first
+    var {x,y} = rectCentroid(this.getBoundingClientRect(true));
+    (this.vertices || []).forEach(function(v) { v.subSelf(x,y); });
     return this;
-
   }
 
   /**
    * If added to a `scene`, removes itself from it.
    */
   remove() {
-
-    if (!this.parent) {
-      return this;
-    }
-
+    // early exit
+    if (!this.parent) { return this; }
+    // main
     this.parent.remove(this);
-
     return this;
-
   }
 
 

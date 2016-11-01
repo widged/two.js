@@ -27,23 +27,22 @@ class Shape {
 
   constructor() {
 
+     // id - The id of the path. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if path.id = 4 then document.querySelector('#two-' + group.id) will return the corresponding svg node.
+    this.id = DefaultValues.ShapeIdentifier + uniqueId();
+    // parent  - A reference to the `Group` that contains this instance.
+    this.parent = undefined;
+    // set on svg import only
+    this.classList = [];
     // Private object for renderer specific variables.
     this._renderer = {};
-    this.stateManager =
-
-    this.id = DefaultValues.ShapeIdentifier + uniqueId();
-    this.classList = [];
-
-    // Define matrix properties which all inherited
-    // objects of Shape have.
-
+    // Define matrix properties which all inherited objects of Shape have.
     this._matrix = new Matrix();
-
-    var flagMatrix = () => { this._flag_matrix = true; };
     this.translation = new Vector();
-    this.translation.dispatcher.on(VectorEvent.change, flagMatrix);
     this.rotation = 0;
     this.scale = 1;
+
+    var flagMatrix = () => { this._flag_matrix = true; };
+    this.translation.dispatcher.on(VectorEvent.change, flagMatrix);
 
   }
 
@@ -65,6 +64,10 @@ class Shape {
     this._scale = v;
     this._flag_matrix = true;
     this._flag_scale = true;
+  }
+
+  get rendererType() {
+    return this._renderer && this._renderer.type;
   }
 
   // -----------------

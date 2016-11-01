@@ -5,6 +5,58 @@ import is  from '../util/is';
 var {isNumber} = is;
 
 var FN = {};
+var NotInUse = {};
+
+
+FN.isShape = (object) => {
+  return (object && object.id) ? true : false;
+};
+
+FN.addShapesToChildren = (objects, children) => {
+  var {isShape} = FN;
+  if(children.constructor.name !== 'ChildrenCollection') { throw "[GroupFN.addShapesTochidren] case not covered"; }
+  for (var i = 0, ni = objects.length, obj = null; i < ni; i++) {
+    obj = objects[i];
+    if (isShape(obj)) { children.push(obj); }
+  }
+  return children;
+};
+
+FN.removeShapesFromChildren = (objects, children) => {
+  for (var i = 0, ni = objects.length, obj = null; i < ni; i++) {
+    obj = objects[i];
+    if (!obj || !(children.ids[obj.id])) continue;
+    // :NOTE: this could be optimised if children was organised as a dictionary with ks and vs.
+    var idx = children.indexOf(obj);
+    if(idx === -1) { throw "[GroupFN.removeShapesFromChildren] case not covered"; }
+    children.splice(children.indexOf(obj), 1);
+  }
+};
+
+
+
+FN.adoptShapes = (group, shapes) => {
+  var {replaceParent} = FN;
+  for (var i = 0; i < shapes.length; i++) {
+    replaceParent(group, shapes[i], group);
+  }
+};
+
+FN.dropShapes = (group, shapes) => {
+  var {replaceParent} = FN;
+  for (var i = 0; i < shapes.length; i++) {
+    replaceParent(group, shapes[i]);
+  }
+};
+
+
+// If no objects are specified, remove the group from the scene.
+FN.removeGroupFromParent = (group, parent) => {
+  if(!parent) { return parent; }
+  if(typeof parent.remove !== 'function') { return parent; }
+  parent.remove(this);
+  return parent;
+};
 
 /**
  * Helper function used to sync parent-child relationship within the
@@ -77,10 +129,11 @@ FN.getEnclosingRect = ({shallow, children}) => {
 
   for(var i = 0, ni = children.length, child = {}; i < ni; i++ ) {
     child = children[i];
-    if (/(linear-gradient|radial-gradient|gradient)/.test(child._renderer.type)) {
+    if (/(linear-gradient|radial-gradient|gradient)/.test(child.rendererType)) {
       return;
     }
-
+    // :NOTE: before refactoring this, consider that child.getBoundingClientRect
+    // will call this._update() before computing the rectangle.
     rect = child.getBoundingClientRect(shallow);
 
     if (!isNumber(rect.top)   || !isNumber(rect.left)   ||
@@ -106,12 +159,55 @@ FN.getEnclosingRect = ({shallow, children}) => {
 
 };
 
+FN.translateChildren = (children, translate) => {
+  var {getEnclosingRect} = FN;
+  var rect = getEnclosingRect({shallow: true, children});
+  children.forEach(function(child) {
+    child.translation.subSelf(translate(rect));
+  });
+  return children;
+};
+
+FN.getItemWithId = (group, id) => {
+  var {findFirstMember, nodeChildren} = FN;
+  return findFirstMember(
+    this, nodeChildren,
+    (node) => { return node.id === id; }
+  );
+};
+
+/**
+ * Recursively search for classes. Returns an array of matching elements.
+ * Empty array if none found.
+ */
+NotInUse.listItemsWithClassName = (group, cl) => {
+  var {findAllMembers, nodeChildren} = FN;
+  return findAllMembers(
+    group, nodeChildren,
+    (node) => { return node.classList.indexOf(cl) !== -1; }
+  );
+};
+
+/**
+ * Recursively search for children of a specific type,
+ * e.g. Two.Polygon. Pass a reference to this type as the param.
+ * Returns an empty array if none found.
+ */
+NotInUse.listItemsWithType =  (group, type) => {
+  var {findAllMembers, nodeChildren} = FN;
+  return findAllMembers(
+    group, nodeChildren,
+    (node) => { return node instanceof type; }
+  );
+};
+
 /**
  * Recursively search for id. Returns the first element found.
  * Returns null if none found.
  */
 FN.findFirstMember = (item, getMembers, assert) => {
-  var list = FN.findAllMembers = (item, getMembers, assert, {stopOnFirstMatch: true});
+  var {findAllMembers} = FN;
+  var list = findAllMembers(item, getMembers, assert, {stopOnFirstMatch: true});
   return list[0] || null;
 };
 

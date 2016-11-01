@@ -34,7 +34,10 @@ class LinearGradient extends Gradient {
 
     this._renderer.type = 'linear-gradient';
 
-    var flagEndPoints = bind(LinearGradient.FlagEndPoints, this);
+    var flagEndPoints = (function() {
+      this._flag_endPoints = true;
+    }).bind(this);
+
     this.left = new Vector();
     this.left.dispatcher.on(VectorEvent.change, flagEndPoints);
     this.right = new Vector();
@@ -102,8 +105,5 @@ class LinearGradient extends Gradient {
 }
 
 
-LinearGradient.FlagEndPoints = function() {
-  this._flag_endPoints = true;
-};
 
 export default LinearGradient;

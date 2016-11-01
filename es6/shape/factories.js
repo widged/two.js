@@ -7,7 +7,10 @@ import Group from './Group';
 import Path from './Path';
 import Text from './Text';
 import Anchor from '../Anchor';
+import shapeFN    from '../shape-fn';
 
+
+var {rectCentroid} = shapeFN;
 var {isNumber, isArray} = is;
 
 var FN = {};
@@ -89,8 +92,8 @@ FN.group = () => {
 
 FN.centerPath = (pth) => {
   var rect = pth.getBoundingClientRect();
-  pth.center().translation
-    .set(rect.left + rect.width / 2, rect.top + rect.height / 2);
+  var {x,y} = rectCentroid;
+  pth.center().translation.set(x,y);
   return pth;
 };
 

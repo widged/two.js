@@ -11,8 +11,10 @@ import Children  from '../ChildrenCollection';
 import DefaultValues from '../constant/DefaultValues';
 
 var {isNumber, isArray} = is;
-var {exclude}  = _;
-var {cloneProperties, serializeProperties, defineSecretAccessors} = shapeFN;
+var {exclude, arrayOrArguments}  = _;
+var {cloneProperties, serializeProperties, defineSecretAccessors, rectCentroid, rectTopLeft} = shapeFN;
+var {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
+var {translateChildren} = groupFN;
 
 var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
 
@@ -29,13 +31,17 @@ class Group extends Shape {
    * If you are constructing groups this way instead of two.makeGroup(), then don't
    * forget to add the group to the instance's scene, two.add(group).
    */
-  constructor() {
+  constructor(...shapes) {
     super(true);
 
+    this.state = {
+      children: new Children(shapes)
+    };
+
     this.bound = {
-      insertChildren: this.insertChildren.bind(this),
-      removeChildren: this.removeChildren.bind(this),
-      orderChildren: this.orderChildren.bind(this),
+      whenChildrenInserted: ((children) => { adoptShapes(this, children); }).bind(this),
+      whenChildrenRemoved: ((children) => { dropShapes(this, children); }).bind(this),
+      whenChildrenShuffled: (() => { this._flag_order = true; }).bind(this)
     };
 
     /**
@@ -47,8 +53,8 @@ class Group extends Shape {
     this._renderer.type = 'group';
     this.additions = [];
     this.subtractions = [];
-    this.children = arguments;
 
+    this.whenChildrenSet();
   }
 
   // --------------------
@@ -56,15 +62,18 @@ class Group extends Shape {
   // --------------------
 
   get children() {
-    return this._children;
+    return this.state.children;
   }
-  set children(children) {
+  set children(shapes) {
+    if (this.state.children) { this.state.children.dispatcher.off(); }
+    this.state.children = new Children(shapes);
+    this.whenChildrenSet();
+  }
 
-    if (this._children) { this._children.dispatcher.off(); }
-    this._children = new Children(children);
-    this._children.dispatcher.on(CollectionEvent.insert, this.bound.insertChildren);
-    this._children.dispatcher.on(CollectionEvent.remove, this.bound.removeChildren);
-    this._children.dispatcher.on(CollectionEvent.order, this.bound.orderChildren);
+  whenChildrenSet() {
+    this.state.children.dispatcher.on(CollectionEvent.insert, this.bound.whenChildrenInserted);
+    this.state.children.dispatcher.on(CollectionEvent.remove, this.bound.whenChildrenRemoved);
+    this.state.children.dispatcher.on(CollectionEvent.order, this.bound.whenChildrenShuffled);
   }
 
   get mask() {
@@ -82,62 +91,24 @@ class Group extends Shape {
   // Main
   // --------------------
 
-  insertChildren(children) {
-    for (var i = 0; i < children.length; i++) {
-      groupFN.replaceParent(this, children[i], this);
-    }
-  }
-
-  removeChildren(children) {
-    for (var i = 0; i < children.length; i++) {
-      groupFN.replaceParent(this, children[i]);
-    }
-  }
-
-  orderChildren(children) {
-    this._flag_order = true;
-  }
-
-
   /**
-   * Anchor all children to the upper left hand corner
-   * of the group.
+   * Anchor all children to the top left corner of the group.
    */
   corner() {
-
-    var rect = this.getBoundingClientRect(true),
-        corner = { x: rect.left, y: rect.top };
-
-    this.children.forEach(function(child) {
-      child.translation.subSelf(corner);
-    });
-
+    this._update(true);
+    this.state.children = translateChildren( this.state.children, rectTopLeft);
     return this;
-
   }
 
   /**
    * Anchors all children around the centroid of the group,
    * effectively placing the shape around the unit circle.
    */
-   // :TODO: :WARN: remove this or at the very least, make it optional,
-   // as it overwrites the user settings.
+   // :REVIEW: this causes unwanted behaviors... optional rather than default behavior?
   center() {
-
-    var rect = this.getBoundingClientRect(true);
-    rect.centroid = {
-      x: rect.left + rect.width / 2,
-      y: rect.top + rect.height / 2
-    };
-
-    this.children.forEach(function(child) {
-      child.translation.subSelf(rect.centroid);
-    });
-
-    // this.translation.copy(rect.centroid);
-
+    this._update(true);
+    this.state.children = translateChildren( this.state.children, rectCentroid );
     return this;
-
   }
 
   /**
@@ -152,120 +123,45 @@ class Group extends Shape {
   }
 
   /**
-   * Recursively search for classes. Returns an array of matching elements.
-   * Empty array if none found.
-   */
-  getByClassName (cl) {
-    return groupFN.findAllMembers(
-      this, groupFN.nodeChildren,
-      (node) => { return node.classList.indexOf(cl) !== -1; }
-    );
-  }
-
-  /**
-   * Recursively search for children of a specific type,
-   * e.g. Two.Polygon. Pass a reference to this type as the param.
-   * Returns an empty array if none found.
-   */
-  getByType(type) {
-    return groupFN.findAllMembers(
-      this, groupFN.nodeChildren,
-      (node) => { return node instanceof type; }
-    );
-  }
-
-  /**
    * Add one or many shapes / groups to the instance. Objects can be added as
    * arguments, two.add(o1, o2, oN), or as an Array.
    */
-  add(objects) {
-
-    // Allow to pass multiple objects either as array or as multiple arguments
-    // If it's an array also create copy of it in case we're getting passed
-    // a childrens array directly.
-    if (!(objects instanceof Array)) {
-      objects = Array.from(arguments);
-    } else {
-      objects = objects.slice();
-    }
-
-    // Add the objects
-    for (var i = 0; i < objects.length; i++) {
-      if (!(objects[i] && objects[i].id)) continue;
-      this.children.push(objects[i]);
-    }
-
+   add(...objects) {
+    // Create copy of it in case we're getting passed a childrens array directly.
+    objects = arrayOrArguments(objects).slice(0);
+    this.state.children = addShapesToChildren(objects, this.state.children);
     return this;
-
   }
-
 
   /**
    * Remove one or many shapes / groups to the instance. Objects can be removed as
    * arguments, two.remove(o1, o2, oN), or as an array.
    */
-  remove(objects) {
-
-    var l = arguments.length,
-      grandparent = this.parent;
-
-    // Allow to call remove without arguments
-    // This will detach the object from the scene.
-    if (l <= 0 && grandparent) {
-      grandparent.remove(this);
-      return this;
-    }
-
-    // Allow to pass multiple objects either as array or as multiple arguments
-    // If it's an array also create copy of it in case we're getting passed
-    // a childrens array directly.
-    if (!(objects instanceof Array)) {
-      objects = Array.from(arguments);
-    } else {
-      objects = objects.slice();
-    }
-
-    // Remove the objects
-    for (var i = 0; i < objects.length; i++) {
-      if (!objects[i] || !(this.children.ids[objects[i].id])) continue;
-      this.children.splice(this.children.indexOf(objects[i]), 1);
-    }
+  remove(...objects) {
+    // Create copy of it in case we're getting passed a childrens array directly.
+    objects = arrayOrArguments(objects).slice(0);
+    // If no objects are specified, remove the group from the parent group.
+    if (!objects) { this.parent = removeGroupFromParent(this, this.parent); }
+    this.state.children = removeShapesFromChildren(objects, this.state.children);
 
     return this;
 
   }
+
+  // -----------------
+  // Trickle down
+  // -----------------
 
   /**
-   * Trickle down of noFill. Remove the fill from all children of the group.
+   * Trickle down to all children in the group
    */
-  noFill() {
-    this.children.forEach(function(child) {
-      child.noFill();
-    });
+  trickleDown(fn) {
+    this.state.children.forEach(fn);
     return this;
   }
-
-  /**
-   * Trickle down of noStroke. Remove the stroke from all children of the group.
-   */
-
-  noStroke() {
-    this.children.forEach(function(child) {
-      child.noStroke();
-    });
-    return this;
-  }
-
-  /**
-   * Trickle down subdivide
-   */
-  subdivide() {
-    var args = arguments;
-    this.children.forEach(function(child) {
-      child.subdivide.apply(child, args);
-    });
-    return this;
-  }
+  noFill()           { return this.trickleDown((d) => { d.noFill(); }); }
+  noStroke()         { return this.trickleDown((d) => { d.noStroke(); }); }
+  subdivide(...args) { return this.trickleDown((d) => { d.subdivide.apply(d, args); }); }
 
   // -----------------
   // IBounded
@@ -280,7 +176,7 @@ class Group extends Shape {
   getBoundingClientRect(shallow) {
     // TODO: Update this to not __always__ update. Just when it needs to.
     this._update(true);
-    return groupFN.getEnclosingRect({shallow, children: this.children});
+    return groupFN.getEnclosingRect({shallow, children: this.state.children});
   }
 
   // -----------------
@@ -322,7 +218,7 @@ class Group extends Shape {
     var clone = cloneProperties(this, new Group(), []);
     parent.add(clone);
     // now clone all children recursively
-    var children = (this.children || []).map((child) => {
+    var children = (this.state.children || []).map((child) => {
       return child.clone(clone);
     });
     return clone;
@@ -336,7 +232,7 @@ class Group extends Shape {
   toObject() {
     var obj = serializeProperties(this, {}, []);
     // now copy all children recursively
-    obj.children =  (this.children || []).map((child) => {
+    obj.children =  (this.state.children || []).map((child) => {
       return child.toObject();
     });
     return obj;
@@ -350,6 +246,5 @@ Group.Properties = Object.keys(DefaultValues.Group);
 // var excluded = 'closed,curved,automatic,beginning,ending,mask'.split(',')
 // unraised flags: 'additions,substractions,order,mask'
 defineSecretAccessors({proto: Group.prototype, accessors: Group.Properties, raisedFlags: ['opacity'] , secrets: DefaultValues.Group, onlyWhenChanged: ['opacity'] });
-
 
 export default Group;

@@ -207,7 +207,7 @@ var text = {
     }
 
     // if (this._mask) {
-    //   webgl[this._mask._renderer.type].render.call(mask, gl, program, this);
+    //   webgl[this._mask.rendererType].render.call(mask, gl, program, this);
     // }
 
     if (this._clip && !forcedParent) {

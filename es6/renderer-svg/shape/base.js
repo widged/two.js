@@ -22,10 +22,8 @@ FN.Commands = Commands;
 var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
 FN.renderShape = (elm, ctx, condi, clip) => {
-  var type = elm._renderer.type;
-  shapeCache.get(type).call(elm, ctx, condi, clip);
+  shapeCache.get(elm.rendererType).call(elm, ctx, condi, clip);
 };
-
 
 // ------------------------------------
 //  Utilities available to all shapes
@@ -63,7 +61,7 @@ FN.removeAttributes = function(elem, attrs) {
     elem.removeAttribute(key);
   }
   return this;
-}
+};
 
 /**
  *
@@ -204,6 +202,6 @@ FN.toString = function(points, closed) {
 
   return ret;
 
-}
+};
 
 export default FN;

@@ -148,4 +148,8 @@ FN.getPathBoundingRect = (matrix, border, length, vertices) => {
     height: bottom - top
   };
 };
+
+FN.rectCentroid = (rect) => { return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; };
+FN.rectTopLeft = (rect) => { return { x: rect.left, y: rect.top }; };
+
 export default FN;

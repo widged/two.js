@@ -22,7 +22,7 @@ FN.create = (getItem) => {
   return item;
 };
 
-FN.destroyStore = (uid) => {
+FN.destroy = (uid) => {
   var idx = ks.indexOf(uid);
   if(idx !== -1) {
     vs.splice(idx, 1);

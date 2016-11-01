@@ -9,7 +9,7 @@ import CollectionEvent   from './constant/CollectionEvent';
  * A children collection which is accesible both by index and by object id
  * @constructor
  */
-class Children extends Collection {
+class ChildrenCollection extends Collection {
 
   // --------------------
   // Constructor
@@ -50,4 +50,4 @@ class Children extends Collection {
 
 
 
-export default Children;
+export default ChildrenCollection;

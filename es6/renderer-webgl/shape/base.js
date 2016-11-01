@@ -18,8 +18,11 @@ var FN = {};
 var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
 FN.renderShape = (elm, ctx, condi, clip) => {
-  var type = elm._renderer.type;
-  shapeCache.get(type).render.call(elm, ctx, condi, clip);
+  shapeCache.get(elm.rendererType).render.call(elm, ctx, condi, clip);
+};
+
+FN.updateCanvas = (elm, webgl) => {
+  shapeCache.get(elm.rendererType).updateCanvas.call(webgl, elm);
 };
 
 FN.Commands = Commands;
@@ -136,10 +139,6 @@ FN.updateBuffer = function(gl, elem, program) {
 };
 
 
-FN.updateCanvas = (elem, webgl) => {
-  var type = elem._renderer.type;
-  shapeCache.get(type).updateCanvas.call(webgl, elem);
-};
 
 FN.drawTextureAndRect = ({
     gl,

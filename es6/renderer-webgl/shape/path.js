@@ -5,11 +5,15 @@ import Matrix   from '../../struct/Matrix';
 import base from './base';
 import Array2   from '../../struct/Array';
 import _ from '../../util/common';
+import shapeRendering   from '../../shape-rendering';
+import LinearGradient from '../../shape/gradient/LinearGradient';
+import RadialGradient from '../../shape/gradient/RadialGradient';
 
 var {renderShape, transformation, Commands, canvas, ctx, drawTextureAndRect} = base;
 var {Multiply: multiplyMatrix} = Matrix;
 var {isNumber, isString} = is;
 var {mod, toFixed} = _;
+var {getShapeProps, getRendererProps} = shapeRendering;
 
 /**
  * Returns the rect of a set of verts. Typically takes vertices that are
@@ -92,25 +96,25 @@ var path = {
 
     var next, prev, a, c, ux, uy, vx, vy, ar, bl, br, cl, x, y;
 
-    var commands = elem._vertices;
 
-    // Styles
-    var scale = elem._renderer.scale;
-    var stroke = elem._stroke;
-    var linewidth = elem._linewidth;
-    var fill = elem._fill;
-    var opacity = elem._renderer.opacity || elem._opacity;
-    var cap = elem._cap;
-    var join = elem._join;
-    var miter = elem._miter;
-    var closed = elem._closed;
-    var length = commands.length;
+    // styles
+    var { vertices,  stroke,  linewidth,  fill,  opacity,  cap,  join,  miter,  closed} = getShapeProps( elem,
+        ["vertices","stroke","linewidth","fill","opacity","cap","join","miter","closed"]
+    );
+
+     var {rdr_scale, rdr_opacity, rdr_rect} = getRendererProps( elem,
+         [   "scale",   "opacity",   "rect"]
+    );
+    opacity = rdr_opacity || opacity;
+    linewidth = linewidth * rdr_scale;
+
+    var length = vertices.length;
     var last = length - 1;
 
-    canvas.width = Math.max(Math.ceil(elem._renderer.rect.width * scale), 1);
-    canvas.height = Math.max(Math.ceil(elem._renderer.rect.height * scale), 1);
+    canvas.width = Math.max(Math.ceil(rdr_rect.width * rdr_scale), 1);
+    canvas.height = Math.max(Math.ceil(rdr_rect.height * rdr_scale), 1);
 
-    var centroid = elem._renderer.rect.centroid;
+    var centroid = rdr_rect.centroid;
     var cx = centroid.x;
     var cy = centroid.y;
 
@@ -121,7 +125,8 @@ var path = {
         ctx.fillStyle = fill;
       } else {
         renderShape(fill, ctx, elem);
-        ctx.fillStyle = fill._renderer.gradient;
+        var fillP = getRendererProps( fill, ["gradient"] );
+        ctx.fillStyle = fillP.rdr_gradient;
       }
     }
     if (stroke) {
@@ -129,7 +134,8 @@ var path = {
         ctx.strokeStyle = stroke;
       } else {
         renderShape(stroke, ctx, elem);
-        ctx.strokeStyle = stroke._renderer.gradient;
+        var strokeP = getRendererProps( stroke, ["gradient"] );
+        ctx.strokeStyle = strokeP.rdr_gradient;
       }
     }
     if (linewidth) {
@@ -150,13 +156,13 @@ var path = {
 
     var d;
     ctx.save();
-    ctx.scale(scale, scale);
+    ctx.scale(rdr_scale, rdr_scale);
     ctx.translate(cx, cy);
 
     ctx.beginPath();
-    for (var i = 0; i < commands.length; i++) {
+    for (var i = 0, ni = vertices.length; i < ni; i++) {
 
-      var b = commands[i];
+      var b = vertices[i];
 
       x = toFixed(b._x);
       y = toFixed(b._y);
@@ -172,8 +178,8 @@ var path = {
           prev = closed ? mod(i - 1, length) : Math.max(i - 1, 0);
           next = closed ? mod(i + 1, length) : Math.min(i + 1, last);
 
-          a = commands[prev];
-          c = commands[next];
+          a = vertices[prev];
+          c = vertices[next];
           ar = (a.controls && a.controls.right) || a;
           bl = (b.controls && b.controls.left) || b;
 
@@ -262,18 +268,30 @@ var path = {
 
     // Calculate what changed
 
+    var anyFlagRaised = (node, keys) => {
+        return keys.filter((k) => {
+          return node['_flag_'+k] ? true : false;
+        }).length ? true : false;
+    };
+
+    var {fill, stroke} = getShapeProps(
+     this, ["fill","stroke"]
+   );
+
+    var {rdr_texture} = getRendererProps(
+     this, ["texture"]
+   );
+
     var parent = this.parent;
-    var flagParentMatrix = parent._matrix.manual || parent._flag_matrix;
-    var flagMatrix = this._matrix.manual || this._flag_matrix;
-    var flagTexture = this._flag_vertices || this._flag_fill
-      || (this._fill instanceof LinearGradient && (this._fill._flag_spread || this._fill._flag_stops || this._fill._flag_endPoints))
-      || (this._fill instanceof RadialGradient && (this._fill._flag_spread || this._fill._flag_stops || this._fill._flag_radius || this._fill._flag_center || this._fill._flag_focal))
-      || (this._stroke instanceof LinearGradient && (this._stroke._flag_spread || this._stroke._flag_stops || this._stroke._flag_endPoints))
-      || (this._stroke instanceof RadialGradient && (this._stroke._flag_spread || this._stroke._flag_stops || this._stroke._flag_radius || this._stroke._flag_center || this._stroke._flag_focal))
-      || this._flag_stroke || this._flag_linewidth || this._flag_opacity
-      || parent._flag_opacity || this._flag_visible || this._flag_cap
-      || this._flag_join || this._flag_miter || this._flag_scale
-      || !this._renderer.texture;
+    var flagParentMatrix = parent._matrix.manual || anyFlagRaised(parent, ['matrix']);
+    var flagMatrix = this._matrix.manual || anyFlagRaised(this, ['matrix']);
+    var flagTexture =
+        anyFlagRaised(this, ['vertices','fill','stroke','linewidth','opacity','visible','cap','join','miter','scale'])
+        || anyFlagRaised(parent, ['opacity'])
+        || !this.rdr_texture
+        || (fill   instanceof LinearGradient && anyFlagRaised(fill, ['spread','stops','endPoints']))
+        || (stroke instanceof LinearGradient && anyFlagRaised(stroke, ['spread','stops','endPoints']))
+        || (fill   instanceof RadialGradient && anyFlagRaised(fill, ['spread','stops','radius','center','focal']));
 
     this._update();
 
@@ -313,7 +331,7 @@ var path = {
     }
 
     // if (this._mask) {
-    //   webgl[this._mask._renderer.type].render.call(mask, gl, program, this);
+    //   webgl[this._mask.rendererType].render.call(mask, gl, program, this);
     // }
 
     if (this._clip && !forcedParent) {

@@ -10,6 +10,16 @@ var FN = {};
 // Arrays, Iterables
 // ------------------------
 
+/**
+ * Allow to pass multiple objects either as array or as multiple arguments
+ */
+FN.arrayOrArguments = (args)  => {
+  if(!args) { return args; }
+  if(!Array.isArray(args)) { return args; }
+  if(args.length === 1 && Array.isArray(args[0])) { args = args[0]; }
+  return args;
+};
+
 FN.arrayLast = (arr) => {
   var s = arr.length;
   return arr[s-1];
@@ -27,5 +37,7 @@ FN.mod = (v, l) => {
 };
 
 FN.exclude = (list) => { return (d) => { return !list.includes(d); }; };
+
+
 
 export default FN;
