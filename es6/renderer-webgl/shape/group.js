@@ -2,14 +2,14 @@
 
 import Matrix   from '../../struct/Matrix';
 import Array2   from '../../struct/Array';
-import rendererUpdater from './renderer-updater';
 import shapeRendering   from '../../shape-rendering';
+import rendererFN from './fn-renderer';
+import glFN       from './fn-gl';
 import base from './base';
-import glFN   from './renderer-gl';
 
 var {renderShape, transformation} = base;
 var {Multiply: multiplyMatrix} = Matrix;
-var {recomputePathMatrixIfNecessary} = rendererUpdater;
+var {recomputeMatrixAndScaleIfNecessary} = rendererFN;
 var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged, raiseFlags} = shapeRendering;
 var {MaskMode, remove} = glFN;
 
@@ -34,14 +34,8 @@ var group = {
 
       updateShape(shp);
 
-      var renderer = getShapeRenderer(shp);
+      var renderer       = recomputeMatrixAndScaleIfNecessary(shp);
       var parentRenderer = getShapeRenderer(shp.parent);
-      var rendererMatrix = recomputePathMatrixIfNecessary(shp);
-      if(rendererMatrix) {
-        var {scale} = getShapeProps( shp, ["scale"] );
-        renderer.matrix = rendererMatrix;
-        renderer.scale  = scale * parentRenderer.scale;
-      }
 
       var { mask, opacity, subtractions } = getShapeProps( shp, ["mask","opacity","subtractions"] );
       if(anyPropChanged(shp.parent, ['opacity'])) { raiseFlags(shp, ['opacity']);}

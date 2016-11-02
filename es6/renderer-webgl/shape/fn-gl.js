@@ -2,11 +2,131 @@
 
 import is  from '../../util/is';
 import base from './base';
+import TwoError from '../../TwoError';
 
 var {updateCanvas} = base;
 var {isObject} = is;
 
 var FN = {};
+
+var SHADER_SOURCES = {
+
+  VERTEX_SHADER: [
+    'attribute vec2 a_position;',
+    'attribute vec2 a_textureCoords;',
+    '',
+    'uniform mat3 u_matrix;',
+    'uniform vec2 u_resolution;',
+    '',
+    'varying vec2 v_textureCoords;',
+    '',
+    'void main() {',
+    '   vec2 projected = (u_matrix * vec3(a_position, 1.0)).xy;',
+    '   vec2 normal = projected / u_resolution;',
+    '   vec2 clipspace = (normal * 2.0) - 1.0;',
+    '',
+    '   gl_Position = vec4(clipspace * vec2(1.0, -1.0), 0.0, 1.0);',
+    '   v_textureCoords = a_textureCoords;',
+    '}'
+  ].join('\n'),
+
+  FRAGMENT_SHADER: [
+    'precision mediump float;',
+    '',
+    'uniform sampler2D u_image;',
+    'varying vec2 v_textureCoords;',
+    '',
+    'void main() {',
+    '  gl_FragColor = texture2D(u_image, v_textureCoords);',
+    '}'
+  ].join('\n')
+
+};
+
+
+var createShader=  function(gl, type) {
+  var source = SHADER_SOURCES[type];
+  var shader, compiled, error;
+  shader = gl.createShader(gl[type]);
+  gl.shaderSource(shader, source);
+  gl.compileShader(shader);
+
+  compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+  if (!compiled) {
+    error = gl.getShaderInfoLog(shader);
+    gl.deleteShader(shader);
+    throw new TwoError('unable to compile shader ' + shader + ': ' + error);
+  }
+
+  return shader;
+};
+
+var createProgram = function(gl, shaders) {
+
+    var program, linked, error;
+    program = gl.createProgram();
+    shaders.forEach(function(s) {
+      gl.attachShader(program, s);
+    });
+
+    gl.linkProgram(program);
+    linked = gl.getProgramParameter(program, gl.LINK_STATUS);
+    if (!linked) {
+      error = gl.getProgramInfoLog(program);
+      gl.deleteProgram(program);
+      throw new TwoError('unable to link program: ' + error);
+    }
+    return program;
+};
+
+FN.initializeGL = (domElement, options) => {
+  var gl = domElement.getContext('webgl', options) ||
+           domElement.getContext('experimental-webgl', options);
+
+  if (!gl) {
+    throw new TwoError(
+      'unable to create a webgl context. Try using another renderer.');
+  }
+
+  // Compile Base Shaders to draw in pixel space.
+  var vs = createShader( gl, 'VERTEX_SHADER');
+  var fs = createShader( gl, 'FRAGMENT_SHADER');
+
+  var program = createProgram(gl, [vs, fs]);
+  gl.useProgram(program);
+
+  // Create and bind the drawing buffer
+  // look up where the vertex data needs to go.
+  program.position      = gl.getAttribLocation (program, 'a_position');
+  program.matrix        = gl.getUniformLocation(program, 'u_matrix');
+  program.textureCoords = gl.getAttribLocation (program, 'a_textureCoords');
+
+  // Copied from Three.js WebGLRenderer
+  gl.disable(gl.DEPTH_TEST);
+
+  // Setup some initial statements of the gl context
+  gl.enable(gl.BLEND);
+
+  // https://code.google.com/p/chromium/issues/detail?id=316393
+  // gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, gl.TRUE);
+
+  gl.blendEquationSeparate(gl.FUNC_ADD, gl.FUNC_ADD);
+  gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
+    gl.ONE, gl.ONE_MINUS_SRC_ALPHA );
+
+  return {gl, program};
+};
+
+FN.clear = (gl) => {
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+}
+
+FN.updateResolution = (gl, program, width, height) => {
+  var resLocation = gl.getUniformLocation( program, 'u_resolution');
+  gl.viewport (0, 0, width, height);
+  gl.uniform2f(resLocation, width, height);
+  return gl;
+};
 
 
 FN.updateTexture = function(base, gl, shp) {

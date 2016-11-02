@@ -32,7 +32,7 @@ var radialGradient = function(domElement) {
 
     changed.id = this.id;
     changed.gradientUnits = 'userSpaceOnUse';
-    this._renderer.elem = base.createElement('radialGradient', changed);
+    this._renderer.elem = base.createSvgElement('radialGradient', changed);
     domElement.defs.appendChild(this._renderer.elem);
 
   // Otherwise apply all pending attributes
@@ -63,7 +63,7 @@ var radialGradient = function(domElement) {
       }
 
       if (!stop._renderer.elem) {
-        stop._renderer.elem = base.createElement('stop', attrs);
+        stop._renderer.elem = base.createSvgElement('stop', attrs);
       } else {
         base.setAttributes(stop._renderer.elem, attrs);
       }

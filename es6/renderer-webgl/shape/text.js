@@ -2,16 +2,15 @@
 
 import is  from '../../util/is';
 import shapeRendering   from '../../shape-rendering';
-import verticesUpdater from './vertices-updater';
-import boundingRect from './bounding-rect';
-import rendererUpdater from './renderer-updater';
+import boundingFN from './fn-bounding';
+import rendererFN from './fn-renderer';
+import anchorFN   from './fn-anchors';
 import base from './base';
 
 var {isNumber, isString} = is;
 var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
-var {updatePathVertices} = verticesUpdater;
-var {getTextBoundingClientRect} = boundingRect;
-var {hasGradientChanged, renderPath} = rendererUpdater;
+var {getTextBoundingClientRect} = boundingFN;
+var {hasGradientChanged, renderPath} = rendererFN;
 var {canvas, ctx, renderShape, isHidden} = base;
 
 var text = {

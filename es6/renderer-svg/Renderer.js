@@ -1,26 +1,38 @@
-import is  from '../util/is';
-import _  from '../util/common';
-import dom   from '../platform/dom';
+/* jshint esnext: true */
+
 import base   from './shape/base';
 import Renderer from '../TwoRenderer';
+
+var {renderShape, createSvgElement, setAttributes} = base;
 
 /**
  * @class
  */
 class SvgRenderer extends Renderer {
 
-  constructor(options) {
-    super(options);
-    if(!this.domElement) {this.domElement = base.createElement('svg'); };
-    this.defs = base.createElement('defs');
-    this.domElement.appendChild(this.defs);
-    this.domElement.defs = this.defs;
-    this.domElement.style.overflow = 'hidden';
+  constructor(scene, options) {
+    super(scene , options);
   }
+
+  getDomNode() {
+    return createSvgElement('svg', { version: 1.1 });
+  }
+
+  initializeContext(options) {
+    var {domElement} = this.getState();
+    var defs = createSvgElement('defs');
+    domElement.appendChild(defs);
+    domElement.defs = defs;
+    domElement.style.overflow = 'hidden';
+    this.defs = defs;
+    this.setState({defs});
+  }
+
 
   setSize(width, height) {
     super.setSize(width, height);
-    base.setAttributes(this.domElement, {
+    var {domElement} = this.getState();
+    setAttributes(domElement, {
       width: width,
       height: height
     });
@@ -28,9 +40,9 @@ class SvgRenderer extends Renderer {
   }
 
   render() {
-    base.renderShape(this.scene, this.domElement);
+    renderShape(this.scene, this.domElement);
     return this;
-  }    
+  }
 
 }
 

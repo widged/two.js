@@ -63,7 +63,7 @@ var group = function(domElement) {
   }
 
   if (!this._renderer.elem) {
-    this._renderer.elem = base.createElement('g', {
+    this._renderer.elem = base.createSvgElement('g', {
       id: this.id
     });
     domElement.appendChild(this._renderer.elem);

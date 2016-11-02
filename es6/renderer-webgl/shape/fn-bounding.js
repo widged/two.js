@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
-import base from './base';
 import is  from '../../util/is';
+import base from './base';
 
 var {ctx, isHidden} = base;
 var {isNumber} = is;

@@ -68,7 +68,7 @@ var text = function(domElement) {
 
     props.id = props.id;
 
-    this._renderer.elem = base.createElement('text', props);
+    this._renderer.elem = base.createSvgElement('text', props);
     domElement.defs.appendChild(this._renderer.elem);
 
   } else {

@@ -87,5 +87,12 @@ FN.raiseFlags = (shp, keys) => {
 
 };
 
+FN.dropFlags = (shp, keys) => {
+  keys.forEach((k) => {
+    shp['_flag_'+k] = false;
+  });
+
+};
+
 
 export default FN;

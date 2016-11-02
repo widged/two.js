@@ -75,7 +75,7 @@ var path = function(domElement) {
   if (!this._renderer.elem) {
 
     changed.id = this.id;
-    this._renderer.elem = base.createElement('path', changed);
+    this._renderer.elem = base.createSvgElement('path', changed);
     domElement.appendChild(this._renderer.elem);
 
   // Otherwise apply all pending attributes

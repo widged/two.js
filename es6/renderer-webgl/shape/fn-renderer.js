@@ -7,12 +7,12 @@ import shapeRendering   from '../../shape-rendering';
 import Matrix   from '../../struct/Matrix';
 import Array2   from '../../struct/Array';
 import base from './base';
-import gl   from './renderer-gl';
+import glFN   from './fn-gl';
 
 var {getShapeProps, updateShape, anyPropChanged, getShapeRenderer, raiseFlags} = shapeRendering;
 var {Multiply: multiplyMatrix} = Matrix;
 var {updateCanvas} = base;
-var {updateBuffer, updateTexture, drawTextureAndRect} = gl;
+var {updateBuffer, updateTexture, drawTextureAndRect} = glFN;
 
 
 var {isObject} = is;
@@ -66,34 +66,46 @@ FN.renderPath = (gl, program, shp, assertShapeChange, getBoundingClientRect) => 
 
 
 FN.updateRendererIfNecesary   =  (shp, gl, program, assertShapeChange, getBoundingClientRect) => {
-  var {recomputePathTrianglesIfNecessary, recomputePathMatrixIfNecessary} = FN;
+  var {recomputeTrianglesAndRectIfNecessary, recomputeMatrixAndScaleIfNecessary} = FN;
   // main
-  var renderer        = getShapeRenderer(shp);
+  var renderer = recomputeMatrixAndScaleIfNecessary(shp);
   var parentRenderer  = getShapeRenderer(shp.parent);
 
-  var rendererMatrix = recomputePathMatrixIfNecessary(shp);
-  if(rendererMatrix) {
-    var {scale} = getShapeProps( shp, ["scale"] );
-    renderer.matrix = rendererMatrix;
-    renderer.scale = scale * parentRenderer.scale;
-  }
-
-  var {triangles, rect} = recomputePathTrianglesIfNecessary(shp, assertShapeChange, getBoundingClientRect) || {};
-  if(triangles) {
+  var tracker = {change: false};
+  renderer = recomputeTrianglesAndRectIfNecessary(shp, assertShapeChange, getBoundingClientRect, tracker) || {};
+  if(tracker.change === true) {
     var {opacity} = getShapeProps( shp, ["opacity"] );
     renderer.opacity = opacity * parentRenderer.opacity;
-    renderer.rect      = rect;
-    renderer.triangles = triangles;
     updateBuffer(base, gl, shp, program);
     updateTexture(base, gl, shp);
   }
   return renderer;
 };
 
-FN.recomputePathMatrixIfNecessary = (shp) => {
+
+FN.recomputeTrianglesAndRectIfNecessary = (shp, assertShapeChange, getBoundingClientRect, tracker) => {
+
+  var {getTriangles} = FN;
+
+  var renderer = getShapeRenderer(shp);
+
+  if (!renderer.texture
+   || anyPropChanged(shp, ['vertices','fill','stroke','linewidth','opacity','visible','scale'])
+   || anyPropChanged(parent, ['opacity'])
+   || assertShapeChange(shp)
+ ) {
+    tracker.change = true;
+    var rect = renderer.rect = getBoundingClientRect(shp);
+    renderer.triangles = getTriangles(rect, renderer.triangles);
+  }
+  return renderer;
+};
+
+
+FN.recomputeMatrixAndScaleIfNecessary = (shp) => {
 
   var parent = shp.parent;
-  var { matrix} = getShapeProps( shp, ["matrix"] );
+  var { matrix, scale} = getShapeProps( shp, ["matrix","scale"] );
   var { matrix: parentMatrix} = getShapeProps( parent,   ["matrix"] );
 
   var renderer        = getShapeRenderer(shp);
@@ -105,32 +117,15 @@ FN.recomputePathMatrixIfNecessary = (shp) => {
   if ( matrix.manual || anyPropChanged(shp, ['matrix']) ||  parentMatrixChanged ) {
     var transformation = (new Array2(9));
     matrix.toArray(true, transformation); // Reduce amount of object / array creation / deletion
-    rendererMatrix = multiplyMatrix(transformation, parentRenderer.matrix, renderer.matrix );
+    renderer.matrix = multiplyMatrix(transformation, parentRenderer.matrix, renderer.matrix );
+    renderer.scale = scale * parentRenderer.scale;
     // In group  but not in `path` or `text`. Used to trickle down any matrix change to the children
     // of the group (who will check for a parentMatrixChanged).
     if (parentMatrixChanged) { raiseFlags(shp, ['matrix']); }
   }
-  return rendererMatrix;
 
-};
+  return renderer;
 
-
-FN.recomputePathTrianglesIfNecessary = (shp, assertShapeChange, getBoundingClientRect) => {
-
-  var {getTriangles} = FN;
-
-  var renderer = getShapeRenderer(shp);
-
-  var rect, triangles;
-  if (!renderer.texture
-   || anyPropChanged(shp, ['vertices','fill','stroke','linewidth','opacity','visible','scale'])
-   || anyPropChanged(parent, ['opacity'])
-   || assertShapeChange(shp)
- ) {
-    rect      = getBoundingClientRect(shp);
-    triangles = getTriangles(rect, renderer.triangles);
-  }
-  return {rect, triangles};
 };
 
 

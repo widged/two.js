@@ -10,59 +10,69 @@ var {getRatio} = dom;
 
 class CanvasRenderer extends Renderer {
 
-  constructor(options) {
+  constructor(scene, options) {
 
-    super(options);
-    // Smoothing property. Defaults to true
-    // Set it to false when working with pixel art.
+    super(scene, options);
+    // Smoothing property. Defaults to true. Set it to false when working with pixel art.
     // false can lead to better performance, since it would use a cheaper interpolation algorithm.
     // It might not make a big difference on GPU backed canvases.
-    var smoothing = (options.smoothing !== false);
-    if(!this.domElement) {this.domElement = document.createElement('canvas'); };
-    this.ctx = this.domElement.getContext('2d');
-    this.overdraw = options.overdraw || false;
+    this.setState({
+      overdraw: (options.overdraw === true) ? true : false,
+      scale: options.ratio
+    });
+  }
 
-    if (!isUndefined(this.ctx.imageSmoothingEnabled)) {
-      this.ctx.imageSmoothingEnabled = smoothing;
+  getDomNode() {
+    return document.createElement('canvas');
+  }
+
+  initializeContext(options) {
+    var {domElement} = this.getState();
+    var canvas    = domElement.getContext('2d');
+    var smoothing = (options.smoothing === true) ? true : false;
+    if (!isUndefined(canvas.imageSmoothingEnabled)) {
+      canvas.imageSmoothingEnabled = smoothing;
     }
+    this.setState({ctx: canvas});
+  }
+
+  whenSizeChange() {
+    // udate dom  node size
+    var {domElement, width, height, scale} = this.getState();
+    dom.updateDomNodeSize(domElement, width, height, scale);
   }
 
   setSize(width, height, ratio) {
-
     super.setSize(width, height);
-    this.ratio = isUndefined(ratio) ? getRatio(this.ctx) : ratio;
-    this.domElement.width = width * this.ratio;
-    this.domElement.height = height * this.ratio;
 
-    if (this.domElement.style) {
-      this.domElement.style = Object.assign(this.domElement.style, {
-        width: width + 'px',
-        height: height + 'px'
-      });
-    }
+    var {ctx} = this.getState();
+    var scale = isUndefined(ratio) ? getRatio(ctx) : ratio;
 
+    this.setState({scale});
+    this.whenSizeChange();
     return this;
 
   }
 
   render() {
 
-    var isOne = this.ratio === 1;
+    var {ctx, scale, overdraw, width, height, scene} = this.getState();
+
+    var isOne = (scale === 1) ? true : false;
 
     if (!isOne) {
-      this.ctx.save();
-      this.ctx.scale(this.ratio, this.ratio);
+      ctx.save();
+      ctx.scale(scale, scale);
     }
 
-    if (!this.overdraw) {
-      this.ctx.clearRect(0, 0, this.width, this.height);
+    if (!overdraw) {
+      ctx.clearRect(0, 0, width, height);
     }
 
-    base.renderShape(this.scene, this.ctx);
+    base.renderShape(scene, ctx);
 
-    if (!isOne) {
-      this.ctx.restore();
-    }
+    if (!isOne) { ctx.restore(); }
+
 
     return this;
 

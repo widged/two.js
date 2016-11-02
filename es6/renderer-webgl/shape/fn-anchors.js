@@ -8,15 +8,15 @@ var {ctx, isHidden, Commands} = base;
 
 var FN = {};
 
-FN.updatePathVertices = (vertices) => {
+FN.updatePathAnchors = (anchors) => {
   var next, prev, a, c, ux, uy, vx, vy, ar, bl, br, cl, x, y, d;
 
-  var length = vertices.length;
+  var length = anchors.length;
   var last = length - 1;
 
-  for (var i = 0; i < vertices.length; i++) {
+  for (var i = 0; i < anchors.length; i++) {
 
-    var b = vertices[i];
+    var b = anchors[i];
 
     x = toFixed(b._x);
     y = toFixed(b._y);
@@ -32,8 +32,8 @@ FN.updatePathVertices = (vertices) => {
         prev = closed ? mod(i - 1, length) : Math.max(i - 1, 0);
         next = closed ? mod(i + 1, length) : Math.min(i + 1, last);
 
-        a = vertices[prev];
-        c = vertices[next];
+        a = anchors[prev];
+        c = anchors[next];
         ar = (a.controls && a.controls.right) || a;
         bl = (b.controls && b.controls.left) || b;
 

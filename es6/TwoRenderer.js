@@ -5,16 +5,37 @@ import dom from './platform/dom';
 
 class Renderer {
 
-  constructor({domElement, scene}) {
-    this.domElement = domElement;
+  constructor(scene, options) {
     // Everything drawn on the canvas needs to come from the stage.
+
+    // :REVIEW: parent of a scene, a renderer?
+    scene.parent = this;
+    var domElement = this.getDomNode();
+    this.setState({ scene, domElement });
+    this.initializeContext(options);
+    this.domElement = domElement;
     this.scene = scene;
-    this.scene.parent = this;
   }
 
+  getDomNode() { }
+  initializeContext(options) {}
+
+  setState(obj) {
+    if(typeof obj === 'object') {
+      this.state = Object.assign(this.state || {}, obj);
+    }
+  }
+
+  getState() {
+    return this.state;
+  }
+
+
   setSize(width, height) {
-      this.width = width;
-      this.height = height;
+    this.width = width;
+    this.height = height;
+    // dom.updateDomNodeSize(domElement, width, height, scale);
+    this.setState({width, height});
   }
 
   render() {

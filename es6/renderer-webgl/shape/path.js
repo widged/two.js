@@ -2,16 +2,16 @@
 
 import is  from '../../util/is';
 import shapeRendering   from '../../shape-rendering';
-import verticesUpdater from './vertices-updater';
-import boundingRect from './bounding-rect';
-import rendererUpdater from './renderer-updater';
+import boundingFN from './fn-bounding';
+import rendererFN from './fn-renderer';
+import anchorFN   from './fn-anchors';
 import base from './base';
 
 var {isNumber, isString} = is;
 var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
-var {updatePathVertices} = verticesUpdater;
-var {getPathBoundingClientRect} = boundingRect;
-var {hasGradientChanged, renderPath} = rendererUpdater;
+var {updatePathAnchors} = anchorFN;
+var {getPathBoundingClientRect} = boundingFN;
+var {hasGradientChanged, renderPath} = rendererFN;
 var {canvas, ctx, renderShape, isHidden} = base;
 
 var path = {
@@ -63,7 +63,7 @@ var path = {
     ctx.translate(cx, cy);
 
     ctx.beginPath();
-    updatePathVertices(vertices);
+    updatePathAnchors(vertices);
     if (closed) { ctx.closePath(); }
 
     if (!isHidden.test(fill)) ctx.fill();

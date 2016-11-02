@@ -18,11 +18,11 @@ class TwoLight {
     this.state = {
       width, height,
       scene: makeShape.group(),
-      domElement: undefined
     };
 
+    // this is never set
     if(typeof beforeRender === 'function') {  beforeRender(this, config);  }
-    this.state.renderer = new this.state.RendererDelegate({domElement: this.state.domElement, scene: this.state.scene});
+    this.state.renderer = new this.state.RendererDelegate(this.state.scene, {});
     this.refreshRenderer();
   }
 
@@ -37,8 +37,8 @@ class TwoLight {
    * It's required to add the instance's dom element to the page in order to
    * see anything drawn.
    */
-  appendTo(elem) {
-    elem.appendChild(this.state.renderer.domElement);
+  appendTo(domNode) {
+    domNode.appendChild(this.state.renderer.domElement);
     return this;
   }
 

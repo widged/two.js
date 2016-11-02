@@ -26,7 +26,7 @@ var linearGradient = function(domElement) {
 
     changed.id = this.id;
     changed.gradientUnits = 'userSpaceOnUse';
-    this._renderer.elem = base.createElement('linearGradient', changed);
+    this._renderer.elem = base.createSvgElement('linearGradient', changed);
     domElement.defs.appendChild(this._renderer.elem);
 
   // Otherwise apply all pending attributes
@@ -55,7 +55,7 @@ var linearGradient = function(domElement) {
       }
 
       if (!stop._renderer.elem) {
-        stop._renderer.elem = base.createElement('stop', attrs);
+        stop._renderer.elem = base.createSvgElement('stop', attrs);
       } else {
         base.setAttributes(stop._renderer.elem, attrs);
       }

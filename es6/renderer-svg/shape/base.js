@@ -3,15 +3,11 @@
 import _  from '../../util/common';
 import Cache   from '../../util/Cache';
 import Commands from '../../constant/CommandTypes';
+import dom   from '../../platform/dom';
 
 var {mod, toFixed} = _;
 
-var ns = 'http://www.w3.org/2000/svg';
-var xlink = 'http://www.w3.org/1999/xlink';
-
 var FN = {};
-
-FN.version = 1.1;
 
 FN.Commands = Commands;
 
@@ -25,6 +21,7 @@ FN.renderShape = (elm, ctx, condi, clip) => {
   shapeCache.get(elm.rendererType).call(elm, ctx, condi, clip);
 };
 
+
 // ------------------------------------
 //  Utilities available to all shapes
 // ------------------------------------
@@ -32,36 +29,14 @@ FN.renderShape = (elm, ctx, condi, clip) => {
 /**
  * Create an svg namespaced element.
  */
-FN.createElement = function(name, attrs) {
+FN.createSvgElement = function(name, attrs) {
+  // var xlink = 'http://www.w3.org/1999/xlink';
   var tag = name;
-  var elem = document.createElementNS(ns, tag);
-  if (tag === 'svg') {
-    attrs = Object.assign(attrs || {}, { version: this.version });
-  }
-  FN.setAttributes(elem, attrs);
+  var elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  dom.setAttributes(elem, attrs);
   return elem;
 };
-
-/**
- * Add attributes from an svg element.
- */
-FN.setAttributes = function(elem, attrs) {
-  if (!attrs || Object.keys(attrs).length === 0) { return; }
-  var keys = Object.keys(attrs);
-  for (var i = 0; i < keys.length; i++) {
-    elem.setAttribute(keys[i], attrs[keys[i]]);
-  }
-};
-
-/**
- * Remove attributes from an svg element.
- */
-FN.removeAttributes = function(elem, attrs) {
-  for (var key in attrs) {
-    elem.removeAttribute(key);
-  }
-  return this;
-};
+FN.setAttributes = dom.setAttributes;
 
 /**
  *
@@ -78,7 +53,7 @@ FN.getClip = function(shape) {
       root = root.parent;
     }
 
-    clip = shape._renderer.clip = FN.createElement('clipPath');
+    clip = shape._renderer.clip = FN.createSvgElement('clipPath');
     root.defs.appendChild(clip);
 
   }
@@ -93,115 +68,115 @@ FN.getClip = function(shape) {
  * possible, because this call will be happening multiple times a
  * second.
  */
-FN.toString = function(points, closed) {
+ FN.toString = function(anchors, closed) {
 
-  var l = points.length,
-    last = l - 1,
-    d, // The elusive last Commands.move point
-    ret = '';
+   var l = anchors.length,
+     last = l - 1,
+     d, // The elusive last Commands.move point
+     ret = '';
 
-  for (var i = 0; i < l; i++) {
-    var b = points[i];
-    var command;
-    var prev = closed ? mod(i - 1, l) : Math.max(i - 1, 0);
-    var next = closed ? mod(i + 1, l) : Math.min(i + 1, last);
+   for (var i = 0; i < l; i++) {
+     var b = anchors[i];
+     var command;
+     var prev = closed ? mod(i - 1, l) : Math.max(i - 1, 0);
+     var next = closed ? mod(i + 1, l) : Math.min(i + 1, last);
 
-    var a = points[prev];
-    var c = points[next];
+     var a = anchors[prev];
+     var c = anchors[next];
 
-    var vx, vy, ux, uy, ar, bl, br, cl;
+     var vx, vy, ux, uy, ar, bl, br, cl;
 
-    // Access x and y directly,
-    // bypassing the getter
-    var x = toFixed(b._x);
-    var y = toFixed(b._y);
+     // Access x and y directly,
+     // bypassing the getter
+     var x = toFixed(b._x);
+     var y = toFixed(b._y);
 
-    switch (b._command) {
+     switch (b._command) {
 
-      case Commands.close:
-        command = Commands.close;
-        break;
+       case Commands.close:
+         command = Commands.close;
+         break;
 
-      case Commands.curve:
+       case Commands.curve:
 
-        ar = (a.controls && a.controls.right) || a;
-        bl = (b.controls && b.controls.left) || b;
+         ar = (a.controls && a.controls.right) || a;
+         bl = (b.controls && b.controls.left) || b;
 
-        if (a._relative) {
-          vx = toFixed((ar.x + a.x));
-          vy = toFixed((ar.y + a.y));
-        } else {
-          vx = toFixed(ar.x);
-          vy = toFixed(ar.y);
-        }
+         if (a._relative) {
+           vx = toFixed((ar.x + a.x));
+           vy = toFixed((ar.y + a.y));
+         } else {
+           vx = toFixed(ar.x);
+           vy = toFixed(ar.y);
+         }
 
-        if (b._relative) {
-          ux = toFixed((bl.x + b.x));
-          uy = toFixed((bl.y + b.y));
-        } else {
-          ux = toFixed(bl.x);
-          uy = toFixed(bl.y);
-        }
+         if (b._relative) {
+           ux = toFixed((bl.x + b.x));
+           uy = toFixed((bl.y + b.y));
+         } else {
+           ux = toFixed(bl.x);
+           uy = toFixed(bl.y);
+         }
 
-        command = ((i === 0) ? Commands.move : Commands.curve) +
-          ' ' + vx + ' ' + vy + ' ' + ux + ' ' + uy + ' ' + x + ' ' + y;
-        break;
+         command = ((i === 0) ? Commands.move : Commands.curve) +
+           ' ' + vx + ' ' + vy + ' ' + ux + ' ' + uy + ' ' + x + ' ' + y;
+         break;
 
-      case Commands.move:
-        d = b;
-        command = Commands.move + ' ' + x + ' ' + y;
-        break;
+       case Commands.move:
+         d = b;
+         command = Commands.move + ' ' + x + ' ' + y;
+         break;
 
-      default:
-        command = b._command + ' ' + x + ' ' + y;
+       default:
+         command = b._command + ' ' + x + ' ' + y;
 
-    }
+     }
 
-    // Add a final point and close it off
+     // Add a final point and close it off
 
-    if (i >= last && closed) {
+     if (i >= last && closed) {
 
-      if (b._command === Commands.curve) {
+       if (b._command === Commands.curve) {
 
-        // Make sure we close to the most previous Commands.move
-        c = d;
+         // Make sure we close to the most previous Commands.move
+         c = d;
 
-        br = (b.controls && b.controls.right) || b;
-        cl = (c.controls && c.controls.left) || c;
+         br = (b.controls && b.controls.right) || b;
+         cl = (c.controls && c.controls.left) || c;
 
-        if (b._relative) {
-          vx = toFixed((br.x + b.x));
-          vy = toFixed((br.y + b.y));
-        } else {
-          vx = toFixed(br.x);
-          vy = toFixed(br.y);
-        }
+         if (b._relative) {
+           vx = toFixed((br.x + b.x));
+           vy = toFixed((br.y + b.y));
+         } else {
+           vx = toFixed(br.x);
+           vy = toFixed(br.y);
+         }
 
-        if (c._relative) {
-          ux = toFixed((cl.x + c.x));
-          uy = toFixed((cl.y + c.y));
-        } else {
-          ux = toFixed(cl.x);
-          uy = toFixed(cl.y);
-        }
+         if (c._relative) {
+           ux = toFixed((cl.x + c.x));
+           uy = toFixed((cl.y + c.y));
+         } else {
+           ux = toFixed(cl.x);
+           uy = toFixed(cl.y);
+         }
 
-        x = toFixed(c.x);
-        y = toFixed(c.y);
+         x = toFixed(c.x);
+         y = toFixed(c.y);
 
-        command +=
-          ' C ' + vx + ' ' + vy + ' ' + ux + ' ' + uy + ' ' + x + ' ' + y;
-      }
+         command +=
+           ' C ' + vx + ' ' + vy + ' ' + ux + ' ' + uy + ' ' + x + ' ' + y;
+       }
 
-      command += ' Z';
+       command += ' Z';
 
-    }
+     }
 
-    ret += command + ' ';
+     ret += command + ' ';
 
-  }
+   }
 
-  return ret;
+   return ret;
 
-};
+ };
 
 export default FN;

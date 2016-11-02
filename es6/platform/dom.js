@@ -8,17 +8,17 @@ import is  from '../util/is';
 
 var {isFunction} = is;
 
-var dom = {};
+var FN = {};
 
-dom.temp = (document ? document.createElement('div') : {});
+FN.temp = (document ? document.createElement('div') : {});
 
-dom.isElement = (obj) =>  {
+FN.isElement = (obj) =>  {
   return !!(obj && obj.nodeType === 1);
 };
 
-dom.hasEventListeners = isFunction(global.addEventListener);
+FN.hasEventListeners = isFunction(global.addEventListener);
 
-dom.onWindowResize = function(func, bool) {
+FN.onWindowResize = function(func, bool) {
   var elem = document;
   if (dom.hasEventListeners) {
     elem.addEventListener('resize', func, !!bool);
@@ -28,11 +28,16 @@ dom.onWindowResize = function(func, bool) {
   return dom;
 };
 
+FN.updateDomNodeSize = (domElement, width, height, ratio) => {
+  domElement.width =  width * ratio;
+  domElement.height = height * ratio;
+  domElement.style = Object.assign(domElement.style, {
+    width: width + 'px',
+    height: height + 'px'
+  });
+};
 
-
-
-
-dom.getWindowSize = () => {
+FN.getWindowSize = () => {
   return document.body.getBoundingClientRect();
 };
 
@@ -40,7 +45,7 @@ dom.getWindowSize = () => {
  * Account for high dpi rendering.
  * http://www.html5rocks.com/en/tutorials/canvas/hidpi/
  */
-dom.getRatio = function(ctx) {
+FN.getRatio = function(ctx) {
   var deviceRatio = global.devicePixelRatio || 1;
   var backingStoreRatio = ctx.webkitBackingStorePixelRatio ||
     ctx.mozBackingStorePixelRatio ||
@@ -51,11 +56,33 @@ dom.getRatio = function(ctx) {
   return deviceRatio / backingStoreRatio;
 };
 
-dom.removeChildNodes = (node) => {
+FN.removeChildNodes = (node) => {
   while (node.firstChild) {
       node.removeChild(node.firstChild);
   }
-}
+};
 
 
-export default dom;
+/**
+ * Add attributes from an svg element.
+ */
+FN.setAttributes = function(elem, attrs) {
+  if (!attrs || Object.keys(attrs).length === 0) { return; }
+  var keys = Object.keys(attrs);
+  for (var i = 0; i < keys.length; i++) {
+    elem.setAttribute(keys[i], attrs[keys[i]]);
+  }
+};
+
+/**
+ * Remove attributes from an svg element.
+ */
+FN.removeAttributes = function(elem, attrs) {
+  for (var key in attrs) {
+    elem.removeAttribute(key);
+  }
+  return this;
+};
+
+
+export default FN;
