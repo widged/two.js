@@ -3,24 +3,24 @@
 import is  from '../../util/is';
 import base from './base';
 
-var {transformation, updateCanvas} = base;
+var {updateCanvas} = base;
 var {isObject} = is;
 
 var FN = {};
 
 
-FN.updateTexture = function(base, gl, elem) {
+FN.updateTexture = function(base, gl, shp) {
 
-  updateCanvas(elem, FN);
+  updateCanvas(shp, FN);
 
-  if (elem._renderer.texture) {
-    gl.deleteTexture(elem._renderer.texture);
+  if (shp._renderer.texture) {
+    gl.deleteTexture(shp._renderer.texture);
   }
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, elem._renderer.textureCoordsBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, shp._renderer.textureCoordsBuffer);
 
-  elem._renderer.texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, elem._renderer.texture);
+  shp._renderer.texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, shp._renderer.texture);
 
   // Set the parameters so we can render any size image.
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -39,32 +39,37 @@ FN.updateTexture = function(base, gl, elem) {
 
 };
 
-FN.updateBuffer = function(base, gl, elem, program) {
+FN.updateBuffer = function(base, gl, shp, program) {
 
-  if (isObject(elem._renderer.buffer)) {
-    gl.deleteBuffer(elem._renderer.buffer);
+  if (isObject(shp._renderer.buffer)) {
+    gl.deleteBuffer(shp._renderer.buffer);
   }
 
-  elem._renderer.buffer = gl.createBuffer();
+  shp._renderer.buffer = gl.createBuffer();
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, elem._renderer.buffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, shp._renderer.buffer);
   gl.enableVertexAttribArray(program.position);
 
-  gl.bufferData(gl.ARRAY_BUFFER, elem._renderer.triangles, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, shp._renderer.triangles, gl.STATIC_DRAW);
 
-  if (isObject(elem._renderer.textureCoordsBuffer)) {
-    gl.deleteBuffer(elem._renderer.textureCoordsBuffer);
+  if (isObject(shp._renderer.textureCoordsBuffer)) {
+    gl.deleteBuffer(shp._renderer.textureCoordsBuffer);
   }
 
-  elem._renderer.textureCoordsBuffer = gl.createBuffer();
+  shp._renderer.textureCoordsBuffer = gl.createBuffer();
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, elem._renderer.textureCoordsBuffer);
+  gl.bindBuffer(gl.ARRAY_BUFFER, shp._renderer.textureCoordsBuffer);
   gl.enableVertexAttribArray(program.textureCoords);
 
   gl.bufferData(gl.ARRAY_BUFFER, base.uv, gl.STATIC_DRAW);
 
 };
 
+FN.remove = (gl, texture) => {
+  // Deallocate texture to free up gl memory.
+  gl.deleteTexture(texture);
+
+};
 
 
 FN.drawTextureAndRect = ({
@@ -85,5 +90,45 @@ FN.drawTextureAndRect = ({
   gl.vertexAttribPointer(rectVertex, 2, gl.FLOAT, false, 0, 0);
   gl.drawArrays(gl.TRIANGLES, 0, 6);
 };
+
+FN.MaskMode = (function() {
+  var activeMaskMode = (gl, renderFn) => {
+    gl.enable(gl.STENCIL_TEST);
+    gl.stencilFunc(gl.ALWAYS, 1, 1);
+
+    gl.colorMask(false, false, false, true);
+    gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
+
+    renderFn();
+
+    gl.colorMask(true, true, true, true);
+    gl.stencilFunc(gl.NOTEQUAL, 0, 1);
+    gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+
+  };
+
+  var desactivateMaskMode = (gl, renderFn) => {
+    gl.colorMask(false, false, false, false);
+    gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
+
+    renderFn();
+
+    gl.colorMask(true, true, true, true);
+    gl.stencilFunc(gl.NOTEQUAL, 0, 1);
+    gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+
+    gl.disable(gl.STENCIL_TEST);
+
+  };
+
+  return (gl, renderFn) => {
+    return {
+      on:  () => { activeMaskMode(gl, renderFn); },
+      off: () => { desactivateMaskMode(gl, renderFn); }
+    };
+  };
+
+
+} ());
 
 export default FN;

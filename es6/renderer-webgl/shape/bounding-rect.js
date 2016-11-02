@@ -29,7 +29,6 @@ var TEXT_H = {
 
 FN.getTextBoundingClientRect = function(border, {value,style,weight,size,leading,family,baseline,alignment}) {
 
-
   var width, height;
 
   ctx.font = [style, weight, size + 'px/' + leading + 'px', family].join(' ');
@@ -52,6 +51,8 @@ FN.getTextBoundingClientRect = function(border, {value,style,weight,size,leading
   // TODO: Gradients aren't inherited...
   return {top, bottom, left, right, width, height, centroid};
 };
+
+
 
 /**
  * Returns the rect of a set of verts. Typically takes vertices that are

@@ -9,9 +9,9 @@ import Array2   from '../../struct/Array';
 import base from './base';
 import gl   from './renderer-gl';
 
-var {getShapeProps, updateShape, anyPropChanged, getShapeRenderer} = shapeRendering;
+var {getShapeProps, updateShape, anyPropChanged, getShapeRenderer, raiseFlags} = shapeRendering;
 var {Multiply: multiplyMatrix} = Matrix;
-var {transformation, updateCanvas} = base;
+var {updateCanvas} = base;
 var {updateBuffer, updateTexture, drawTextureAndRect} = gl;
 
 
@@ -27,9 +27,28 @@ FN.hasGradientChanged = (shp) => {
       || (stroke instanceof RadialGradient && anyPropChanged(stroke, ['spread','stops','radius','center','focal']));
 };
 
-FN.renderPath = (gl, program, shp, shapeChange, getBoundingClientRect) => {
+FN.renderPath = (gl, program, shp, assertShapeChange, getBoundingClientRect) => {
+
+  var completed = false;
+
   var {updateRendererIfNecesary} = FN;
-  var renderer = updateRendererIfNecesary(shp, gl, program, shapeChange, getBoundingClientRect);
+
+  // nothing to do if there is nothing visible to the user
+  var { visible,  opacity,  clip /*,  mask*/} = getShapeProps( shp,
+      ["visible","opacity","clip"/*,"mask"*/] );
+
+  if (!visible || !opacity)  { return completed; }
+  if (clip && !forcedParent) { return completed; }
+
+  // if (mask) {
+  //  var maskRenderer = getShapeRenderer(mask);
+  //  webgl[maskRenderer.type].render.call(mask, gl, program, shp);
+  // }
+
+  updateShape(shp);
+
+  var renderer = updateRendererIfNecesary(shp, gl, program, assertShapeChange, getBoundingClientRect);
+  // :REVIEW: do we need to redraw if the renderer did not change?
   drawTextureAndRect({
     gl: gl,
     coordBind: renderer.textureCoordsBuffer,
@@ -40,11 +59,13 @@ FN.renderPath = (gl, program, shp, shapeChange, getBoundingClientRect) => {
     rectMatrixBuffer: program.matrix,
     rectVertex: program.position
   });
+
+  return true;
 };
 
 
 
-FN.updateRendererIfNecesary   =  (shp, gl, program, shapeChange, getBoundingClientRect) => {
+FN.updateRendererIfNecesary   =  (shp, gl, program, assertShapeChange, getBoundingClientRect) => {
   var {recomputePathTrianglesIfNecessary, recomputePathMatrixIfNecessary} = FN;
   // main
   var renderer        = getShapeRenderer(shp);
@@ -57,7 +78,7 @@ FN.updateRendererIfNecesary   =  (shp, gl, program, shapeChange, getBoundingClie
     renderer.scale = scale * parentRenderer.scale;
   }
 
-  var {triangles, rect} = recomputePathTrianglesIfNecessary(shp, shapeChange, getBoundingClientRect) || {};
+  var {triangles, rect} = recomputePathTrianglesIfNecessary(shp, assertShapeChange, getBoundingClientRect) || {};
   if(triangles) {
     var {opacity} = getShapeProps( shp, ["opacity"] );
     renderer.opacity = opacity * parentRenderer.opacity;
@@ -73,29 +94,28 @@ FN.recomputePathMatrixIfNecessary = (shp) => {
 
   var parent = shp.parent;
   var { matrix} = getShapeProps( shp, ["matrix"] );
-  var {matrix: parentMatrix} = getShapeProps( parent,   ["matrix"] );
+  var { matrix: parentMatrix} = getShapeProps( parent,   ["matrix"] );
 
   var renderer        = getShapeRenderer(shp);
   var parentRenderer  = getShapeRenderer(parent);
 
   // update matrix only if necessary
   var rendererMatrix;
-  if ( matrix.manual
-    || parentMatrix.manual
-    || anyPropChanged(shp, ['matrix'])
-    || anyPropChanged(parent, ['matrix'])
-  ) {
-
+  var parentMatrixChanged = (parentMatrix && parentMatrix.manual) || anyPropChanged(parent, ['matrix']);
+  if ( matrix.manual || anyPropChanged(shp, ['matrix']) ||  parentMatrixChanged ) {
+    var transformation = (new Array2(9));
     matrix.toArray(true, transformation); // Reduce amount of object / array creation / deletion
     rendererMatrix = multiplyMatrix(transformation, parentRenderer.matrix, renderer.matrix );
+    // In group  but not in `path` or `text`. Used to trickle down any matrix change to the children
+    // of the group (who will check for a parentMatrixChanged).
+    if (parentMatrixChanged) { raiseFlags(shp, ['matrix']); }
   }
   return rendererMatrix;
 
 };
 
 
-
-FN.recomputePathTrianglesIfNecessary = (shp, shapeChange, getBoundingClientRect) => {
+FN.recomputePathTrianglesIfNecessary = (shp, assertShapeChange, getBoundingClientRect) => {
 
   var {getTriangles} = FN;
 
@@ -105,7 +125,7 @@ FN.recomputePathTrianglesIfNecessary = (shp, shapeChange, getBoundingClientRect)
   if (!renderer.texture
    || anyPropChanged(shp, ['vertices','fill','stroke','linewidth','opacity','visible','scale'])
    || anyPropChanged(parent, ['opacity'])
-   || shapeChange
+   || assertShapeChange(shp)
  ) {
     rect      = getBoundingClientRect(shp);
     triangles = getTriangles(rect, renderer.triangles);

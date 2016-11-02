@@ -34,7 +34,6 @@ FN.isHidden = /(none|transparent)/i;
 
 FN.canvas = (document ? document.createElement('canvas') : { getContext: (v) =>  { return v; } });
 
-FN.matrix = new Matrix();
 
 FN.ctx = FN.canvas.getContext('2d');
 

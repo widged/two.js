@@ -2,11 +2,17 @@
 
 import Matrix   from '../../struct/Matrix';
 import Array2   from '../../struct/Array';
-
+import rendererUpdater from './renderer-updater';
+import shapeRendering   from '../../shape-rendering';
 import base from './base';
+import glFN   from './renderer-gl';
 
 var {renderShape, transformation} = base;
 var {Multiply: multiplyMatrix} = Matrix;
+var {recomputePathMatrixIfNecessary} = rendererUpdater;
+var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged, raiseFlags} = shapeRendering;
+var {MaskMode, remove} = glFN;
+
 
 var removeChild = function(child, gl) {
   if (child.children) {
@@ -15,87 +21,50 @@ var removeChild = function(child, gl) {
     }
     return;
   }
-  // Deallocate texture to free up gl memory.
-  gl.deleteTexture(child._renderer.texture);
+  glFN.remove(gl, child._renderer.texture);
   delete child._renderer.texture;
 };
+
 
 var group = {
 
     render: function(gl, program) {
 
-      this._update();
+      var shp = this;
 
-      var parent = this.parent;
-      var flagParentMatrix = (parent._matrix && parent._matrix.manual) || parent._flag_matrix;
-      var flagMatrix = this._matrix.manual || this._flag_matrix;
+      updateShape(shp);
 
-      if (flagParentMatrix || flagMatrix) {
-
-        if (!this._renderer.matrix) {
-          this._renderer.matrix = new Array2(9);
-        }
-
-        // Reduce amount of object / array creation / deletion
-        this._matrix.toArray(true, transformation);
-
-        multiplyMatrix(transformation, parent._renderer.matrix, this._renderer.matrix);
-        this._renderer.scale = this._scale * parent._renderer.scale;
-
-        if (flagParentMatrix) {
-          this._flag_matrix = true;
-        }
-
+      var renderer = getShapeRenderer(shp);
+      var parentRenderer = getShapeRenderer(shp.parent);
+      var rendererMatrix = recomputePathMatrixIfNecessary(shp);
+      if(rendererMatrix) {
+        var {scale} = getShapeProps( shp, ["scale"] );
+        renderer.matrix = rendererMatrix;
+        renderer.scale  = scale * parentRenderer.scale;
       }
 
-      if (this._mask) {
+      var { mask, opacity, subtractions } = getShapeProps( shp, ["mask","opacity","subtractions"] );
+      if(anyPropChanged(shp.parent, ['opacity'])) { raiseFlags(shp, ['opacity']);}
+      renderer.opacity = opacity * (parentRenderer ? parentRenderer.opacity : 1);
 
-        gl.enable(gl.STENCIL_TEST);
-        gl.stencilFunc(gl.ALWAYS, 1, 1);
 
-        gl.colorMask(false, false, false, true);
-        gl.stencilOp(gl.KEEP, gl.KEEP, gl.INCR);
+      var maskMode = (mask) ? MaskMode(gl, () => { renderShape(mask, gl, program, shp); }) : undefined;
 
-        renderShape(this._mask, gl, program, this);
+      if(maskMode) { maskMode.on(); }
 
-        gl.colorMask(true, true, true, true);
-        gl.stencilFunc(gl.NOTEQUAL, 0, 1);
-        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-
+      // :NOTE: subtractions array is reset on flag.reset()
+      for (var i = 0; i < subtractions.length; i++) {
+        removeChild(subtractions[i], gl);
       }
 
-      this._flag_opacity = parent._flag_opacity || this._flag_opacity;
-
-      this._renderer.opacity = this._opacity
-        * (parent && parent._renderer ? parent._renderer.opacity : 1);
-
-      if (this._flag_subtractions) {
-        for (var i = 0; i < this.subtractions.length; i++) {
-          removeChild(this.subtractions[i], gl);
-        }
-      }
-
-
-      Array.from(this.children).forEach((child) => {
+      // shp.children is a collection, not a proper array
+      Array.from(shp.children).forEach((child) => {
         renderShape(child, gl, program);
       });
 
-      if (this._mask) {
+      if(maskMode) { maskMode.off(); }
 
-        gl.colorMask(false, false, false, false);
-        gl.stencilOp(gl.KEEP, gl.KEEP, gl.DECR);
-
-        renderShape(this._mask, gl, program, this);
-
-        gl.colorMask(true, true, true, true);
-        gl.stencilFunc(gl.NOTEQUAL, 0, 1);
-        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-
-        gl.disable(gl.STENCIL_TEST);
-
-      }
-
-      return this.flagReset();
+      return shp.flagReset();
 
     }
 

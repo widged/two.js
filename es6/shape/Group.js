@@ -187,12 +187,12 @@ class Group extends Shape {
   flagReset() {
 
     if (this._flag_additions) {
-      this.additions.length = 0;
+      this.additions = [];
       this._flag_additions = false;
     }
 
     if (this._flag_subtractions) {
-      this.subtractions.length = 0;
+      this.subtractions = [];
       this._flag_subtractions = false;
     }
 

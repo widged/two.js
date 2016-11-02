@@ -77,33 +77,20 @@ var path = {
 
     var shp = this;
 
-    // nothing to do if there is nothing visible to the user
-    var { visible,  opacity,  clip /*,  mask*/} = getShapeProps( shp,
-        ["visible","opacity","clip"/*,"mask"*/] );
-
-    if (!visible || !opacity)  { return shp; }
-    if (clip && !forcedParent) { return shp; }
-
-    // if (mask) {
-    //  var maskRenderer = getShapeRenderer(mask);
-    //  webgl[maskRenderer.type].render.call(mask, gl, program, shp);
-    // }
-
-    updateShape(shp);
-
     // <<< code that varies between text and path
     var getBoundingClientRect = (shp) => {
       var { vertices,  linewidth} = getShapeProps( shp, ["vertices","linewidth"] );
       return getPathBoundingClientRect(vertices, linewidth);
     };
 
-    var shapeChange = hasGradientChanged || anyPropChanged(parent, ['cap','join','miter']);
+    var assertShapeChange = (shp) => {
+      return hasGradientChanged(shp) || anyPropChanged(shp.parent, ['cap','join','miter']);
+    };
     // >>>
 
-    renderPath(gl, program, shp, shapeChange, getBoundingClientRect);
-
-    return this.flagReset();
-
+    var rendered = renderPath(gl, program, shp, assertShapeChange, getBoundingClientRect);
+    if(rendered) { shp.flagReset(); }
+    return shp;
 
   }
 

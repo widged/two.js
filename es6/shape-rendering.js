@@ -35,6 +35,9 @@ FN.getShapeProps = (shape, ks) => {
     } else {
       m = getSecretProp(shape, k);
     }
+    if(!m && shape.hasOwnProperty(k)) {
+      m = shape[k];
+    }
     if(m) { acc[k] = m; }
   });
   return acc;
@@ -74,11 +77,18 @@ FN.updateShape = (shape) => {
 };
 
 
-FN.anyPropChanged = (node, keys) => {
-      return keys.filter((k) => {
-        return node['_flag_'+k] ? true : false;
-      }).length ? true : false;
-  };
+FN.anyPropChanged = (shp, keys) => {
+  return keys.filter((k) => {
+    return shp['_flag_'+k] ? true : false;
+  }).length ? true : false;
+};
+
+FN.raiseFlags = (shp, keys) => {
+  keys.forEach((k) => {
+    shp['_flag_'+k] = true;
+  });
+
+};
 
 
 export default FN;

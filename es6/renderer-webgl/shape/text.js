@@ -32,9 +32,7 @@ var text = {
     canvas.width = Math.max(Math.ceil(renderer.rect.width * scale), 1);
     canvas.height = Math.max(Math.ceil(renderer.rect.height * scale), 1);
 
-    var centroid = renderer.rect.centroid;
-    var cx = centroid.x;
-    var cy = centroid.y;
+    var {x: cx, y: cy} = renderer.rect.centroid;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -83,21 +81,6 @@ var text = {
 
     var shp = this;
 
-    // nothing to do if there is nothing visible to the user
-    var { visible,  opacity,  clip /*,  mask*/} = getShapeProps( shp,
-        ["visible","opacity","clip"/*,"mask"*/] );
-
-    if (!visible || !opacity)  { return shp; }
-    if (clip && !forcedParent) { return shp; }
-
-    // if (mask) {
-    //  var maskRenderer = getShapeRenderer(mask);
-    //  webgl[maskRenderer.type].render.call(mask, gl, program, shp);
-    // }
-
-    // update Shape before any transformation
-    updateShape(shp);
-
     // <<< code that varies between text and path
     var getBoundingClientRect = (shp) => {
       var { stroke, linewidth} = getShapeProps( shp, ["stroke","linewidth"] );
@@ -106,10 +89,13 @@ var text = {
       return getTextBoundingClientRect(border, props);
     };
 
-    var shapeChange = hasGradientChanged || anyPropChanged(shp, ['value','family','size','leading','alignment','baseline','style','weight','decoration']);
+    var assertShapeChange = () => {
+      return hasGradientChanged || anyPropChanged(shp, ['value','family','size','leading','alignment','baseline','style','weight','decoration']);
+    };
+
     // >>>
 
-    renderPath(gl, program, shp, shapeChange, getBoundingClientRect);
+    renderPath(gl, program, shp, assertShapeChange, getBoundingClientRect);
     return shp.flagReset();
 
   }
