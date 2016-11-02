@@ -1,35 +1,42 @@
 /* jshint esnext: true */
 
 import base from './base';
+import shapeRendering   from '../../shape-rendering';
+
+var {isCanvas} = base;
+var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
+
 
 var linearGradient = {
 
   render: function(ctx, elem) {
 
-    if (!ctx.canvas.getContext('2d')) {
-      return;
-    }
+    if (!isCanvas(ctx)) { return; }
 
-    this._update();
+    var shp = this;
 
-    if (!this._renderer.gradient || this._flag_endPoints || this._flag_stops) {
+    updateShape(shp);
 
-      this._renderer.gradient = ctx.createLinearGradient(
-        this.left._x, this.left._y,
-        this.right._x, this.right._y
-      );
+    var renderer = getShapeRenderer(shp);
 
-      for (var i = 0; i < this.stops.length; i++) {
-        var stop = this.stops[i];
-        this._renderer.gradient.addColorStop(stop.offset, stop.color);
+    if (!renderer.gradient  || anyPropChanged(shp, ['endPoints','stops']) ) {
+
+      var {left, right, stops} = getShapeProps(shp, ['left','right','stops']);
+      var {x: lx,y: ly} = getShapeProps(left, ['x','y']);
+      var {x: rx,y: ry} = getShapeProps(right, ['x','y']);
+      renderer.gradient = ctx.createLinearGradient( lx, ly, rx, ry );
+
+      for (var i = 0, ni = stops.length, di = null; i < ni, di = stops[i]; i++) {
+        renderer.gradient.addColorStop(di.offset, di.color);
       }
 
     }
 
-    return this.flagReset();
+    return shp.flagReset();
 
   }
 
 };
 
 export default linearGradient;
+

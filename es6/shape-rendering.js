@@ -12,10 +12,6 @@ FN.getShapeRenderer = (shape) => {
   return shape._renderer;
 };
 
-FN.getSecretProp = (shape, k) => {
-  var secret = '_' + k;
-  return shape[secret];
-};
 
 FN.getMatrixProp = (shape, mtx) => {
   var matrix = shape._matrix;
@@ -33,12 +29,13 @@ FN.getShapeProps = (shape, ks) => {
     if(k.indexOf('mtx_') === 0) {
       m = getMatrixProp(shape, k);
     } else {
-      m = getSecretProp(shape, k);
+      // secret prop
+      m = shape['_' + k];
     }
     if(!m && shape.hasOwnProperty(k)) {
       m = shape[k];
     }
-    if(m) { acc[k] = m; }
+    if(typeof m !== 'undefined') { acc[k] = m; }
   });
   return acc;
 };

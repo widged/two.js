@@ -36,6 +36,8 @@ FN.canvas = (document ? document.createElement('canvas') : { getContext: (v) => 
 
 
 FN.ctx = FN.canvas.getContext('2d');
+FN.isCanvas = (ctx) => { return ctx.canvas.getContext('2d'); }
+
 
 FN.transformation = new Array2(9);
 

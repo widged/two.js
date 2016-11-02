@@ -1,34 +1,39 @@
 /* jshint esnext: true */
 
 import base from './base';
+import shapeRendering   from '../../shape-rendering';
+
+
+var {isCanvas} = base;
+var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
 
 
 var radialGradient = {
 
-  render: function(ctx, elem) {
+  render: function(ctx) {
 
-    if (!ctx.canvas.getContext('2d')) {
-      return;
-    }
+    if (!isCanvas(ctx)) { return; }
 
-    this._update();
+    var shp = this;
 
-    if (!this._renderer.gradient || this._flag_center || this._flag_focal
-        || this._flag_radius || this._flag_stops) {
+    updateShape(shp);
 
-      this._renderer.gradient = ctx.createRadialGradient(
-        this.center._x, this.center._y, 0,
-        this.focal._x, this.focal._y, this._radius
-      );
+    var renderer = getShapeRenderer(shp);
 
-      for (var i = 0; i < this.stops.length; i++) {
-        var stop = this.stops[i];
-        this._renderer.gradient.addColorStop(stop.offset, stop.color);
+    if (!renderer.gradient  || anyPropChanged(shp, ['center','focal','radius','stops']) ) {
+
+      var {center, focal, radius, stops} = getShapeProps(shp, ['center','focal','radius','stops']);
+      var {x: cx,y: cy} = getShapeProps(center, ['x','y']);
+      var {x: fx,y: fy} = getShapeProps(focal, ['x','y']);
+      renderer.gradient = ctx.createRadialGradient( cx, cy, 0, fx, fy, radius );
+
+      for (var i = 0, ni = stops.length, di = null; i < ni, di = stops[i]; i++) {
+        renderer.gradient.addColorStop(di.offset, di.color);
       }
 
     }
 
-    return this.flagReset();
+    return shp.flagReset();
 
   }
 
