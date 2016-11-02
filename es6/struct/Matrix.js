@@ -353,7 +353,7 @@ Matrix.Multiply = (A, B, C) => {
   var B3 = B[3], B4 = B[4], B5 = B[5];
   var B6 = B[6], B7 = B[7], B8 = B[8];
 
-  C = C || new Array2(9);
+  if(!C) { C = new Array2(9); }
 
   C[0] = A0 * B0 + A1 * B3 + A2 * B6;
   C[1] = A0 * B1 + A1 * B4 + A2 * B7;
@@ -367,6 +367,6 @@ Matrix.Multiply = (A, B, C) => {
 
   return C;
 
-}
+};
 
 export default Matrix;

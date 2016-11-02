@@ -6,33 +6,79 @@ shpKeys = shpKeys.concat(["vertices","stroke","linewidth","fill","opacity","cap"
 var rdrKeys = [];
 rdrKeys = rdrKeys.concat(["scale","opacity","rect"]);
 
-var FN = {};
+var FN = {}, NotInUse = {};
+
+FN.getShapeRenderer = (shape) => {
+  return shape._renderer;
+};
+
+FN.getSecretProp = (shape, k) => {
+  var secret = '_' + k;
+  return shape[secret];
+};
+
+FN.getMatrixProp = (shape, mtx) => {
+  var matrix = shape._matrix;
+  var k = mtx.slice(4);
+  return matrix[k];
+};
+
+
 
 FN.getShapeProps = (shape, ks) => {
+  var {getRendererKey, getSecretProp, getMatrixProp} = FN;
   var acc = {};
   ks.forEach((k) => {
-    var secret = '_' + k;
-    if(shape.hasOwnProperty(secret)) {
-      acc[k] = shape[secret];
-    // } else if(shape.hasOwnProperty(secret)) {
-    //   acc[k] = shape[k];
+    var m;
+    if(k.indexOf('mtx_') === 0) {
+      m = getMatrixProp(shape, k);
     } else {
-      // console.log(`[getShapeProps] key not found: ${k}`);
+      m = getSecretProp(shape, k);
     }
+    if(m) { acc[k] = m; }
   });
   return acc;
 };
 
-FN.getRendererProps = (shape, ks) => {
-      var acc = {};
-      var renderer = shape._renderer;
-      ks.forEach((k) => {
-        if(renderer.hasOwnProperty(k)) {
-          acc['rdr_'+k] = renderer[k];
-        } else {
-          console.log(`[getRendererProps] key not found: ${k}`);
-        }
-      });
-      return acc;
-    };
+NotInUse.setDefaultShapeKey = (shape, k, v, dontReplace) => {
+  var secret = '_' + k;
+  if(!shape.hasOwnProperty(secret) || dontReplace) { shape[secret] = v; }
+  return shape[secret];
+};
+
+NotInUse.setValueAndGetShapeProps = (shape, defaults, dontReplace) => {
+  var {setDefaultMatrixKey, setDefaultShapeKey} = FN;
+  var acc = {};
+  Object.keys(defaults).forEach((k) => {
+    var m, v = defaults[k];
+    if(k.indexOf('mtx_') === 0) {
+      // m = setDefaultMatrixKey(shape, k, v, dontReplace);
+    } else {
+      m = setDefaultShapeKey(shape, k, v, dontReplace);
+    }
+    if(m) { acc[k] = m; }
+
+  });
+  return acc;
+};
+
+
+NotInUse.defaultAndGetShapeProps = (shape, defaults, dontReplace) => {
+  return FN.setValueAndGetShapeProps(shape, defaults, true);
+
+};
+
+
+FN.updateShape = (shape) => {
+  shape._update();
+};
+
+
+FN.anyPropChanged = (node, keys) => {
+      return keys.filter((k) => {
+        return node['_flag_'+k] ? true : false;
+      }).length ? true : false;
+  };
+
+
 export default FN;
