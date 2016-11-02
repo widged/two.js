@@ -71,10 +71,9 @@ class CanvasRenderer extends Renderer {
       ctx.clearRect(0, 0, width, height);
     }
 
-    base.renderShape(scene, ctx);
+    base.renderScene(scene, ctx);
 
     if (!isOne) { ctx.restore(); }
-
 
     return this;
 

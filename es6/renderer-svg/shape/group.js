@@ -1,7 +1,9 @@
 /* jshint esnext: true */
 
 import base from './base';
+import svgFN    from './fn-svg';
 
+var {createElement, setAttributes} = svgFN;
 var {renderShape} = base;
 
 var orderChild = function(object) {
@@ -63,7 +65,7 @@ var group = function(domElement) {
   }
 
   if (!this._renderer.elem) {
-    this._renderer.elem = base.createSvgElement('g', {
+    this._renderer.elem = createElement('g', {
       id: this.id
     });
     domElement.appendChild(this._renderer.elem);

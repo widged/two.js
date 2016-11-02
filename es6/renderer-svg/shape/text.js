@@ -1,6 +1,8 @@
 /* jshint esnext: true */
 
-import base from './base';
+import svgFN    from './fn-svg';
+
+var {createElement, setAttributes, getClip} = svgFN;
 
 const ALIGNMENTS = {
   left: 'start',
@@ -68,18 +70,18 @@ var text = function(domElement) {
 
     props.id = props.id;
 
-    this._renderer.elem = base.createSvgElement('text', props);
+    this._renderer.elem = createElement('text', props);
     domElement.defs.appendChild(this._renderer.elem);
 
   } else {
 
-    base.setAttributes(this._renderer.elem, props);
+    setAttributes(this._renderer.elem, props);
 
   }
 
   if (this._flag_clip) {
 
-    var clip = base.getClip(this);
+    var clip = getClip(this);
     var elem = this._renderer.elem;
 
     if (this._clip) {

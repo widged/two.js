@@ -122,7 +122,7 @@ class WebglRenderer extends Renderer {
   render() {
     var {ctx, overdraw, scene, program} = this.getState();
     if (!overdraw) { glFN.clear(ctx); }
-    base.renderShape(scene, ctx, program);
+    base.renderScene(scene, ctx, program);
     dropFlags(this, ['matrix']);
     return this;
   }

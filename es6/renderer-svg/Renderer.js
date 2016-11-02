@@ -2,8 +2,11 @@
 
 import base   from './shape/base';
 import Renderer from '../TwoRenderer';
+import svgFN    from './shape/fn-svg';
 
-var {renderShape, createSvgElement, setAttributes} = base;
+var {renderScene} = base;
+var {createElement, setAttributes} = svgFN;
+
 
 /**
  * @class
@@ -15,21 +18,19 @@ class SvgRenderer extends Renderer {
   }
 
   getDomNode() {
-    return createSvgElement('svg', { version: 1.1 });
+    return createElement('svg', { version: 1.1 });
   }
 
   initializeContext(options) {
     var {domElement} = this.getState();
-    var defs = createSvgElement('defs');
+    var defs = createElement('defs');
     domElement.appendChild(defs);
     domElement.defs = defs;
     domElement.style.overflow = 'hidden';
     this.setState({defs});
   }
 
-  get defs() {
-    return this.state.defs;
-  }
+  get defs() { return this.state.defs; }
 
   whenSizeChange() {
     var {domElement, width, height} = this.getState();
@@ -44,7 +45,7 @@ class SvgRenderer extends Renderer {
 
   render() {
     var {scene, domElement} = this.getState();
-    renderShape(scene, domElement);
+    renderScene(scene, domElement);
     return this;
   }
 

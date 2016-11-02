@@ -1,7 +1,8 @@
 /* jshint esnext: true */
 
-import base from './base';
-import dom from '../../platform/dom';
+import svgFN    from './fn-svg';
+
+var {createElement, setAttributes} = svgFN;
 
 var radialGradient = function(domElement) {
 
@@ -32,19 +33,19 @@ var radialGradient = function(domElement) {
 
     changed.id = this.id;
     changed.gradientUnits = 'userSpaceOnUse';
-    this._renderer.elem = base.createSvgElement('radialGradient', changed);
+    this._renderer.elem = createElement('radialGradient', changed);
     domElement.defs.appendChild(this._renderer.elem);
 
   // Otherwise apply all pending attributes
   } else {
 
-    base.setAttributes(this._renderer.elem, changed);
+    setAttributes(this._renderer.elem, changed);
 
   }
 
   if (this._flag_stops) {
 
-    dom.removeChildNodes(this._renderer.elem);
+    svgFN.clear(this._renderer.elem);
 
 
     for (var i = 0; i < this.stops.length; i++) {
@@ -63,9 +64,9 @@ var radialGradient = function(domElement) {
       }
 
       if (!stop._renderer.elem) {
-        stop._renderer.elem = base.createSvgElement('stop', attrs);
+        stop._renderer.elem = createElement('stop', attrs);
       } else {
-        base.setAttributes(stop._renderer.elem, attrs);
+        setAttributes(stop._renderer.elem, attrs);
       }
 
       this._renderer.elem.appendChild(stop._renderer.elem);

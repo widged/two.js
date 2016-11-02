@@ -1,8 +1,12 @@
 /* jshint esnext: true */
 
 import base from './base';
+import svgFN    from './fn-svg';
+import anchorFN from './fn-anchor';
 
 var {renderShape} = base;
+var {createElement, setAttributes, getClip} = svgFN;
+var {toString} = anchorFN;
 
 var path = function(domElement) {
 
@@ -25,7 +29,7 @@ var path = function(domElement) {
   }
 
   if (this._flag_vertices) {
-    var vertices = base.toString(this._vertices, this._closed);
+    var vertices = toString(this._vertices, this._closed);
     changed.d = vertices;
   }
 
@@ -75,17 +79,17 @@ var path = function(domElement) {
   if (!this._renderer.elem) {
 
     changed.id = this.id;
-    this._renderer.elem = base.createSvgElement('path', changed);
+    this._renderer.elem = createElement('path', changed);
     domElement.appendChild(this._renderer.elem);
 
   // Otherwise apply all pending attributes
   } else {
-    base.setAttributes(this._renderer.elem, changed);
+    setAttributes(this._renderer.elem, changed);
   }
 
   if (this._flag_clip) {
 
-    var clip = base.getClip(this);
+    var clip = getClip(this);
     var elem = this._renderer.elem;
 
     if (this._clip) {

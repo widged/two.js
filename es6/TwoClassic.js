@@ -28,17 +28,14 @@
  *
  */
 
-
 /* jshint esnext: true */
 
 // classic interface for two.js
-
 import TwoLight  from './TwoLight';
 import EventEmitter  from './util/EventEmitter';
 import makeShape from './shape/factories';
 import Player from './util/Player';
 import DefaultValues from './constant/DefaultValues';
-import Renderer from './TwoRenderer';
 import TwoEvent from './constant/TwoEvent';
 import dom from './platform/dom';
 import RendererLoader from './renderer-loader';
