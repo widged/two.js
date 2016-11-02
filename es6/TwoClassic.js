@@ -41,6 +41,7 @@ import DefaultValues from './constant/DefaultValues';
 import Renderer from './TwoRenderer';
 import TwoEvent from './constant/TwoEvent';
 import dom from './platform/dom';
+import RendererLoader from './renderer-loader';
 
 var beforeRender = (two, classicConfig) => {
 
@@ -56,7 +57,7 @@ class TwoClassic extends TwoLight  {
 
     var beforeRender = (two) => {
 
-      two.state.RendererDelegate = Renderer.loadRendererOfType(type, two, classicConfig.domElement);
+      two.state.RendererDelegate = RendererLoader.load(type, two, classicConfig.domElement);
 
       two.dispatcher = new EventEmitter(Object.keys(TwoEvent));
 

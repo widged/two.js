@@ -24,23 +24,27 @@ class SvgRenderer extends Renderer {
     domElement.appendChild(defs);
     domElement.defs = defs;
     domElement.style.overflow = 'hidden';
-    this.defs = defs;
     this.setState({defs});
   }
 
+  get defs() {
+    return this.state.defs;
+  }
+
+  whenSizeChange() {
+    var {domElement, width, height} = this.getState();
+    setAttributes(domElement, { width, height });
+  }
 
   setSize(width, height) {
-    super.setSize(width, height);
-    var {domElement} = this.getState();
-    setAttributes(domElement, {
-      width: width,
-      height: height
-    });
+    this.setState({width, height});
+    this.whenSizeChange();
     return this;
   }
 
   render() {
-    renderShape(this.scene, this.domElement);
+    var {scene, domElement} = this.getState();
+    renderShape(scene, domElement);
     return this;
   }
 

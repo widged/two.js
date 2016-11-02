@@ -43,15 +43,17 @@ class CanvasRenderer extends Renderer {
   }
 
   setSize(width, height, ratio) {
-    super.setSize(width, height);
-
+    var {getDeviceRatio, getCanvasContextRatio} = dom;
     var {ctx} = this.getState();
-    var scale = isUndefined(ratio) ? getRatio(ctx) : ratio;
-
-    this.setState({scale});
+    var scale = ratio;
+    if (isUndefined(ratio)) {
+        var deviceRatio  = getDeviceRatio() || 1;
+        var canvasRatio = getCanvasContextRatio(ctx) || deviceRatio;
+        scale = deviceRatio / canvasRatio;
+    }
+    this.setState({width, height, scale});
     this.whenSizeChange();
     return this;
-
   }
 
   render() {

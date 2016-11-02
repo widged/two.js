@@ -12,20 +12,18 @@ var FN = {};
 
 FN.temp = (document ? document.createElement('div') : {});
 
-FN.isElement = (obj) =>  {
-  return !!(obj && obj.nodeType === 1);
-};
 
 FN.hasEventListeners = isFunction(global.addEventListener);
 
 FN.onWindowResize = function(func, bool) {
-  var elem = document;
-  if (dom.hasEventListeners) {
+  var {hasEventListeners} = FN;
+  var elem = window;
+  if (hasEventListeners) {
     elem.addEventListener('resize', func, !!bool);
   } else {
     elem.attachEvent('onresize', func);
   }
-  return dom;
+  return elem;
 };
 
 FN.updateDomNodeSize = (domElement, width, height, ratio) => {
@@ -37,23 +35,32 @@ FN.updateDomNodeSize = (domElement, width, height, ratio) => {
   });
 };
 
+FN.nodeType = (node) => {
+  // check if node is element
+  if (!(node && node.nodeType === 1)) { return; }
+  return node.tagName.toLowerCase();
+};
+
+
 FN.getWindowSize = () => {
   return document.body.getBoundingClientRect();
+};
+
+
+FN.getDeviceRatio = () => {
+  return window.devicePixelRatio || 1;
 };
 
 /**
  * Account for high dpi rendering.
  * http://www.html5rocks.com/en/tutorials/canvas/hidpi/
  */
-FN.getRatio = function(ctx) {
-  var deviceRatio = global.devicePixelRatio || 1;
-  var backingStoreRatio = ctx.webkitBackingStorePixelRatio ||
-    ctx.mozBackingStorePixelRatio ||
-    ctx.msBackingStorePixelRatio ||
-    ctx.oBackingStorePixelRatio ||
-    ctx.backingStorePixelRatio || deviceRatio;
-
-  return deviceRatio / backingStoreRatio;
+FN.getCanvasContextRatio = function(context) {
+  return context.webkitBackingStorePixelRatio ||
+    context.mozBackingStorePixelRatio ||
+    context.msBackingStorePixelRatio ||
+    context.oBackingStorePixelRatio ||
+    context.backingStorePixelRatio;
 };
 
 FN.removeChildNodes = (node) => {

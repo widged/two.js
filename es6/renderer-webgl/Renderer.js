@@ -9,7 +9,6 @@ import base from './shape/base';
 import shapeRendering   from '../shape-rendering';
 import glFN   from './shape/fn-gl';
 
-var {getRatio} = dom;
 var {isUndefined} = is;
 var {raiseFlags, dropFlags} = shapeRendering;
 
@@ -107,12 +106,15 @@ class WebglRenderer extends Renderer {
   }
 
   setSize(width, height, ratio) {
-    super.setSize(width, height);
-
+    var {getDeviceRatio, getCanvasContextRatio} = dom;
     var {ctx} = this.getState();
-    var scale = isUndefined(ratio) ? getRatio(ctx) : ratio;
-
-    this.setState({scale});
+    var scale = ratio;
+    if (isUndefined(ratio)) {
+        var deviceRatio  = getDeviceRatio() || 1;
+        var canvasRatio = getCanvasContextRatio(ctx) || deviceRatio;
+        scale = deviceRatio / canvasRatio;
+    }
+    this.setState({scale, width, height});
     this.whenSizeChange();
     return this;
   }
