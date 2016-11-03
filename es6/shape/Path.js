@@ -252,7 +252,7 @@ class Path extends Shape {
     }
 
     for (var i = 0; i < this._vertices.length; i++) {
-      this._vertices[i]._command = i === 0 ? Commands.move : Commands.line;
+      this._vertices[i].command = i === 0 ? Commands.MOVE : Commands.LINE;
     }
 
     return this;
@@ -270,7 +270,7 @@ class Path extends Shape {
       limit,
       vertices: this.vertices,
       pathClosed : this._closed,
-      lastClosed : (arrayLast(this.vertices)._command === Commands.close) ? true : false,
+      lastClosed : (arrayLast(this.vertices).command === Commands.CLOSE) ? true : false,
       automatic: this._automatic
     });
     return this;
@@ -286,7 +286,7 @@ class Path extends Shape {
       limit,
       vertices: this.vertices,
       pathClosed: this._closed,
-      lastClosed: (arrayLast(this.vertices)._command === Commands.close) ? true : false,
+      lastClosed: (arrayLast(this.vertices).command === Commands.CLOSE) ? true : false,
       lengths: this._lengths
     });
     this._lengths = lengths;

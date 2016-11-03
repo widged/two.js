@@ -5,6 +5,9 @@ import Commands from '../constant/CommandTypes';
 var PI = Math.PI, TWO_PI = Math.PI * 2, cos = Math.cos,
   sin = Math.sin, abs = Math.abs;
 
+const {MOVE, CURVE} = Commands;
+
+
 function sineRing(ox, oy, r, periods, amplitude, mod) {
 
   var size = (periods * 2) + 1;
@@ -18,8 +21,7 @@ function sineRing(ox, oy, r, periods, amplitude, mod) {
   points.push([
     sin(theta) * (r + (amplitude/2)),
     cos(theta) * (r + (amplitude/2)),
-    0,0,0,0,
-    Commands.move
+    MOVE
   ]);
 
   for (var i = 0; i < size; i++) {
@@ -47,7 +49,11 @@ function sineRing(ox, oy, r, periods, amplitude, mod) {
       rx = ry = 0;
     }
 
-    points.push([x, y, lx, ly, rx, ry, Commands.curve]);
+    points.push([
+      x, y,
+      CURVE,
+      {left: [lx, ly], right: [rx, ry]}
+    ]);
 
   }
   return {points, translation: [ox, oy]};

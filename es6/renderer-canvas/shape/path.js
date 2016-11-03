@@ -98,13 +98,13 @@ var path = function(ctx, forced, parentClipped) {
     x = toFixed(b._x);
     y = toFixed(b._y);
 
-    switch (b._command) {
+    switch (b.command) {
 
-      case Commands.close:
+      case Commands.CLOSE:
         ctx.closePath();
         break;
 
-      case Commands.curve:
+      case Commands.CURVE:
 
         prev = closed ? mod(i - 1, length) : Math.max(i - 1, 0);
         next = closed ? mod(i + 1, length) : Math.min(i + 1, last);
@@ -114,17 +114,17 @@ var path = function(ctx, forced, parentClipped) {
         ar = (a.controls && a.controls.right) || a;
         bl = (b.controls && b.controls.left) || b;
 
-        if (a._relative) {
-          vx = (ar.x + toFixed(a._x));
-          vy = (ar.y + toFixed(a._y));
+        if (a.relative) {
+          vx = (ar.x + toFixed(a.x));
+          vy = (ar.y + toFixed(a.y));
         } else {
           vx = toFixed(ar.x);
           vy = toFixed(ar.y);
         }
 
-        if (b._relative) {
-          ux = (bl.x + toFixed(b._x));
-          uy = (bl.y + toFixed(b._y));
+        if (b.relative) {
+          ux = (bl.x + toFixed(b.x));
+          uy = (bl.y + toFixed(b.y));
         } else {
           ux = toFixed(bl.x);
           uy = toFixed(bl.y);
@@ -139,24 +139,24 @@ var path = function(ctx, forced, parentClipped) {
           br = (b.controls && b.controls.right) || b;
           cl = (c.controls && c.controls.left) || c;
 
-          if (b._relative) {
-            vx = (br.x + toFixed(b._x));
-            vy = (br.y + toFixed(b._y));
+          if (b.relative) {
+            vx = (br.x + toFixed(b.x));
+            vy = (br.y + toFixed(b.y));
           } else {
             vx = toFixed(br.x);
             vy = toFixed(br.y);
           }
 
-          if (c._relative) {
-            ux = (cl.x + toFixed(c._x));
-            uy = (cl.y + toFixed(c._y));
+          if (c.relative) {
+            ux = (cl.x + toFixed(c.x));
+            uy = (cl.y + toFixed(c.y));
           } else {
             ux = toFixed(cl.x);
             uy = toFixed(cl.y);
           }
 
-          x = toFixed(c._x);
-          y = toFixed(c._y);
+          x = toFixed(c.x);
+          y = toFixed(c.y);
 
           ctx.bezierCurveTo(vx, vy, ux, uy, x, y);
 
@@ -164,11 +164,11 @@ var path = function(ctx, forced, parentClipped) {
 
         break;
 
-      case Commands.line:
+      case Commands.LINE:
         ctx.lineTo(x, y);
         break;
 
-      case Commands.move:
+      case Commands.MOVE:
         d = b;
         ctx.moveTo(x, y);
         break;

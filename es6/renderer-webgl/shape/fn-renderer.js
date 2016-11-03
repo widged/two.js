@@ -3,7 +3,7 @@
 import is  from '../../util/is';
 import LinearGradient from '../../shape/gradient/LinearGradient';
 import RadialGradient from '../../shape/gradient/RadialGradient';
-import shapeRendering   from '../../shape-rendering';
+import shapeRendering from '../../shape-rendering';
 import Matrix   from '../../struct/Matrix';
 import Array2   from '../../struct/Array';
 import base from './base';
@@ -11,13 +11,15 @@ import glFN   from './fn-gl';
 
 var {getShapeProps, updateShape, anyPropChanged, getShapeRenderer, raiseFlags} = shapeRendering;
 var {Multiply: multiplyMatrix} = Matrix;
-var {updateCanvas} = base;
 var {updateBuffer, updateTexture, drawTextureAndRect} = glFN;
+var {getContext, renderShape} = base;
 
 
-var {isObject} = is;
+var {isObject, isString} = is;
 
 var FN = {};
+
+FN.isHidden = /(none|transparent)/i;
 
 FN.hasGradientChanged = (shp) => {
   var {fill,  stroke} = getShapeProps( shp, ["fill","stroke"] );
@@ -27,7 +29,55 @@ FN.hasGradientChanged = (shp) => {
       || (stroke instanceof RadialGradient && anyPropChanged(stroke, ['spread','stops','radius','center','focal']));
 };
 
-FN.renderPath = (gl, program, shp, assertShapeChange, getBoundingClientRect) => {
+
+var removeChild = function(child, gl) {
+  if (child.children) {
+    for (var i = 0; i < child.children.length; i++) {
+      removeChild(child.children[i], gl);
+    }
+    return;
+  }
+  var renderer = getShapeRenderer(child);
+  glFN.remove(gl, renderer.texture);
+  renderer.texture = undefined;
+};
+
+
+FN.removeNodes = (nodes, gl) => {
+  for (var i = 0; i < nodes.length; i++) {
+    removeChild(nodes[i], gl);
+  }
+
+};
+
+
+FN.drawFill = (canvas, fill, renderGradient) => {
+  var context = getContext(canvas);
+  if (isString(fill)) {
+    context.fillStyle = fill;
+  } else {
+    // fill is a Gradient shape
+    context.fillStyle = renderGradient(fill, context);
+  }
+
+};
+FN.drawStroke = (canvas, stroke, renderGradient) => {
+  var context = getContext(canvas);
+  if (isString(stroke)) {
+    context.strokeStyle = stroke;
+  } else {
+    // stroke is a Gradient shape
+    context.strokeStyle = renderGradient(stroke, context);
+  }
+};
+FN.drawGradientShape = (gdt, context, shp) => {
+  // renderShape constructs the gdt _renderer
+  renderShape(gdt, context, shp);
+  return getShapeRenderer(gdt).gradient;
+};
+
+
+FN.renderPath = (gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas) => {
 
   var completed = false;
 
@@ -47,7 +97,7 @@ FN.renderPath = (gl, program, shp, assertShapeChange, getBoundingClientRect) => 
 
   updateShape(shp);
 
-  var renderer = updateRendererIfNecesary(shp, gl, program, assertShapeChange, getBoundingClientRect);
+  var renderer = updateRendererIfNecesary(shp, gl, program, assertShapeChange, getBoundingClientRect, updateShapeCanvas);
   // :REVIEW: do we need to redraw if the renderer did not change?
   drawTextureAndRect({
     gl: gl,
@@ -64,8 +114,7 @@ FN.renderPath = (gl, program, shp, assertShapeChange, getBoundingClientRect) => 
 };
 
 
-
-FN.updateRendererIfNecesary   =  (shp, gl, program, assertShapeChange, getBoundingClientRect) => {
+FN.updateRendererIfNecesary   =  (shp, gl, program, assertShapeChange, getBoundingClientRect, updateShapeCanvas) => {
   var {recomputeTrianglesAndRectIfNecessary, recomputeMatrixAndScaleIfNecessary} = FN;
   // main
   var renderer = recomputeMatrixAndScaleIfNecessary(shp);
@@ -76,16 +125,52 @@ FN.updateRendererIfNecesary   =  (shp, gl, program, assertShapeChange, getBoundi
   if(tracker.change === true) {
     var {opacity} = getShapeProps( shp, ["opacity"] );
     renderer.opacity = opacity * parentRenderer.opacity;
-    updateBuffer(base, gl, shp, program);
-    updateTexture(base, gl, shp);
+    var {buffer, textureCoordsBuffer} = updateBuffer(gl, program, renderer);
+    renderer.buffer = buffer;
+    renderer.textureCoordsBuffer = textureCoordsBuffer;
+    updateShapeCanvas(shp, FN);
+    updateTexture(gl, base.canvas, renderer); // :FIXME: this should be the ctx, not the base.canvas
   }
   return renderer;
 };
 
+var getTriangles = function(rect, triangles) {
+
+  var top = rect.top,
+      left = rect.left,
+      right = rect.right,
+      bottom = rect.bottom;
+
+  // First Triangle
+
+  if(!triangles) { triangles = new Array2(12); }
+
+  triangles[0] = left;
+  triangles[1] = top;
+
+  triangles[2] = right;
+  triangles[3] = top;
+
+  triangles[4] = left;
+  triangles[5] = bottom;
+
+  // Second Triangle
+
+  triangles[6] = left;
+  triangles[7] = bottom;
+
+  triangles[8] = right;
+  triangles[9] = top;
+
+  triangles[10] = right;
+  triangles[11] = bottom;
+
+  return triangles;
+
+};
+
 
 FN.recomputeTrianglesAndRectIfNecessary = (shp, assertShapeChange, getBoundingClientRect, tracker) => {
-
-  var {getTriangles} = FN;
 
   var renderer = getShapeRenderer(shp);
 
@@ -129,40 +214,16 @@ FN.recomputeMatrixAndScaleIfNecessary = (shp) => {
 };
 
 
-FN.getTriangles = function(rect, triangles) {
-
-  var top = rect.top,
-      left = rect.left,
-      right = rect.right,
-      bottom = rect.bottom;
-
-  // First Triangle
-
-  if(!triangles) { triangles = new Array2(12); }
-
-  triangles[0] = left;
-  triangles[1] = top;
-
-  triangles[2] = right;
-  triangles[3] = top;
-
-  triangles[4] = left;
-  triangles[5] = bottom;
-
-  // Second Triangle
-
-  triangles[6] = left;
-  triangles[7] = bottom;
-
-  triangles[8] = right;
-  triangles[9] = top;
-
-  triangles[10] = right;
-  triangles[11] = bottom;
-
-  return triangles;
-
+FN.updateAndClearCanvasRect = (canvas, width, height, scale) => {
+  var {max, ceil} = Math;
+  width  = max(ceil(width * scale), 1);
+  height = max(ceil(height * scale), 1);
+  canvas.width  = width; canvas.height = height;
+  var context = getContext(canvas);
+  context.clearRect(0, 0, width, height);
+  return {width, height};
 };
+
 
 
 export default FN;

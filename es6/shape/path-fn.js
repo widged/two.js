@@ -236,12 +236,12 @@ FN.getCurveLengthAB = (a, b, limit) => {
   x4 = a.x;
   y4 = a.y;
 
-  if (right && b._relative) {
+  if (right && b.relative) {
     x2 += b.x;
     y2 += b.y;
   }
 
-  if (left && a._relative) {
+  if (left && a.relative) {
     x3 += a.x;
     y3 += a.y;
   }
@@ -294,7 +294,7 @@ FN.getCurveFromPoints = (points, closed)  => {
     var c = points[next];
     getControlPoints(a, b, c);
 
-    b._command = i === 0 ? Commands.move : Commands.curve;
+    b.command = i === 0 ? Commands.MOVE : Commands.CURVE;
 
     b.controls.left.x = isNumber(b.controls.left.x) ? b.controls.left.x : b.x;
     b.controls.left.y = isNumber(b.controls.left.y) ? b.controls.left.y : b.y;
@@ -351,7 +351,7 @@ FN.getControlPoints = (a, b, c)  => {
 
   // TODO: Issue 73
   if (d1 < 0.0001 || d2 < 0.0001) {
-    if (!b._relative) {
+    if (!b.relative) {
       b.controls.left.copy(b);
       b.controls.right.copy(b);
     }
@@ -375,7 +375,7 @@ FN.getControlPoints = (a, b, c)  => {
   b.controls.right.x = cos(mid) * d2;
   b.controls.right.y = sin(mid) * d2;
 
-  if (!b._relative) {
+  if (!b.relative) {
     b.controls.left.x += b.x;
     b.controls.left.y += b.y;
     b.controls.right.x += b.x;
@@ -420,12 +420,12 @@ FN.getSubdivisions = (a, b, limit) => {
     x4 = a.x;
     y4 = a.y;
 
-    if (right && b._relative) {
+    if (right && b.relative) {
       x2 += b.x;
       y2 += b.y;
     }
 
-    if (left && a._relative) {
+    if (left && a.relative) {
       x3 += a.x;
       y3 += a.y;
     }
@@ -455,10 +455,10 @@ FN.getSubdivisions = (a, b, limit) => {
         return;
       }
 
-      if (a.command === Commands.move) {
+      if (a.command === Commands.MOVE) {
         points.push(new Anchor(b.x, b.y));
         if (i > 0) {
-          points[points.length - 1].command = Commands.line;
+          points[points.length - 1].command = Commands.LINE;
         }
         b = a;
         return;
@@ -469,10 +469,10 @@ FN.getSubdivisions = (a, b, limit) => {
 
       // Assign commands to all the verts
       verts.forEach(function(v, i) {
-        if (i <= 0 && b.command === Commands.move) {
-          v.command = Commands.move;
+        if (i <= 0 && b.command === Commands.MOVE) {
+          v.command = Commands.MOVE;
         } else {
-          v.command = Commands.line;
+          v.command = Commands.LINE;
         }
       });
 
@@ -488,10 +488,10 @@ FN.getSubdivisions = (a, b, limit) => {
 
           // Assign commands to all the verts
           verts.forEach(function(v, i) {
-            if (i <= 0 && b.command === Commands.move) {
-              v.command = Commands.move;
+            if (i <= 0 && b.command === Commands.MOVE) {
+              v.command = Commands.MOVE;
             } else {
-              v.command = Commands.line;
+              v.command = Commands.LINE;
             }
           });
 
@@ -499,7 +499,7 @@ FN.getSubdivisions = (a, b, limit) => {
           points.push(new Anchor(a.x, a.y));
         }
 
-        points[points.length - 1].command = closed ? Commands.close : Commands.line;
+        points[points.length - 1].command = closed ? Commands.CLOSE : Commands.LINE;
 
       }
 
@@ -525,7 +525,7 @@ FN.updateLength = ({limit, vertices, pathClosed, lastClosed, lengths}) => {
 
   vertices.forEach((a, i) => {
 
-    if ((i <= 0 && !closed) || a.command === Commands.move) {
+    if ((i <= 0 && !closed) || a.command === Commands.MOVE) {
       b = a;
       lengths[i] = 0;
       return;
@@ -591,7 +591,7 @@ NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  =>
     // y += center.y;
 
     // TODO: Calculate control points here...
-    points.push([x, y, 0, 0, 0, 0, Commands.line]);
+    points.push([x, y, 0, 0, 0, 0, Commands.LINE]);
 
   }
   return points;
@@ -641,12 +641,12 @@ NotInUse.getPointAt = (t, obj, pth) => {
       x4 = a.x;
       y4 = a.y;
 
-      if (right && b._relative) {
+      if (right && b.relative) {
         x2 += b.x;
         y2 += b.y;
       }
 
-      if (left && a._relative) {
+      if (left && a.relative) {
         x3 += a.x;
         y3 += a.y;
       }

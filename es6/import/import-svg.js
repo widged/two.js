@@ -397,9 +397,7 @@ var tags = {
             y = coord.y;
             result = new Anchor(
               x, y,
-              undefined, undefined,
-              undefined, undefined,
-              Commands.close
+              Commands.CLOSE
             );
           }
           break;
@@ -412,9 +410,7 @@ var tags = {
 
           result = new Anchor(
             x, y,
-            undefined, undefined,
-            undefined, undefined,
-            lower === 'm' ? Commands.move : Commands.line
+            lower === 'm' ? Commands.MOVE : Commands.LINE
           );
 
           if (relative) {
@@ -434,10 +430,8 @@ var tags = {
           var b = a === 'x' ? 'y' : 'x';
 
           result = new Anchor(
-            undefined, undefined,
-            undefined, undefined,
-            undefined, undefined,
-            Commands.line
+            0, 0,
+            Commands.LINE
           );
           result[a] = parseFloat(coords[0]);
           result[b] = coord[b];
@@ -503,9 +497,8 @@ var tags = {
           coord.controls.right.set(x2 - coord.x, y2 - coord.y);
           result = new Anchor(
             x4, y4,
-            x3 - x4, y3 - y4,
-            undefined, undefined,
-            Commands.curve
+            Commands.CURVE,
+            {left: [x3 - x4, y3 - y4], right: [undefined, undefined]}
           );
 
           coord = result;
@@ -565,9 +558,8 @@ var tags = {
           coord.controls.right.set(x2 - coord.x, y2 - coord.y);
           result = new Anchor(
             x4, y4,
-            x3 - x4, y3 - y4,
-            undefined, undefined,
-            Commands.curve
+            Commands.CURVE,
+            {left: [x3 - x4, y3 - y4], right: [undefined, undefined]}
           );
 
           coord = result;
@@ -677,9 +669,10 @@ var tags = {
             var xx = rx * cos(theta);
             var yy = ry * sin(theta);
             var projected = projection.multiply(xx, yy, 1);
-            result.push(new Anchor(projected.x, projected.y, false, false, false, false, Commands.line));
+            result.push(new Anchor(
+              projected.x, projected.y, Commands.LINE));
           }
-          result.push(new Anchor(x4, y4, false, false, false, false, Commands.line));
+          result.push(new Anchor(x4, y4, Commands.LINE));
 
           coord = result[result.length - 1];
           control = coord.controls.left;

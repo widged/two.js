@@ -7,8 +7,8 @@ var linearGradient = function(ctx) {
   if (!this._renderer.gradient || this._flag_endPoints || this._flag_stops) {
 
     this._renderer.gradient = ctx.createLinearGradient(
-      this.left._x, this.left._y,
-      this.right._x, this.right._y
+      this.left.x, this.left.y,
+      this.right.x, this.right.y
     );
 
     for (var i = 0; i < this.stops.length; i++) {

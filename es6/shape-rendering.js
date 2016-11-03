@@ -22,7 +22,7 @@ FN.getMatrixProp = (shape, mtx) => {
 
 
 FN.getShapeProps = (shape, ks) => {
-  var {getRendererKey, getSecretProp, getMatrixProp} = FN;
+  var {getMatrixProp} = FN;
   var acc = {};
   ks.forEach((k) => {
     var m;

@@ -1,12 +1,14 @@
 /* jshint esnext: true */
 
 import is  from '../../util/is';
-import base from './base';
 
-var {ctx, isHidden} = base;
 var {isNumber} = is;
 var {min, max} = Math;
 var FN = {};
+
+// --------------------
+// Text Bounding Rect
+// --------------------
 
 const TEXT_ALIGNMENTS = {
   left: 'start',
@@ -26,19 +28,7 @@ var TEXT_H = {
   center:  (width, cx) => { return [ -cx   ,    cx]; }
 };
 
-
-FN.getTextBoundingClientRect = function(border, {value,style,weight,size,leading,family,baseline,alignment}) {
-
-  var width, height;
-
-  ctx.font = [style, weight, size + 'px/' + leading + 'px', family].join(' ');
-  ctx.textAlign = 'center';
-  ctx.textBaseline = baseline;
-
-  // TODO: Estimate this better
-  width = ctx.measureText(value).width;
-  height = max(size || leading);
-
+FN.getTextBoundingClientRect = function(border, width, height, {alignment, baseline}) {
   // width += border; // REVIEW: Not sure if the `measure` calcs
   height += border;
 
@@ -53,6 +43,9 @@ FN.getTextBoundingClientRect = function(border, {value,style,weight,size,leading
 };
 
 
+// --------------------
+// Path Bounding Rect
+// --------------------
 
 /**
  * Returns the rect of a set of verts. Typically takes vertices that are

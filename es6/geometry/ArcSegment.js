@@ -4,7 +4,7 @@
  * arcSegment
  *
  * Defines an arc segment from center point ox, oy with an inner and outer radius
- * of ir, or. Lastly, you need to supply a start and ending angle sa, ea. Optionally,
+ * of iRadius, oRadius. Lastly, you need to supply a start and ending angle sAngle, eAngle. Optionally,
  * pass the resolution for how many points on the arc are desired.
  */
 
@@ -13,99 +13,72 @@ import Commands from '../constant/CommandTypes';
 var PI = Math.PI, TWO_PI = Math.PI * 2, HALF_PI = Math.PI/2,
   cos = Math.cos, sin = Math.sin, abs = Math.abs;
 
+const {MOVE, CURVE, CLOSE} = Commands;
+
 /*
 @function ArcSegment
-  ox : Origin X
-  oy : Origin Y
-  ir : Inner Radius
-  or : Outer Radius
-  sa : Starting Angle
-  ea : Ending Angle
-  res : Resolution
+  x : Origin X
+  y : Origin Y
+  iRadius : Inner Radius
+  oRadius : Outer Radius
+  sAngle : Starting Angle
+  eAngle : Ending Angle
+  resolution : Resolution
 */
-function arcSegment(ox, oy, ir, or, sa, ea, res) {
+function arcSegment(x, y, iRadius, oRadius, sAngle, eAngle, resolution) {
 
-  if (sa > ea) {
-    ea += Math.PI*2;
-  }
+  resolution = resolution || 8;
 
-  res = res || 8;
-
-  var rot = sa;
-  var ta = ea - sa;
-  var angleStep = ta / res;
-  var command = Commands.move;
+  if (sAngle > eAngle) { eAngle += Math.PI*2; }
+  var arc = eAngle - sAngle;
+  var angleStep = arc / resolution;
   var points = [];
 
   points.push( [
-    Math.sin(0) * or,
-    Math.cos(0) * or,
-    0,0,0,0,
-    command
+    Math.sin(0) * oRadius,
+    Math.cos(0) * oRadius,
+    MOVE
   ]);
-
-
-  var theta, x, y, lx, ly, rx, ry;
-  command = Commands.curve;
 
   //Do Outer Edge
-  for (var i = 0; i < res+1; i++) {
-
-    theta = i * angleStep;
-    x = sin(theta) * or;
-    y = cos(theta) * or;
-    lx = sin(theta - HALF_PI) * (angleStep / PI) * or;
-    ly = cos(theta - HALF_PI) * (angleStep / PI) * or;
-    rx = sin(theta + HALF_PI) * (angleStep / PI) * or;
-    ry = cos(theta + HALF_PI) * (angleStep / PI) * or;
-
-    if (i===0) {
-      lx = ly = 0;
-    }
-
-    if (i===res) {
-      rx = ry = 0;
-    }
-
-    points.push( [
-      x, y, lx, ly, rx, ry, command
-    ]);
-  }
-
+  var outerTheta = (i, angleStep) => { return i * angleStep; };
+  points = points.concat(edge(resolution, outerTheta, angleStep, HALF_PI, oRadius));
   //Do Inner Edge
-  for (var j = 0; j < res+1; j++) {
+  var innerTheta = (i, angleStep) => { return arc - (angleStep * i); };
+  points = points.concat(edge(resolution, innerTheta, angleStep, PI*1.5, iRadius));
 
-    theta = ta - (angleStep * j);
-    x = sin(theta) * ir;
-    y = cos(theta) * ir;
-    lx = sin(theta - (PI*1.5)) * (angleStep / PI) * ir;
-    ly = cos(theta - (PI*1.5)) * (angleStep / PI) * ir;
-    rx = sin(theta + (PI*1.5)) * (angleStep / PI) * ir;
-    ry = cos(theta + (PI*1.5)) * (angleStep / PI) * ir;
-
-    if (j===0) {
-      lx = ly = 0;
-    }
-
-    if (j===res) {
-      rx = ry = 0;
-    }
-
-    points.push( [
-      x, y, lx, ly, rx, ry, command
-    ]);
-  }
-
-  command = Commands.close;
   points.push( [
-    Math.sin(0) * or,
-    Math.cos(0) * or,
-    0,0,0,0,
-    command
+    Math.sin(0) * oRadius,
+    Math.cos(0) * oRadius,
+    CLOSE
   ]);
 
-  return {points, rotation: sa, translation: [ox, oy]};
+  return {points, rotation: sAngle, translation: [x, y]};
 }
 
+var edge = (resolution, getTheta, angleStep, adj, radius) => {
+  var x, y, lx, ly, rx, ry;
+  var points = [];
+  for (var i = 0, ni = resolution+1; i < ni; i++) {
+    var theta = getTheta(i, angleStep);
+    x = sin(theta) * radius;
+    y = cos(theta) * radius;
+    lx = sin(theta - adj) * (angleStep / PI) * radius;
+    ly = cos(theta - adj) * (angleStep / PI) * radius;
+    rx = sin(theta + adj) * (angleStep / PI) * radius;
+    ry = cos(theta + adj) * (angleStep / PI) * radius;
+
+    if (i===0)          { lx = ly = 0; }
+    if (i===resolution) { rx = ry = 0; }
+
+    points.push( [
+      x, y,
+      CURVE,
+      {left: [lx, ly], right: [rx, ry]}
+    ]);
+  }
+
+  return points;
+};
 
 export default arcSegment;

@@ -1,102 +1,99 @@
 /* jshint esnext: true */
 
+import Commands from '../../constant/CommandTypes';
+import _    from '../../util/common';
 import base from './base';
-import _  from '../../util/common';
 
-var {mod, toFixed} = _;
-var {ctx, isHidden, Commands} = base;
+var {toFixed} = _;
+var {getContext} = base;
 
 var FN = {};
 
-FN.updatePathAnchors = (anchors) => {
-  var next, prev, a, c, ux, uy, vx, vy, ar, bl, br, cl, x, y, d;
+var relativePoint = (p, pr) => {
+
+};
+
+var curveSegment = (a, b) => {
+  var ar, bl, vx, vy, ux, uy;
+  ar = (a.controls && a.controls.right) || a;
+  bl = (b.controls && b.controls.left) || b;
+
+  if (a.relative) {
+    vx = toFixed((ar.x + a.x));
+    vy = toFixed((ar.y + a.y));
+  } else {
+    vx = toFixed(ar.x);
+    vy = toFixed(ar.y);
+  }
+
+  if (b.relative) {
+    ux = toFixed((bl.x + b.x));
+    uy = toFixed((bl.y + b.y));
+  } else {
+    ux = toFixed(bl.x);
+    uy = toFixed(bl.y);
+  }
+  return [vx, vy, ux, uy];
+};
+
+var drawCurve = (canvasContext, a, b) => {
+  var [vx, vy,  ux, uy] = curveSegment(a,b);
+  canvasContext.bezierCurveTo(
+    vx, vy, ux, uy,
+    toFixed(b.x),
+    toFixed(b.y)
+  );
+
+};
+
+FN.drawPathAnchors = (canvas, anchors, closed) => {
+
+  var canvasContext = getContext(canvas);
+
+  var iprv, prv, moveEndpoint;
 
   var length = anchors.length;
   var last = length - 1;
 
-  for (var i = 0; i < anchors.length; i++) {
+  canvasContext.beginPath();
+  for (var i = 0, ni = anchors.length, anchor = null; i < ni; i++) {
 
-    var b = anchors[i];
+    anchor = anchors[i];
 
-    x = toFixed(b._x);
-    y = toFixed(b._y);
+    switch (anchor.command) {
 
-    switch (b._command) {
-
-      case Commands.close:
-        ctx.closePath();
+      case Commands.CLOSE:
+        canvasContext.closePath();
         break;
 
-      case Commands.curve:
+      case Commands.CURVE:
+        // :NOTE: check simplified
+        iprv = (closed && i === 0) ? last : Math.max(i - 1, 0);
+        prv = anchors[iprv];
 
-        prev = closed ? mod(i - 1, length) : Math.max(i - 1, 0);
-        next = closed ? mod(i + 1, length) : Math.min(i + 1, last);
-
-        a = anchors[prev];
-        c = anchors[next];
-        ar = (a.controls && a.controls.right) || a;
-        bl = (b.controls && b.controls.left) || b;
-
-        if (a._relative) {
-          vx = toFixed((ar.x + a._x));
-          vy = toFixed((ar.y + a._y));
-        } else {
-          vx = toFixed(ar.x);
-          vy = toFixed(ar.y);
+        drawCurve(canvasContext, prv, anchor);
+        if (i === last && closed) {
+          drawCurve(canvasContext, anchor, moveEndpoint);
         }
-
-        if (b._relative) {
-          ux = toFixed((bl.x + b._x));
-          uy = toFixed((bl.y + b._y));
-        } else {
-          ux = toFixed(bl.x);
-          uy = toFixed(bl.y);
-        }
-
-        ctx.bezierCurveTo(vx, vy, ux, uy, x, y);
-
-        if (i >= last && closed) {
-
-          c = d;
-
-          br = (b.controls && b.controls.right) || b;
-          cl = (c.controls && c.controls.left) || c;
-
-          if (b._relative) {
-            vx = toFixed((br.x + b._x));
-            vy = toFixed((br.y + b._y));
-          } else {
-            vx = toFixed(br.x);
-            vy = toFixed(br.y);
-          }
-
-          if (c._relative) {
-            ux = toFixed((cl.x + c._x));
-            uy = toFixed((cl.y + c._y));
-          } else {
-            ux = toFixed(cl.x);
-            uy = toFixed(cl.y);
-          }
-
-          x = toFixed(c._x);
-          y = toFixed(c._y);
-
-          ctx.bezierCurveTo(vx, vy, ux, uy, x, y);
-
-        }
-
         break;
 
-      case Commands.line:
-        ctx.lineTo(x, y);
+      case Commands.LINE:
+        canvasContext.lineTo(
+          toFixed(anchor.x),
+          toFixed(anchor.y)
+        );
         break;
 
-      case Commands.move:
-        d = b;
-        ctx.moveTo(x, y);
+      case Commands.MOVE:
+        moveEndpoint = anchor;
+        canvasContext.moveTo(
+          toFixed(anchor.x),
+          toFixed(anchor.y)
+        );
         break;
     }
   }
+  if (closed) { canvasContext.closePath(); }
   // Loose ends
 };
 

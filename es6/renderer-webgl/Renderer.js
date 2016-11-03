@@ -59,7 +59,6 @@ class WebglRenderer extends Renderer {
   }
 
   get _renderer() {
-    console.log('_renderer')
     return this.state.renderer;
   }
   set _renderer(_) { throw('webgl - set _renderer'); }

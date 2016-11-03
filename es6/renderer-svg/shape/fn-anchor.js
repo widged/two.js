@@ -17,7 +17,7 @@ FN.toString = function(anchors, closed) {
 
   var l = anchors.length,
    last = l - 1,
-   d, // The elusive last Commands.move point
+   d, // The elusive last Commands.MOVE point
    ret = '';
 
   for (var i = 0; i < l; i++) {
@@ -36,18 +36,18 @@ FN.toString = function(anchors, closed) {
    var x = toFixed(b._x);
    var y = toFixed(b._y);
 
-   switch (b._command) {
+   switch (b.command) {
 
-     case Commands.close:
-       command = Commands.close;
+     case Commands.CLOSE:
+       command = Commands.CLOSE;
        break;
 
-     case Commands.curve:
+     case Commands.CURVE:
 
        ar = (a.controls && a.controls.right) || a;
        bl = (b.controls && b.controls.left) || b;
 
-       if (a._relative) {
+       if (a.relative) {
          vx = toFixed((ar.x + a.x));
          vy = toFixed((ar.y + a.y));
        } else {
@@ -55,7 +55,7 @@ FN.toString = function(anchors, closed) {
          vy = toFixed(ar.y);
        }
 
-       if (b._relative) {
+       if (b.relative) {
          ux = toFixed((bl.x + b.x));
          uy = toFixed((bl.y + b.y));
        } else {
@@ -63,17 +63,17 @@ FN.toString = function(anchors, closed) {
          uy = toFixed(bl.y);
        }
 
-       command = ((i === 0) ? Commands.move : Commands.curve) +
+       command = ((i === 0) ? Commands.MOVE : Commands.CURVE) +
          ' ' + vx + ' ' + vy + ' ' + ux + ' ' + uy + ' ' + x + ' ' + y;
        break;
 
-     case Commands.move:
+     case Commands.MOVE:
        d = b;
-       command = Commands.move + ' ' + x + ' ' + y;
+       command = Commands.MOVE + ' ' + x + ' ' + y;
        break;
 
      default:
-       command = b._command + ' ' + x + ' ' + y;
+       command = b.command + ' ' + x + ' ' + y;
 
    }
 
@@ -81,15 +81,15 @@ FN.toString = function(anchors, closed) {
 
    if (i >= last && closed) {
 
-     if (b._command === Commands.curve) {
+     if (b.command === Commands.CURVE) {
 
-       // Make sure we close to the most previous Commands.move
+       // Make sure we close to the most previous Commands.MOVE
        c = d;
 
        br = (b.controls && b.controls.right) || b;
        cl = (c.controls && c.controls.left) || c;
 
-       if (b._relative) {
+       if (b.relative) {
          vx = toFixed((br.x + b.x));
          vy = toFixed((br.y + b.y));
        } else {
@@ -97,7 +97,7 @@ FN.toString = function(anchors, closed) {
          vy = toFixed(br.y);
        }
 
-       if (c._relative) {
+       if (c.relative) {
          ux = toFixed((cl.x + c.x));
          uy = toFixed((cl.y + c.y));
        } else {

@@ -11,6 +11,7 @@ var linearGradient = {
 
   render: function(ctx, elem) {
 
+    // context can be canvas or webgl... webgl when elem is WebGL program
     if (!isCanvas(ctx)) { return; }
 
     var shp = this;
@@ -39,4 +40,3 @@ var linearGradient = {
 };
 
 export default linearGradient;
-

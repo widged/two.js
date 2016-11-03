@@ -9,68 +9,65 @@ import base from './base';
 
 var {isNumber, isString} = is;
 var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
-var {updatePathAnchors} = anchorFN;
+var {drawPathAnchors} = anchorFN;
 var {getPathBoundingClientRect} = boundingFN;
-var {hasGradientChanged, renderPath} = rendererFN;
-var {canvas, ctx, renderShape, isHidden} = base;
+var {hasGradientChanged, renderPath, isHidden, updateAndClearCanvasRect} = rendererFN;
+var {drawFill, drawStroke, drawGradientShape} = rendererFN;
+var {canvas, getContext, renderShape} = base;
+var {max} = Math;
+
+var styleCanvasPath = (canvas, {cap,  join,  miter}) => {
+  var context = getContext(canvas);
+  // Path Properties
+  if (miter)     { context.miterLimit = miter;     }
+  if (join)      { context.lineJoin   = join;      }
+  if (cap)       { context.lineCap    = cap;       }
+  return;
+};
+
+
+var updateShapeCanvas = function(shp) {
+
+  var renderer = getShapeRenderer(shp);
+
+  // styles
+  var { vertices,  stroke,  linewidth,  fill,  opacity,  cap,  join,  miter,  closed} = getShapeProps( shp,
+      ["vertices","stroke","linewidth","fill","opacity","cap","join","miter","closed"]
+  );
+  var {scale, opacity: rendererOpacity, rect} = renderer;
+  opacity = rendererOpacity || opacity;
+  linewidth = linewidth * scale;
+
+  // dimensions
+  var context = getContext(canvas);
+  var {width, height} = updateAndClearCanvasRect(canvas, rect.width, rect.height, scale);
+
+  // Shape properties
+  if (isNumber(opacity)) { context.globalAlpha = opacity; }
+  // :REVIEW: closure over shape
+  var renderGradient = (gdt, context) => {  return drawGradientShape(gdt, context, shp); };
+  if (fill)   { drawFill  (canvas, fill  , renderGradient); }
+  if (stroke) { drawStroke(canvas, stroke, renderGradient); }
+  if (linewidth) { context.lineWidth  = linewidth; }
+
+  styleCanvasPath(canvas, {cap,  join,  miter});
+
+  // save, scale and translate
+  context.save();
+  context.scale(renderer.scale, renderer.scale);
+  // :REVIEW: why force everything on the centroid?
+  var {x, y} = renderer.rect.centroid;
+  context.translate(x, y);
+
+  drawPathAnchors(canvas, vertices, closed);
+
+  if (!isHidden.test(fill))   context.fill();
+  if (!isHidden.test(stroke)) context.stroke();
+
+  context.restore();
+};
 
 var path = {
-
-  updateCanvas: function(shp) {
-
-    var renderer = getShapeRenderer(shp);
-
-    // styles
-    var { vertices,  stroke,  linewidth,  fill,  opacity,  cap,  join,  miter,  closed} = getShapeProps( shp,
-        ["vertices","stroke","linewidth","fill","opacity","cap","join","miter","closed"]
-    );
-    opacity = renderer.opacity || opacity;
-    linewidth = linewidth * renderer.scale;
-
-    canvas.width  = Math.max(Math.ceil(renderer.rect.width  * renderer.scale), 1);
-    canvas.height = Math.max(Math.ceil(renderer.rect.height * renderer.scale), 1);
-
-    var centroid = renderer.rect.centroid;
-    var cx = centroid.x;
-    var cy = centroid.y;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (fill) {
-      if (isString(fill)) {
-        ctx.fillStyle = fill;
-      } else {
-        renderShape(fill, ctx, shp);
-        ctx.fillStyle = getShapeRenderer(fill).gradient;
-      }
-    }
-    if (stroke) {
-      if (isString(stroke)) {
-        ctx.strokeStyle = stroke;
-      } else {
-        renderShape(stroke, ctx, shp);
-        ctx.strokeStyle = getShapeRenderer(stroke).gradient;
-      }
-    }
-    if (linewidth) { ctx.lineWidth  = linewidth; }
-    if (miter)     { ctx.miterLimit = miter;     }
-    if (join)      { ctx.lineJoin   = join;      }
-    if (cap)       { ctx.lineCap    = cap;       }
-    if (isNumber(opacity)) { ctx.globalAlpha = opacity; }
-
-    ctx.save();
-    ctx.scale(renderer.scale, renderer.scale);
-    ctx.translate(cx, cy);
-
-    ctx.beginPath();
-    updatePathAnchors(vertices);
-    if (closed) { ctx.closePath(); }
-
-    if (!isHidden.test(fill)) ctx.fill();
-    if (!isHidden.test(stroke)) ctx.stroke();
-
-    ctx.restore();
-  },
 
 
   render: function(gl, program, forcedParent) {
@@ -88,7 +85,7 @@ var path = {
     };
     // >>>
 
-    var rendered = renderPath(gl, program, shp, assertShapeChange, getBoundingClientRect);
+    var rendered = renderPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
     if(rendered) { shp.flagReset(); }
     return shp;
 

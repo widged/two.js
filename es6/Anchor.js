@@ -9,107 +9,95 @@ import Vector  from './struct/Vector';
 var {isNumber, isObject} = is;
 
   /**
-   * An object that holds 3 `Vector`s, the anchor point and its
-   * corresponding handles: `left` and `right`.
+   * Taken from the Adobe Illustrator nomenclature an `Anchor` holds 3 `Vector`s:
+   * the anchor point and its `left` and `right` handles: .
+   * An anchor provides renderers information about what action to take when
+   * plotting points. It inherits all properties and methods from `Vector`.
+   * For curves, anchors also define the control points of bezier curves.
    */
 
-   /*
-   Taken from the Adobe Illustrator nomenclature a Two.Anchor represents an anchor point in two.js. This class delineates to the renderer what action to take when plotting points. It inherits all properties and methods from Two.Vector. As a result, Two.Anchor can be used as such. Depending on its command, anchor points may or may not have corresponding control points to describe how their bezier curves should be rendered.
-   construction var anchor = new Two.Anchor(x, y, lx, ly, rx, ry, command);
-   A Two.Anchor can take initial positions of x and y to orient the point. lx and ly describe where the left control point will reside. Likewise rx and ry describe where the right control point will reside. Finally, the command describes what action the renderer will take once rendering. A more detailed description of commands can be found on the w3c and the available commands in two.js can be found under Two.Commands.
-    Two.Anchor is introduced to two.js as of v0.3.0
-   x anchor.x
-   The x value of the anchor's position.
-   y anchor.y
-   The y value of the anchor's position.
-   command anchor.command
-   The command for the given anchor.
-   controls anchor.controls
-   An object that exists only when anchor.command is Two.Commands.curve. It holds the anchor's control point Two.Vectors and describes what the make up of the curve will be.
-   right anchor.controls.right
-   A Two.Vector that represents the position of the control point to the “right” of the anchor's position. To further clarify, if you were to orient the anchor so that it was normalized and facing up, this control point would be to the right of it.
-   left anchor.controls.left
-   A Two.Vector that represents the position of the control point to the “left” of the anchor's position. To further clarify, if you were to orient the anchor so that it was normalized and facing up, this control point would be to the left of it.
-   clone anchor.clone();
-   Returns a new instance of a Two.Anchor with the same x, y, controls, and command values as the instance.
-   listen anchor.listen();
-   Convenience method to add event bubbling to an attached path.
-   ignore anchor.ignore();
-   Convenience method to remove event bubbling to an attached path.
-   AppendCurveProperties Anchor.AppendCurveProperties();
-   Convenience method to add the controls object.
-   Two.Stop
-   This is a class for defining how gradients are colored in two.js. By itself a Two.Stop doesn't render anything specifically to the screen.
-   construction var stop = new Two.Stop(offset, color, opacity);
-   A stop takes a 0 to 1 offset value which defines where on the trajectory of the gradient the full color is rendered. It also takes a color which is a css string representing the color value and an optional opacity which is also a 0 to 1 value.
-   offset stop.offset
-   A 0 to 1 offset value which defines where on the trajectory of the gradient the full color is rendered.
-   color stop.color
-   A css string that represents the color of the stop.
-   opacity stop.opacity
-   A 0 to 1 value which defines the opacity of the stop.
-    This only renders in the Two.Types.svg mode.
-   clone stop.clone();
-   Clones a stop. Returns a new Two.Stop.
-   */
+
+
  class Anchor extends Vector {
 
-  constructor(x, y, ux, uy, vx, vy, command) {
+   /**
+   * new Two.Anchor(x, y, lx, ly, rx, ry, command);
+   *  - x,y are initial positions of x and y to orient the point.
+   * - command is the command describes the plotting action to perform when rendering.
+   * - config encodes any extra configuration data for the plotting action. CURVE
+   *   is the only command that requires extra config data.
+   */
+  constructor(x, y, command, config) {
     super(x,y);
+    // x  -- The x value of the anchor's position.
     this.x = x || 0;
+    // y  -- The y value of the anchor's position.
     this.y = y || 0;
-
-    this._command = command || Commands.move;
-    this._relative = true;
+    // command  -- The command for the given anchor. It must be one of `CommandsTypes`.
+    this.state.command = command || Commands.MOVE;
+    this.state.relative = true;
 
     if (!command) {
       return this;
     }
 
-    Anchor.AppendCurveProperties(this);
+    // controls  -- An object that exists only for curves. It holds the anchor's control points of the bezier curve. It contains Two
+    // parts, {left, right}, the control point to the `left` of the anchor's position and the control point to its right.
+      Anchor.AppendCurveProperties(this);
 
-    if (isNumber(ux)) {
-      this.controls.left.x = ux;
-    }
-    if (isNumber(uy)) {
-      this.controls.left.y = uy;
-    }
-    if (isNumber(vx)) {
-      this.controls.right.x = vx;
-    }
-    if (isNumber(vy)) {
-      this.controls.right.y = vy;
-    }
+      if(config && command !== 'C') {
+        console.log('[WARN] only C expects a config', config, command)
+      }
+
+      if(command === 'C') {
+        this.controls = {};
+        var {left, right} = config || {};
+        if (isNumber(left.x)) {
+          this.controls.left.x = left.x;
+        }
+        if (isNumber(left.y)) {
+          this.controls.left.y = left.y;
+        }
+        if (isNumber(right.x)) {
+          this.controls.right.x = right.x;
+        }
+        if (isNumber(right.y)) {
+          this.controls.right.y = right.y;
+        }
+      }
 
   }
 
   get command() {
-    return this._command;
+    return this.state.command;
   }
 
   set command(c) {
-    this._command = c;
-    if (this._command === Commands.curve && !isObject(this.controls)) {
+    this.state.command = c;
+    if (this.state.command === Commands.CURVE && !isObject(this.controls)) {
       Anchor.AppendCurveProperties(this);
     }
     this.whenChange();
   }
 
   get relative() {
-    return this._relative;
+    return this.state.relative;
   }
 
   set relative(b) {
-    if (this._relative == b) { return this; }
-    this._relative = !!b;
+    if (this.state.relative == b) { return this; }
+    this.state.relative = !!b;
     this.whenChange();
-    return
+    return;
   }
 
    whenChange() {
       this.dispatcher.emit(VectorEvent.change);
    }
 
+   /**
+   * Convenience method to add event bubbling to an attached path.
+   */
   listen() {
     if (!isObject(this.controls)) {
       Anchor.AppendCurveProperties(this);
@@ -119,12 +107,18 @@ var {isNumber, isObject} = is;
     return this;
   }
 
+  /**
+  * Convenience method to remove event bubbling to an attached path.
+  */
   ignore() {
     this.controls.left.dispatcher.off(VectorEvent.change, this.whenChange);
     this.controls.right.dispatcher.off(VectorEvent.change, this.whenChange);
     return this;
   }
 
+  /**
+   Returns a new instance of an `Anchor` with the same x, y, controls, and command values as the instance.
+  */
   clone() {
 
     var controls = this.controls;
@@ -138,7 +132,7 @@ var {isNumber, isObject} = is;
       controls && controls.right.y,
       this.command
     );
-    clone.relative = this._relative;
+    clone.relative = this.state.relative;
     return clone;
 
   }
@@ -148,11 +142,11 @@ var {isNumber, isObject} = is;
       x: this.x,
       y: this.y
     };
-    if (this._command) {
-      o.command = this._command;
+    if (this.state.command) {
+      o.command = this.state.command;
     }
-    if (this._relative) {
-      o.relative = this._relative;
+    if (this.state.relative) {
+      o.relative = this.state.relative;
     }
     if (this.controls) {
       o.controls = {
@@ -165,6 +159,10 @@ var {isNumber, isObject} = is;
 
  }
 
+
+/**
+ * Convenience method to add the controls object.
+ */
 Anchor.AppendCurveProperties = (anchor) => {
   anchor.controls = {
     left: new Vector(0, 0),
