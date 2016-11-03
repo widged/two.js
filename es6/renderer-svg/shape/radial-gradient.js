@@ -18,9 +18,7 @@ var renderElement = (parentNode, nodeType, attrs, defs) => {
   return parentNode;
 };
 
-var radialGradient = function(domElement) {
-
-  var shp = this;
+var radialGradient = function(shp, domElement) {
 
   updateShape(shp);
 
@@ -62,7 +60,7 @@ var radialGradient = function(domElement) {
 
   }
 
-  return this.flagReset();
+  return shp.flagReset();
 
 };
 

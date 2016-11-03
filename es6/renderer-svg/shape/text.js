@@ -4,7 +4,7 @@ import svgFN    from './fn-svg';
 import shapeRendering from '../../shape-rendering';
 
 var {createElement, setAttributes, getClip} = svgFN;
-var {anyPropChanged} = shapeRendering;
+var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
 
 const ALIGNMENTS = {
   left: 'start',
@@ -12,75 +12,77 @@ const ALIGNMENTS = {
   right: 'end'
 };
 
-var text = function(domElement) {
-
-  var shp = this;
-
-  this._update();
+var text = function(shp, domElement) {
 
 
-  var flagMatrix = this._matrix.manual || this._flag_matrix;
+  updateShape(shp);
 
-  var props = {};
+  var attrs = {};
 
-  if (flagMatrix) {
-    props.transform = 'matrix(' + this._matrix.toString() + ')';
+  var {matrix} = getShapeProps(shp, ['matrix']);
+  if (matrix.manual || anyPropChanged(shp, ['matrix'])) {
+    attrs.transform = 'matrix(' + matrix.toString() + ')';
   }
 
-  if(anyPropChanged(this, ['family','size','leading','alignment','baseline','style','weight','decoration'])) {
-    props['font-family'] = this._family;
-    props['font-size'] = this._size;
-    props['line-height'] = this._leading;
-    props['text-anchor'] = ALIGNMENTS[this._alignment] || this._alignment;
-    props['alignment-baseline'] = props['dominant-baseline'] = this._baseline;
-    props['font-style'] = this._style;
-    props['font-weight'] = this._weight;
-    props['text-decoration'] = this._decoration;
+  if(anyPropChanged(shp, ['family','size','leading','alignment','baseline','style','weight','decoration'])) {
+
+    var { family,  size,  leading,  alignment,  baseline,  style,  weight,  decoration} = getShapeProps(shp,
+        ['family','size','leading','alignment','baseline','style','weight','decoration']);
+    attrs['font-family'] = family;
+    attrs['font-size']   = size;
+    attrs['line-height'] = leading;
+    attrs['text-anchor'] = ALIGNMENTS[alignment] || alignment;
+    attrs['alignment-baseline'] = attrs['dominant-baseline'] = baseline;
+    attrs['font-style']  = style;
+    attrs['font-weight'] = weight;
+    attrs['text-decoration'] = decoration;
   }
 
-  if(anyPropChanged(this, ['fill','stroke','linewidth','opacity','visibility'])) {
-    props.fill = this._fill && this._fill.id ? 'url(#' + this._fill.id + ')' : this._fill;
-    props.stroke = this._stroke && this._stroke.id ? 'url(#' + this._stroke.id + ')' : this._stroke;
-    props['stroke-width'] = this._linewidth;
-    props.opacity     = this._opacity;
-    props.visibility = this._visible ? 'visible' : 'hidden';
+  if(anyPropChanged(shp, ['fill','stroke','linewidth','opacity','visibility'])) {
+    var { fill,  stroke,  linewidth,  opacity,  visible} = getShapeProps(shp,
+        ['fill','stroke','linewidth','opacity','visible']);
+
+    attrs.fill = fill && fill.id ? 'url(#' + fill.id + ')' : fill;
+    attrs.stroke = stroke && stroke.id ? 'url(#' + stroke.id + ')' : stroke;
+    attrs['stroke-width'] = linewidth;
+    attrs.opacity     = opacity;
+    attrs.visibility =  visible ? 'visible' : 'hidden';
   }
 
-  if (!this._renderer.elem) {
+  var renderer = getShapeRenderer(shp);
 
-    props.id = shp.id;
-
-    this._renderer.elem = createElement('text', props);
-    domElement.defs.appendChild(this._renderer.elem);
-
+  if (!renderer.elem) {
+    attrs.id = shp.id;
+    renderer.elem = createElement('text', attrs);
+    domElement.defs.appendChild(renderer.elem);
   } else {
-
-    setAttributes(this._renderer.elem, props);
-
+    setAttributes(renderer.elem, attrs);
   }
 
-  if (this._flag_clip) {
+  if (anyPropChanged(shp, ['fill'])) {
 
-    var clip = getClip(this);
-    var elem = this._renderer.elem;
+    var clipElem = getClip(shp);
 
-    if (this._clip) {
-      elem.removeAttribute('id');
-      clip.setAttribute('id', this.id);
-      clip.appendChild(elem);
+    var { clip } = getShapeProps(shp, ['clip']);
+
+    if (clip) {
+      renderer.elem.removeAttribute('id');
+      clipElem.setAttribute('id', shp.id);
+      clipElem.appendChild(renderer.elem);
     } else {
-      clip.removeAttribute('id');
-      elem.setAttribute('id', this.id);
-      this.parent._renderer.elem.appendChild(elem); // TODO: should be insertBefore
+      clipElem.removeAttribute('id');
+      renderer.elem.setAttribute('id', shp.id);
+      getShapeRenderer(shp.parent).elem.appendChild(renderer.elem); // TODO: should be insertBefore
     }
 
   }
 
-  if (this._flag_value) {
-    this._renderer.elem.textContent = this._value;
+  if (anyPropChanged(shp, ['value'])) {
+    var { value } = getShapeProps(shp, ['value']);
+    renderer.elem.textContent = value;
   }
 
-  return this.flagReset();
+  return shp.flagReset();
 
 };
 

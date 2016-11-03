@@ -1,67 +1,67 @@
 /* jshint esnext: true */
 
 import svgFN    from './fn-svg';
+import shapeRendering   from '../../shape-rendering';
 
 var {createElement, setAttributes} = svgFN;
+var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
 
-var linearGradient = function(domElement) {
+var linearGradient = function(shp, domElement) {
 
-  this._update();
+  updateShape(shp);
 
-  var changed = {};
+  var attrs = {};
 
-  if (this._flag_endPoints) {
-    changed.x1 = this.left.x;
-    changed.y1 = this.left.y;
-    changed.x2 = this.right.x;
-    changed.y2 = this.right.y;
+  if (anyPropChanged(shp, ['endPoints'])) {
+    attrs.x1 = shp.left.x;
+    attrs.y1 = shp.left.y;
+    attrs.x2 = shp.right.x;
+    attrs.y2 = shp.right.y;
   }
 
-  if (this._flag_spread) {
-    changed.spreadMethod = this._spread;
+  if (anyPropChanged(shp, ['spread'])) {
+    var {spread} = getShapeProps(shp, ['spread']);
+    attrs.spreadMethod = spread;
   }
 
+  var renderer = getShapeRenderer(shp);
   // If there is no attached DOM element yet,
   // create it with all necessary attributes.
-  if (!this._renderer.elem) {
+  attrs.id = shp.id;
+  attrs.gradientUnits = 'userSpaceOnUse';
 
-    changed.id = this.id;
-    changed.gradientUnits = 'userSpaceOnUse';
-    this._renderer.elem = createElement('linearGradient', changed);
-    domElement.defs.appendChild(this._renderer.elem);
-
+  if (!renderer.elem) {
+    renderer.elem = createElement('linearGradient', attrs);
+    domElement.defs.appendChild(renderer.elem);
   // Otherwise apply all pending attributes
   } else {
-
-    setAttributes(this._renderer.elem, changed);
-
+    setAttributes(renderer.elem, attrs);
   }
 
-  if (this._flag_stops) {
-    svgFN.clear(this._renderer.elem);
+  if (anyPropChanged(shp, ['stops'])) {
+    var {stops} = getShapeProps(shp, ['stops']);
+    svgFN.clear(renderer.elem);
 
-    for (var i = 0; i < this.stops.length; i++) {
+    for (var i = 0; i < stops.length; i++) {
 
-      var stop = this.stops[i];
-      var attrs = {};
+      var stop = stops[i];
+      var sAttrs = {};
 
-      if (stop._flag_offset) {
-        attrs.offset = 100 * stop._offset + '%';
-      }
-      if (stop._flag_color) {
-        attrs['stop-color'] = stop._color;
-      }
-      if (stop._flag_opacity) {
-        attrs['stop-opacity'] = stop._opacity;
+      if (anyPropChanged(stop, ['offset','color','opacity'])) {
+        var {offset,color,opacity} = getShapeProps(stop, ['offset','color','opacity']);
+        sAttrs.offset = 100 * offset + '%';
+        sAttrs['stop-color'] = color;
+        sAttrs['stop-opacity'] = opacity;
       }
 
-      if (!stop._renderer.elem) {
-        stop._renderer.elem = createElement('stop', attrs);
+      var stopRenderer = getShapeRenderer(stop);
+      if (!stopRenderer.elem) {
+        stopRenderer.elem = createElement('stop', sAttrs);
       } else {
-        setAttributes(stop._renderer.elem, attrs);
+        setAttributes(stopRenderer.elem, sAttrs);
       }
 
-      this._renderer.elem.appendChild(stop._renderer.elem);
+      renderer.elem.appendChild(stopRenderer.elem);
 
       stop.flagReset();
 
@@ -69,7 +69,7 @@ var linearGradient = function(domElement) {
 
   }
 
-  return this.flagReset();
+  return shp.flagReset();
 
 };
 

@@ -80,9 +80,10 @@ var text = function(ctx, forced, parentClipped) {
     ctx.globalAlpha = opacity;
   }
 
+
   if (!clip && !parentClipped) {
-    if (!isHidden.test(fill)) ctx.fillText(this.value, 0, 0);
-    if (!isHidden.test(stroke)) ctx.strokeText(this.value, 0, 0);
+    if (!isHidden.test(fill)) ctx.fillText(this._value, 0, 0);
+    if (!isHidden.test(stroke)) ctx.strokeText(this._value, 0, 0);
   }
 
   if (!defaultMatrix) {

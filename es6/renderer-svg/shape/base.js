@@ -18,7 +18,7 @@ FN.renderScene = (elm, ctx) => {
 };
 
 FN.renderShape = (elm, ctx, condi, clip) => {
-  shapeCache.get(elm.rendererType).call(elm, ctx, condi, clip);
+  shapeCache.get(elm.rendererType)(elm, ctx, condi, clip);
 };
 
 export default FN;

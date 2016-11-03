@@ -2,105 +2,101 @@
 
 import base from './base';
 import svgFN    from './fn-svg';
+import shapeRendering   from '../../shape-rendering';
 
 var {createElement, setAttributes} = svgFN;
 var {renderShape} = base;
+var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
 
-var orderChild = function(object) {
-  this.elem.appendChild(object._renderer.elem);
-};
 
   // TODO: Can speed up.
   // TODO: How does this effect a f
-var appendChild = function(object) {
+var appendChild = function(elem, object) {
+  var elem = getShapeRenderer(object);
 
-  var elem = object._renderer.elem;
-
-  if (!elem) {
-    return;
-  }
-
+  if (!elem) { return; }
   var tag = elem.nodeName;
-
-  if (!tag || /(radial|linear)gradient/i.test(tag) || object._clip) {
+  var {clip} = getShapeProps(object, ['clip']);
+  if (!tag || /(radial|linear)gradient/i.test(tag) || clip) {
     return;
   }
-
-  this.elem.appendChild(elem);
-
+  Relem.appendChild(object);
 };
 
-var removeChild = function(object) {
+var removeChild = function(Relem, object) {
 
-  var elem = object._renderer.elem;
+var elem = getShapeRenderer(object);
 
-  if (!elem || elem.parentNode != this.elem) {
-    return;
-  }
+  if (!elem || elem.parentNode != elem) { return; }
 
   var tag = elem.nodeName;
 
-  if (!tag) {
-    return;
-  }
+  if (!tag) { return; }
 
   // Defer subtractions while clipping.
-  if (object._clip) {
-    return;
-  }
+  var {clip} = getShapeProps(object, ['clip']);
+  if (clip) { return; }
 
-  this.elem.removeChild(elem);
+  Relem.removeChild(elem);
 
 };
 
-var group = function(domElement) {
+var group = function(shp, domElement) {
 
-  this._update();
+
+  updateShape(shp);
 
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and
   // applied once the object is visible again
-  if (this._opacity === 0 && !this._flag_opacity) {
-    return this;
+  var {opacity} = getShapeProps(shp, ['opacity']);
+  if (opacity === 0 && !anyPropChanged(shp, ['opacity'])) {
+    return shp;
   }
 
-  if (!this._renderer.elem) {
-    this._renderer.elem = createElement('g', {
-      id: this.id
-    });
-    domElement.appendChild(this._renderer.elem);
+  var renderer = getShapeRenderer(shp)
+
+  if (!renderer.elem) {
+    renderer.elem = createElement('g', { id: shp.id });
+    domElement.appendChild(renderer.elem);
   }
 
   // _Update styles for the <g>
-  var flagMatrix = this._matrix.manual || this._flag_matrix;
+  var {matrix} = getShapeProps(shp, ['matrix']);
   var context = {
     domElement: domElement,
-    elem: this._renderer.elem
+    elem: renderer.elem
   };
 
-  if (flagMatrix) {
-    this._renderer.elem.setAttribute('transform', 'matrix(' + this._matrix.toString() + ')');
+  if (matrix.manual || anyPropChanged(shp, ['matrix'])) {
+    renderer.elem.setAttribute('transform', 'matrix(' + matrix.toString() + ')');
   }
 
-  for (var i = 0; i < this.children.length; i++) {
-    var child = this.children[i];
+  for (var i = 0; i < shp.children.length; i++) {
+    var child = shp.children[i];
     renderShape(child, domElement);
   }
 
-  if (this._flag_opacity) {
-    this._renderer.elem.setAttribute('opacity', this._opacity);
+  if(anyPropChanged(shp, ['opacity'])) {
+    renderer.elem.setAttribute('opacity', opacity);
   }
 
-  if (this._flag_additions) {
-    this.additions.forEach(appendChild, context);
+
+  if(anyPropChanged(shp, ['additions'])) {
+    var {additions} = getShapeProps(shp, ['additions']);
+    additions.forEach((obj) => { appendChild(renderer.elem, obj); });
   }
 
-  if (this._flag_subtractions) {
-    this.subtractions.forEach(removeChild, context);
+  if(anyPropChanged(shp, ['subtractions'])) {
+    var {subtractions} = getShapeProps(shp, ['subtractions']);
+    subtractions.forEach((obj) => { removeChild(renderer.elem, obj); });
   }
 
-  if (this._flag_order) {
-    this.children.forEach(orderChild, context);
+  if (anyPropChanged(shp, ['order'])) {
+    shp.children.forEach((child) => {
+      var childR = getShapeRenderer(child);
+      renderer.elem.appendChild(childR.elem);
+    });
   }
 
   /**
@@ -109,32 +105,35 @@ var group = function(domElement) {
    * https://code.google.com/p/chromium/issues/detail?id=370951
    */
 
-  // if (this._flag_clip) {
+/*
+   if (anyPropChanged(shp, ['clip'])) {
+     var clipElem = getClip(shp);
 
-  //   clip = svg.getClip(this);
-  //   elem = this._renderer.elem;
+     var { clip } = getShapeProps(shp, ['clip']);
 
-  //   if (this._clip) {
-  //     elem.removeAttribute('id');
-  //     clip.setAttribute('id', this.id);
-  //     clip.appendChild(elem);
-  //   } else {
-  //     clip.removeAttribute('id');
-  //     elem.setAttribute('id', this.id);
-  //     this.parent._renderer.elem.appendChild(elem); // TODO: should be insertBefore
-  //   }
+     if (clip) {
+       renderer.elem.removeAttribute('id');
+       clipElem.setAttribute('id', shp.id);
+       clipElem.appendChild(renderer.elem);
+     } else {
+       clipElem.removeAttribute('id');
+       renderer.elem.setAttribute('id', shp.id);
+       getShapeRenderer(shp.parent).elem.appendChild(renderer.elem); // TODO: should be insertBefore
+     }
 
-  // }
+   }
+   */
 
-  if (this._flag_mask) {
-    if (this._mask) {
-      this._renderer.elem.setAttribute('clip-path', 'url(#' + this._mask.id + ')');
+  if (anyPropChanged(shp, ['mask'])) {
+    var { mask } = getShapeProps(shp, ['mask']);
+    if (mask) {
+      renderer.elem.setAttribute('clip-path', 'url(#' + mask.id + ')');
     } else {
-      this._renderer.elem.removeAttribute('clip-path');
+      renderer.elem.removeAttribute('clip-path');
     }
   }
 
-  return this.flagReset();
+  return shp.flagReset();
 
 };
 

@@ -1,6 +1,9 @@
 /* jshint esnext: true */
 
 import dom   from '../../platform/dom';
+import shapeRendering   from '../../shape-rendering';
+
+var {getShapeRenderer} = shapeRendering;
 
 var FN = {};
 
@@ -25,18 +28,19 @@ FN.clear = (node) => {
 /**
  *
  */
-FN.getClip = function(shape) {
+FN.getClip = function(shp) {
   var {createElement} = FN;
-  var clip = shape._renderer.clip;
+  var renderer = getShapeRenderer(shp);
+  var clipR = renderer.clip;
 
-  if (!clip) {
-    var root = shape;
+  if (!clipR) {
+    var root = shp;
     while (root.parent) { root = root.parent; }
-    clip = shape._renderer.clip = createElement('clipPath');
-    root.defs.appendChild(clip);
+    clipR = renderer.clip = createElement('clipPath');
+    root.defs.appendChild(clipR);
   }
 
-  return clip;
+  return clipR;
 };
 
 

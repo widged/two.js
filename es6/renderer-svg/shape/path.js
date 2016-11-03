@@ -3,103 +3,87 @@
 import base from './base';
 import svgFN    from './fn-svg';
 import anchorFN from './fn-anchor';
+import shapeRendering   from '../../shape-rendering';
 
 var {renderShape} = base;
 var {createElement, setAttributes, getClip} = svgFN;
 var {toString} = anchorFN;
+var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
 
-var path = function(domElement) {
+var path = function(shp, domElement) {
 
-  this._update();
+
+  updateShape(shp);
 
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and
   // applied once the object is visible again
-  if (this._opacity === 0 && !this._flag_opacity) {
-    return this;
+  var {opacity} = getShapeProps(shp, ['opacity']);
+  if (opacity === 0 && !anyPropChanged(shp, ['opacity'])) {
+    return shp;
   }
 
-  // Collect any attribute that needs to be changed here
-  var changed = {};
+  // Collect any attribute that needs to be attrs here
+  var attrs = {};
 
-  var flagMatrix = this._matrix.manual || this._flag_matrix;
-
-  if (flagMatrix) {
-    changed.transform = 'matrix(' + this._matrix.toString() + ')';
+  var {matrix} = getShapeProps(shp, ['matrix']);
+  if (matrix.manual || anyPropChanged(shp, ['matrix'])) {
+    attrs.transform = 'matrix(' + matrix.toString() + ')';
   }
 
-  if (this._flag_vertices) {
-    var vertices = toString(this._vertices, this._closed);
-    changed.d = vertices;
+  if(anyPropChanged(shp, ['vertices'])) {
+    var {vertices, closed} = getShapeProps(shp, ['vertices','closed']);
+    attrs.d = toString(vertices, closed);
   }
 
-  if (this._flag_fill) {
-    if (this._fill && this._fill._renderer) {
-      renderShape(this._fill, domElement);
-    }
-    changed.fill = this._fill && this._fill.id
-      ? 'url(#' + this._fill.id + ')' : this._fill;
+  if(anyPropChanged(shp, ['fill','stroke','linewidth','opacity','visibility'])) {
+    var { fill,  stroke,  linewidth,  opacity,  visible} = getShapeProps(shp,
+        ['fill','stroke','linewidth','opacity','visible']);
+
+    if (fill && getShapeRenderer(fill)) { renderShape(fill, domElement); }
+    attrs.fill = fill && fill.id ? 'url(#' + fill.id + ')' : fill;
+
+    if (stroke && getShapeRenderer(stroke)) { renderShape(stroke, domElement); }
+    attrs.stroke = stroke && stroke.id ? 'url(#' + stroke.id + ')' : stroke;
+    attrs['stroke-width']   = linewidth;
+    attrs['stroke-opacity'] = opacity;
+    attrs['fill-opacity']   = opacity;
+    attrs.visibility =  visible ? 'visible' : 'hidden';
   }
 
-  if (this._flag_stroke) {
-    if (this._stroke && this._stroke._renderer) {
-      renderShape(this._stroke, domElement);
-    }
-    changed.stroke = this._stroke && this._stroke.id
-      ? 'url(#' + this._stroke.id + ')' : this._stroke;
+  if(anyPropChanged(shp, ['cap','join','miter'])) {
+    var { cap,  join,  miter} = getShapeProps(shp,
+        ['cap','join','miter']);
+    attrs['stroke-linecap'] = cap;
+    attrs['stroke-linejoin'] = join;
+    attrs['stroke-miterlimit'] = miter;
   }
 
-  if (this._flag_linewidth) {
-    changed['stroke-width'] = this._linewidth;
-  }
-
-  if (this._flag_opacity) {
-    changed['stroke-opacity'] = this._opacity;
-    changed['fill-opacity'] = this._opacity;
-  }
-
-  if (this._flag_visible) {
-    changed.visibility = this._visible ? 'visible' : 'hidden';
-  }
-
-  if (this._flag_cap) {
-    changed['stroke-linecap'] = this._cap;
-  }
-
-  if (this._flag_join) {
-    changed['stroke-linejoin'] = this._join;
-  }
-
-  if (this._flag_miter) {
-    changed['stroke-miterlimit'] = this._miter;
-  }
-
+  var renderer = getShapeRenderer(shp);
   // If there is no attached DOM element yet,
   // create it with all necessary attributes.
-  if (!this._renderer.elem) {
-
-    changed.id = this.id;
-    this._renderer.elem = createElement('path', changed);
-    domElement.appendChild(this._renderer.elem);
-
+  if (!renderer.elem) {
+    attrs.id = shp.id;
+    renderer.elem = createElement('path', attrs);
+    domElement.appendChild(renderer.elem);
   // Otherwise apply all pending attributes
   } else {
-    setAttributes(this._renderer.elem, changed);
+    setAttributes(renderer.elem, attrs);
   }
 
-  if (this._flag_clip) {
+  if (anyPropChanged(shp, ['clip'])) {
+    var clipElem = getClip(shp);
 
-    var clip = getClip(this);
-    var elem = this._renderer.elem;
+    var { clip } = getShapeProps(shp, ['clip']);
 
-    if (this._clip) {
-      elem.removeAttribute('id');
-      clip.setAttribute('id', this.id);
-      clip.appendChild(elem);
+    if (clip) {
+      renderer.elem.removeAttribute('id');
+      clipElem.setAttribute('id', shp.id);
+      clipElem.appendChild(renderer.elem);
     } else {
-      clip.removeAttribute('id');
-      elem.setAttribute('id', this.id);
-      this.parent._renderer.elem.appendChild(elem); // TODO: should be insertBefore
+      clipElem.removeAttribute('id');
+      renderer.elem.setAttribute('id', shp.id);
+      getShapeRenderer(shp.parent).elem.appendChild(renderer.elem); // TODO: should be insertBefore
     }
 
   }
@@ -110,15 +94,16 @@ var path = function(domElement) {
    * https://code.google.com/p/chromium/issues/detail?id=370951
    */
 
-  // if (this._flag_mask) {
-  //   if (this._mask) {
-  //     elem.setAttribute('clip-path', 'url(#' + this._mask.id + ')');
+  // if (anyPropChanged(shp, ['mask'])) {
+  //  var { mask } = getShapeProps(shp, ['mask']);
+  //   if (mask) {
+  //     elem.setAttribute('clip-path', 'url(#' + mask.id + ')');
   //   } else {
   //     elem.removeAttribute('clip-path');
   //   }
   // }
 
-  return this.flagReset();
+  return shp.flagReset();
 
 };
 

@@ -25,8 +25,8 @@ var styleCanvasText = (canvas, {style, weight, size, leading, family}) => {
 var updateShapeCanvas = function(shp) {
   var renderer = getShapeRenderer(shp);
   var {scale, opacity: rendererOpacity, rect} = renderer;
-  var { fill,  stroke,  linewidth,  opacity,  style,  weight,  size,  leading,  family} = getShapeProps(shp,
-      ["fill","stroke","linewidth","opacity","style","weight","size","leading","family"]);
+  var { fill,  stroke,  linewidth,  opacity,  style,  weight,  size,  leading,  family,  value} = getShapeProps(shp,
+      ["fill","stroke","linewidth","opacity","style","weight","size","leading","family","value"]);
   var context = getContext(canvas);
 
   // dimensions
@@ -49,8 +49,8 @@ var updateShapeCanvas = function(shp) {
   var {x, y} = rect.centroid;
   context.translate(x, y);
 
-  if (!isHidden.test(fill))   { context.fillText(shp.value, 0, 0); }
-  if (!isHidden.test(stroke)) { context.strokeText(shp.value, 0, 0); }
+  if (!isHidden.test(fill))   { context.fillText(value, 0, 0); }
+  if (!isHidden.test(stroke)) { context.strokeText(value, 0, 0); }
 
   context.restore();
 
