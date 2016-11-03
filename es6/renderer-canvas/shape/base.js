@@ -11,13 +11,15 @@ var FN = {};
 
 var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
-FN.renderScene = (elm, ctx) => {
+FN.renderScene = (gp, ctx) => {
   var {renderShape} = FN;
-  return renderShape(elm, ctx);
+  return renderShape(gp, ctx);
 };
 
-FN.renderShape = (elm, ctx, condi, clip) => {
-  shapeCache.get(elm.rendererType).call(elm, ctx, condi, clip);
+FN.renderShape = (shp, ctx, condi, clip) => {
+  var renderFn = shapeCache.get(shp.rendererType);
+  if(!renderFn) { console.log('[canvas.renderShape] Renderer not found', shp.rendererType); }
+  shapeCache.get(shp.rendererType)(shp, ctx, condi, clip);
 };
 
 // ------------------------------------
@@ -34,7 +36,7 @@ FN.shim = function(elem) {
   return elem;
 };
 
-// Returns true if this is a non-transforming matrix
+// Returns true if that is a non-transforming matrix
 FN.isDefaultMatrix = (m) => {
   return (m[0] == 1 && m[3] == 0 && m[1] == 0 && m[4] == 1 && m[2] == 0 && m[5] == 0);
 };

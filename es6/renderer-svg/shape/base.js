@@ -12,13 +12,15 @@ var FN = {};
 
 var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
-FN.renderScene = (elm, ctx) => {
+FN.renderScene = (gp, ctx) => {
   var {renderShape} = FN;
-  return renderShape(elm, ctx);
+  return renderShape(gp, ctx);
 };
 
-FN.renderShape = (elm, ctx, condi, clip) => {
-  shapeCache.get(elm.rendererType)(elm, ctx, condi, clip);
+FN.renderShape = (shp, ctx, condi, clip) => {
+  var renderFn = shapeCache.get(shp.rendererType);
+  if(!renderFn) { console.log('[svg.renderShape] Renderer not found', shp.rendererType); }
+  shapeCache.get(shp.rendererType)(shp, ctx, condi, clip);
 };
 
 export default FN;

@@ -1,25 +1,29 @@
 /* jshint esnext: true */
 
-var radialGradient = function(canvasContext) {
+import shapeRendering   from '../../shape-rendering';
 
-  this._update();
+var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
 
-  if (!this._renderer.gradient || this._flag_center || this._flag_focal
-      || this._flag_radius || this._flag_stops) {
+var radialGradient = function(shp, canvasContext) {
 
-    this._renderer.gradient = canvasContext.createRadialGradient(
-      this.center.x, this.center.y, 0,
-      this.focal.x, this.focal.y, this._radius
+  updateShape(shp);
+
+  var renderer = getShapeRenderer(shp);
+
+  if (!renderer.gradient || anyPropChanged(shp, ['center','focal','radius','stops'])) {
+    var {center, focal, radius, stops} = getShapeProps(shp, ['center','focal','radius','stops']);
+    renderer.gradient = canvasContext.createRadialGradient(
+      center.x, center.y, 0, focal.x,  focal.y, radius
     );
 
-    for (var i = 0; i < this.stops.length; i++) {
-      var stop = this.stops[i];
-      this._renderer.gradient.addColorStop(stop.offset, stop.color);
+    for (var i = 0; i < stops.length; i++) {
+      var stop = stops[i];
+      renderer.gradient.addColorStop(stop.offset, stop.color);
     }
 
   }
 
-  return this.flagReset();
+  return shp.flagReset();
 
 };
 

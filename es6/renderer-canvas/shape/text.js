@@ -2,7 +2,9 @@
 
 import is  from '../../util/is';
 import base from './base';
+import shapeRendering   from '../../shape-rendering';
 
+var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
 var {isDefaultMatrix, renderShape, isHidden} = base;
 
 var {isString, isNumber} = is;
@@ -14,35 +16,34 @@ const ALIGNMENTS = {
 };
 
 
-var text = function(ctx, forced, parentClipped) {
+var text = function(shp, ctx, forced, parentClipped) {
 
   // TODO: Add a check here to only invoke _update if need be.
-  this._update();
+  updateShape(shp);
 
-  var matrix = this._matrix.elements;
-  var stroke = this._stroke;
-  var linewidth = this._linewidth;
-  var fill = this._fill;
-  var opacity = this._opacity * this.parent._renderer.opacity;
-  var visible = this._visible;
-  var defaultMatrix = isDefaultMatrix(matrix);
+  var renderer = getShapeRenderer(shp);
+  var parentRenderer = getShapeRenderer(shp.parent);
 
-  // mask = this._mask;
-  var clip = this._clip;
+  var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = getShapeProps(shp,
+      ['stroke','linewidth','fill','opacity','visible','clip','mask']);
+  var { matrix,  vertices,  closed } = getShapeProps(shp, ['matrix','vertices','closed']);
 
-  if (!forced && (!visible || clip)) {
-    return this;
-  }
+  opacity = opacity * parentRenderer.opacity;
+  var anchors = vertices; // Commands
+
+  if (!forced && (!visible || clip)) { return shp; }
 
   // Transform
+  var matrixElem = matrix.elements;
+  var defaultMatrix = isDefaultMatrix(matrixElem);
   if (!defaultMatrix) {
     ctx.save();
-    ctx.transform(matrix[0], matrix[3], matrix[1], matrix[4], matrix[2], matrix[5]);
+    ctx.transform(matrixElem[0], matrixElem[3], matrixElem[1], matrixElem[4], matrixElem[2], matrixElem[5]);
   }
 
  /**
    * Commented two-way functionality of clips / masks with groups and
-   * polygons. Uncomment when this bug is fixed:
+   * polygons. Uncomment when that bug is fixed:
    * https://code.google.com/p/chromium/issues/detail?id=370951
    */
 
@@ -50,11 +51,13 @@ var text = function(ctx, forced, parentClipped) {
   //   renderShape(mask, ctx, true);
   // }
 
-  ctx.font = [this._style, this._weight, this._size + 'px/' +
-    this._leading + 'px', this._family].join(' ');
+  var { font,  style,  weight , size , leading , family , alignment , baseline , value  } = getShapeProps(shp,
+      ['font','style','weight','size','leading','family','alignment','baseline','value']);
 
-  ctx.textAlign = ALIGNMENTS[this._alignment] || this._alignment;
-  ctx.textBaseline = this._baseline;
+  ctx.font = [style, weight, size + 'px/' + leading + 'px', family].join(' ');
+
+  ctx.textAlign = ALIGNMENTS[alignment] || alignment;
+  ctx.textBaseline = baseline;
 
   // Styles
   if (fill) {
@@ -62,7 +65,8 @@ var text = function(ctx, forced, parentClipped) {
       ctx.fillStyle = fill;
     } else {
       renderShape(fill, ctx);
-      ctx.fillStyle = fill._renderer.gradient;
+      var fillR = getShapeRenderer(fill);
+      ctx.fillStyle = fillR.gradient;
     }
   }
   if (stroke) {
@@ -70,7 +74,8 @@ var text = function(ctx, forced, parentClipped) {
       ctx.strokeStyle = stroke;
     } else {
       renderShape(stroke, ctx);
-      ctx.strokeStyle = stroke._renderer.gradient;
+      var strokeR = getShapeRenderer(fill);
+      ctx.strokeStyle = strokeR.gradient;
     }
   }
   if (linewidth) {
@@ -82,8 +87,8 @@ var text = function(ctx, forced, parentClipped) {
 
 
   if (!clip && !parentClipped) {
-    if (!isHidden.test(fill)) ctx.fillText(this._value, 0, 0);
-    if (!isHidden.test(stroke)) ctx.strokeText(this._value, 0, 0);
+    if (!isHidden.test(fill)) ctx.fillText(value, 0, 0);
+    if (!isHidden.test(stroke)) ctx.strokeText(value, 0, 0);
   }
 
   if (!defaultMatrix) {
@@ -95,7 +100,7 @@ var text = function(ctx, forced, parentClipped) {
     ctx.clip();
   }
 
-  return this.flagReset();
+  return shp.flagReset();
 
 };
 

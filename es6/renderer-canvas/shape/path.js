@@ -3,52 +3,50 @@
 import _   from '../../util/common';
 import is  from '../../util/is';
 import base from './base';
+import shapeRendering   from '../../shape-rendering';
 
+var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
 var {isDefaultMatrix, renderShape, Commands} = base;
 
 var {mod, toFixed} = _;
 var {isString, isNumber} = is;
 
-var path = function(ctx, forced, parentClipped) {
-
-  var matrix, stroke, linewidth, fill, opacity, visible, cap, join, miter,
-      closed, commands, length, last, next, prev, a, b, c, d, ux, uy, vx, vy,
-      ar, bl, br, cl, x, y, mask, clip, defaultMatrix;
+var path = function(shp, ctx, forced, parentClipped) {
 
   // TODO: Add a check here to only invoke _update if need be.
-  this._update();
 
-  matrix = this._matrix.elements;
-  stroke = this._stroke;
-  linewidth = this._linewidth;
-  fill = this._fill;
-  opacity = this._opacity * this.parent._renderer.opacity;
-  visible = this._visible;
-  cap = this._cap;
-  join = this._join;
-  miter = this._miter;
-  closed = this._closed;
-  commands = this._vertices; // Commands
-  length = commands.length;
+  updateShape(shp);
+
+  var renderer = getShapeRenderer(shp);
+  var parentRenderer = getShapeRenderer(shp.parent);
+
+  var matrixElem, anchors, length, last, next, prev, a, b, c, d, ux, uy, vx, vy,
+      ar, bl, br, cl, x, y, defaultMatrix;
+
+  var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = getShapeProps(shp,
+      ['stroke','linewidth','fill','opacity','visible','clip','mask']);
+  var { matrix,  vertices,  closed } = getShapeProps(shp, ['matrix','vertices','closed']);
+  var { cap,  join,  miter  } = getShapeProps(shp, ['cap','join','miter','closed']);
+
+  opacity = opacity * parentRenderer.opacity;
+  anchors = vertices; // Commands
+
+  length = anchors.length;
   last = length - 1;
-  defaultMatrix = isDefaultMatrix(matrix);
 
-  // mask = this._mask;
-  clip = this._clip;
-
-  if (!forced && (!visible || clip)) {
-    return this;
-  }
+  if (!forced && (!visible || clip)) { return shp; }
 
   // Transform
+  matrixElem = matrix.elements;
+  defaultMatrix = isDefaultMatrix(matrixElem);
   if (!defaultMatrix) {
     ctx.save();
-    ctx.transform(matrix[0], matrix[3], matrix[1], matrix[4], matrix[2], matrix[5]);
+    ctx.transform(matrixElem[0], matrixElem[3], matrixElem[1], matrixElem[4], matrixElem[2], matrixElem[5]);
   }
 
  /**
    * Commented two-way functionality of clips / masks with groups and
-   * polygons. Uncomment when this bug is fixed:
+   * polygons. Uncomment when that bug is fixed:
    * https://code.google.com/p/chromium/issues/detail?id=370951
    */
 
@@ -62,7 +60,8 @@ var path = function(ctx, forced, parentClipped) {
       ctx.fillStyle = fill;
     } else {
       renderShape(fill, ctx);
-      ctx.fillStyle = fill._renderer.gradient;
+      var fillR = getShapeRenderer(fill);
+      ctx.fillStyle = fillR.gradient;
     }
   }
   if (stroke) {
@@ -70,7 +69,8 @@ var path = function(ctx, forced, parentClipped) {
       ctx.strokeStyle = stroke;
     } else {
       renderShape(stroke, ctx);
-      ctx.strokeStyle = stroke._renderer.gradient;
+      var strokeR = getShapeRenderer(fill);
+      ctx.strokeStyle = strokeR.gradient;
     }
   }
   if (linewidth) {
@@ -91,9 +91,9 @@ var path = function(ctx, forced, parentClipped) {
 
   ctx.beginPath();
 
-  for (var i = 0; i < commands.length; i++) {
+  for (var i = 0; i < anchors.length; i++) {
 
-    b = commands[i];
+    b = anchors[i];
 
     x = toFixed(b.x);
     y = toFixed(b.y);
@@ -109,8 +109,8 @@ var path = function(ctx, forced, parentClipped) {
         prev = closed ? mod(i - 1, length) : Math.max(i - 1, 0);
         next = closed ? mod(i + 1, length) : Math.min(i + 1, last);
 
-        a = commands[prev];
-        c = commands[next];
+        a = anchors[prev];
+        c = anchors[next];
         ar = (a.controls && a.controls.right) || a;
         bl = (b.controls && b.controls.left) || b;
 
@@ -195,7 +195,7 @@ var path = function(ctx, forced, parentClipped) {
     ctx.clip();
   }
 
-  return this.flagReset();
+  return shp.flagReset();
 
 };
 

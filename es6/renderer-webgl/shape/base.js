@@ -11,16 +11,16 @@ var FN = {};
 
 var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
-FN.renderScene = (elm, ctx, program) => {
+FN.renderScene = (gp, ctx, program) => {
   var {renderShape} = FN;
-  return renderShape(elm, ctx, program);
+  return renderShape(gp, ctx, program);
 };
 
 
-FN.renderShape = (elm, ctx, condi, clip) => {
-  var renderFn = shapeCache.get(elm.rendererType);
-  if(!renderFn) { console.log('Not found'); }
-  renderFn.render(elm, ctx, condi, clip);
+FN.renderShape = (shp, ctx, condi, clip) => {
+  var renderFn = shapeCache.get(shp.rendererType);
+  if(!renderFn) { console.log('[webgl.renderShape] Renderer not found', shp.rendererType); }
+  renderFn.render(shp, ctx, condi, clip);
 };
 
 

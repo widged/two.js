@@ -59,9 +59,12 @@ class Shape {
     if(typeof obj === 'object') {
       this.state = Object.assign(this.state || {}, obj);
       // :TODO: remove once all ._ have been replaced.
-      Object.keys(obj).forEach((k) => {
+      var keys = Object.keys(obj);
+      keys.forEach((k) => {
         this['_'+k] = obj[k];
       });
+      raiseFlags(this, keys);
+      console.log(this)
     }
   }
 

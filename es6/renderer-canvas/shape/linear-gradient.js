@@ -1,24 +1,28 @@
 /* jshint esnext: true */
 
-var linearGradient = function(ctx) {
+import shapeRendering   from '../../shape-rendering';
 
-  this._update();
+var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
 
-  if (!this._renderer.gradient || this._flag_endPoints || this._flag_stops) {
+var linearGradient = function(shp, ctx) {
 
-    this._renderer.gradient = ctx.createLinearGradient(
-      this.left.x, this.left.y,
-      this.right.x, this.right.y
+
+  var renderer = getShapeRenderer(shp);
+
+  if (!renderer.gradient || anyPropChanged(shp, ['stops', 'endPoints'])) {
+    var { stops, left, right } = getShapeProps(shp, ['stops','left','right']);
+
+    renderer.gradient = ctx.createLinearGradient(
+      left.x, left.y, right.x, right.y
     );
 
-    for (var i = 0; i < this.stops.length; i++) {
-      var stop = this.stops[i];
-      this._renderer.gradient.addColorStop(stop.offset, stop.color);
+    for (var i = 0; i < stops.length; i++) {
+      var stop = stops[i];
+      renderer.gradient.addColorStop(stop.offset, stop.color);
     }
-
   }
 
-  return this.flagReset();
+  return shp.flagReset();
 
 };
 

@@ -20,7 +20,6 @@ FN.getMatrixProp = (shape, mtx) => {
 };
 
 
-
 FN.getShapeProps = (shape, ks) => {
   var {getMatrixProp} = FN;
   var acc = {};

@@ -14,6 +14,7 @@ const ALIGNMENTS = {
 
 var text = function(shp, domElement) {
 
+  console.log(shp)
 
   updateShape(shp);
 
@@ -23,6 +24,7 @@ var text = function(shp, domElement) {
   if (matrix.manual || anyPropChanged(shp, ['matrix'])) {
     attrs.transform = 'matrix(' + matrix.toString() + ')';
   }
+
 
   if(anyPropChanged(shp, ['family','size','leading','alignment','baseline','style','weight','decoration'])) {
 
@@ -59,8 +61,7 @@ var text = function(shp, domElement) {
     setAttributes(renderer.elem, attrs);
   }
 
-  if (anyPropChanged(shp, ['fill'])) {
-
+  if (true || anyPropChanged(shp, ['clip'])) {
     var clipElem = getClip(shp);
 
     var { clip } = getShapeProps(shp, ['clip']);
@@ -74,6 +75,7 @@ var text = function(shp, domElement) {
       renderer.elem.setAttribute('id', shp.id);
       getShapeRenderer(shp.parent).elem.appendChild(renderer.elem); // TODO: should be insertBefore
     }
+    getShapeRenderer(shp.parent).elem.appendChild(renderer.elem); // TODO: should be insertBefore
 
   }
 

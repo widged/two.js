@@ -1,41 +1,42 @@
 /* jshint esnext: true */
 
 import base from './base';
+import shapeRendering   from '../../shape-rendering';
 
+var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
 var {isDefaultMatrix, renderShape} = base;
 
-var group = function(ctx) {
+var group = function(shp, ctx) {
 
   // TODO: Add a check here to only invoke _update if need be.
-  this._update();
 
-  var matrix = this._matrix.elements;
-  var parent = this.parent;
-  this._renderer.opacity = this._opacity * (parent && parent._renderer ? parent._renderer.opacity : 1);
+  updateShape(shp);
 
-  var defaultMatrix = isDefaultMatrix(matrix);
+  var renderer = getShapeRenderer(shp);
+  var parentRenderer = getShapeRenderer(shp.parent);
 
-  var mask = this._mask;
-  // var clip = this._clip;
+  var { matrix, opacity, mask, clip } = getShapeProps(shp, ['matrix','opacity','mask','clip']);
 
-  if (!this._renderer.context) {
-    this._renderer.context = {};
-  }
+  var parent = shp.parent;
+  renderer.opacity = opacity * (parent && parentRenderer ? parentRenderer.opacity : 1);
 
-  this._renderer.context.ctx = ctx;
-  // this._renderer.context.clip = clip;
+  if (!renderer.context) { renderer.context = {}; }
+  renderer.context.ctx = ctx;
+  // renderer.context.clip = clip;
 
+  var matrixElem = matrix.elements;
+  var defaultMatrix = isDefaultMatrix(matrixElem);
   if (!defaultMatrix) {
     ctx.save();
-    ctx.transform(matrix[0], matrix[3], matrix[1], matrix[4], matrix[2], matrix[5]);
+    ctx.transform(matrixElem[0], matrixElem[3], matrixElem[1], matrixElem[4], matrixElem[2], matrixElem[5]);
   }
 
   if (mask) {
     renderShape(mask, ctx, true);
   }
 
-  for (var i = 0; i < this.children.length; i++) {
-    var child = this.children[i];
+  for (var i = 0; i < shp.children.length; i++) {
+    var child = shp.children[i];
     renderShape(child, ctx);
   }
 
@@ -45,7 +46,7 @@ var group = function(ctx) {
 
  /**
  * Commented two-way functionality of clips / masks with groups and
- * polygons. Uncomment when this bug is fixed:
+ * polygons. Uncomment when that bug is fixed:
  * https://code.google.com/p/chromium/issues/detail?id=370951
  */
 
@@ -53,7 +54,7 @@ var group = function(ctx) {
   //   ctx.clip();
   // }
 
-  return this.flagReset();
+  return shp.flagReset();
 
 };
 

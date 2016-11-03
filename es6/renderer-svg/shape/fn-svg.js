@@ -35,7 +35,9 @@ FN.getClip = function(shp) {
 
   if (!clipR) {
     var root = shp;
-    while (root.parent) { root = root.parent; }
+    while (root.parent) {
+      root = root.parent;
+     }
     clipR = renderer.clip = createElement('clipPath');
     root.defs.appendChild(clipR);
   }

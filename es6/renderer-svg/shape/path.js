@@ -12,7 +12,6 @@ var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRender
 
 var path = function(shp, domElement) {
 
-
   updateShape(shp);
 
   // Shortcut for hidden objects.

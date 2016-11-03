@@ -18,8 +18,16 @@ var Types = require('../es6/constant/RendererTypes').default;
 
 var appNode = document.getElementById('app');
 
-appNode.appendChild(h('svg'))
+appNode.appendChild(h('canvas'))
+  var two = new TwoClassic({
+    width: 600,
+    height: 400,
+    type: Types.canvas
+  }).appendTo(appNode);
+  renderShapes(two);
 
+
+appNode.appendChild(h('svg'))
   var two = new TwoClassic({
     width: 600,
     height: 400,
@@ -35,14 +43,6 @@ appNode.appendChild(h('webgl'))
   }).appendTo(appNode);
   renderShapes(two);
 
-appNode.appendChild(h('canvas'))
-
-  var two = new TwoClassic({
-    width: 600,
-    height: 400,
-    type: Types.canvas
-  }).appendTo(appNode);
-  renderShapes(two);
 
 
 
@@ -107,8 +107,6 @@ function renderShapes(two) {
   star.stroke = "purple";
   star.opacity = 0.25;
 
-  var txt = two.makeText('hello there', 200,200);
-  txt.opacity = 0.75;
 
   // ----------- gradients ------
   //
@@ -151,6 +149,9 @@ function renderShapes(two) {
   rectangle.noStroke();
 
   rectangle.fill = linearGradient;
+
+  var txt = two.makeText('hello there', 200,200);
+  txt.opacity = 0.75;
 
   two.update();
 
