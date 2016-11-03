@@ -20,7 +20,7 @@ FN.renderScene = (elm, ctx, program) => {
 FN.renderShape = (elm, ctx, condi, clip) => {
   var renderFn = shapeCache.get(elm.rendererType);
   if(!renderFn) { console.log('Not found'); }
-  renderFn.render.call(elm, ctx, condi, clip);
+  renderFn.render(elm, ctx, condi, clip);
 };
 
 
@@ -39,7 +39,7 @@ FN.getContext = (canvas) => {
   return canvas.getContext('2d');
 };
 
-FN.isCanvas = (ctx) => { return ctx.canvas.getContext('2d'); }
+FN.isCanvasContext = (canvasContext) => { return canvasContext.canvas.getContext('2d'); }
 
 
 export default FN;

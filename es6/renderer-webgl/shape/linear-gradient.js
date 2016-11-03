@@ -3,18 +3,17 @@
 import base from './base';
 import shapeRendering   from '../../shape-rendering';
 
-var {isCanvas} = base;
+var {isCanvasContext} = base;
 var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
 
 
 var linearGradient = {
 
-  render: function(ctx, elem) {
+  render: function(shp, canvasContext, elem) {
 
     // context can be canvas or webgl... webgl when elem is WebGL program
-    if (!isCanvas(ctx)) { return; }
+    if (!isCanvasContext(canvasContext)) { return; }
 
-    var shp = this;
 
     updateShape(shp);
 
@@ -25,9 +24,10 @@ var linearGradient = {
       var {left, right, stops} = getShapeProps(shp, ['left','right','stops']);
       var {x: lx,y: ly} = getShapeProps(left, ['x','y']);
       var {x: rx,y: ry} = getShapeProps(right, ['x','y']);
-      renderer.gradient = ctx.createLinearGradient( lx, ly, rx, ry );
+      renderer.gradient = canvasContext.createLinearGradient( lx, ly, rx, ry );
 
-      for (var i = 0, ni = stops.length, di = null; i < ni, di = stops[i]; i++) {
+      for (var i = 0, ni = stops.length, di = null; i < ni; i++) {
+        di = stops[i];
         renderer.gradient.addColorStop(di.offset, di.color);
       }
 

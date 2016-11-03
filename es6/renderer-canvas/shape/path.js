@@ -95,8 +95,8 @@ var path = function(ctx, forced, parentClipped) {
 
     b = commands[i];
 
-    x = toFixed(b._x);
-    y = toFixed(b._y);
+    x = toFixed(b.x);
+    y = toFixed(b.y);
 
     switch (b.command) {
 

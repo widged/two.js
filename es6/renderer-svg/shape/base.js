@@ -3,6 +3,7 @@
 import Cache   from '../../util/Cache';
 import svgFN   from './fn-svg';
 
+
 var FN = {};
 
 // ------------------------------------

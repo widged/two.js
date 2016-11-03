@@ -17,9 +17,8 @@ var {MaskMode, remove} = glFN;
 
 var group = {
 
-    render: function(gl, program) {
+    render: function(shp, gl, program) {
 
-      var shp = this;
 
       updateShape(shp);
 

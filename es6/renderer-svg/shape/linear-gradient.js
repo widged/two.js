@@ -11,10 +11,10 @@ var linearGradient = function(domElement) {
   var changed = {};
 
   if (this._flag_endPoints) {
-    changed.x1 = this.left._x;
-    changed.y1 = this.left._y;
-    changed.x2 = this.right._x;
-    changed.y2 = this.right._y;
+    changed.x1 = this.left.x;
+    changed.y1 = this.left.y;
+    changed.x2 = this.right.x;
+    changed.y2 = this.right.y;
   }
 
   if (this._flag_spread) {

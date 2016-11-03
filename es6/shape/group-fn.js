@@ -1,6 +1,8 @@
 /* jshint esnext: true */
 
 import is  from '../util/is';
+import shapeRendering from '../shape-rendering';
+var {dropFlags, raiseFlags} = shapeRendering;
 
 var {isNumber} = is;
 
@@ -73,7 +75,7 @@ FN.replaceParent = (that, child, newParent) => {
 
   if (parent === newParent) {
     that.additions.push(child);
-    that._flag_additions = true;
+    raiseFlags(parent, ['additions']);
     return;
   }
 
@@ -89,14 +91,14 @@ FN.replaceParent = (that, child, newParent) => {
       parent.additions.splice(index, 1);
     } else {
       parent.subtractions.push(child);
-      parent._flag_subtractions = true;
+      raiseFlags(parent, ['subtractions']);
     }
   }
 
   if (newParent) {
     child.parent = newParent;
     that.additions.push(child);
-    that._flag_additions = true;
+    raiseFlags(that, ['additions']);
     return;
   }
 
@@ -107,7 +109,7 @@ FN.replaceParent = (that, child, newParent) => {
     that.additions.splice(index, 1);
   } else {
     that.subtractions.push(child);
-    that._flag_subtractions = true;
+    raiseFlags(that, ['subtractions']);
   }
 
   delete child.parent;

@@ -58,9 +58,7 @@ var updateShapeCanvas = function(shp) {
 
 var text = {
 
-  render: function(gl, program, forcedParent) {
-
-    var shp = this;
+  render: function(shp, gl, program, forcedParent) {
 
     // <<< code that varies between text and path
     var getBoundingClientRect = (shp) => {

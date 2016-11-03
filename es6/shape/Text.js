@@ -6,12 +6,13 @@ import Shape from '../Shape';
 import shapeFN    from '../shape-fn';
 import pathFN    from '../shape/path-fn';
 import DefaultValues from '../constant/DefaultValues';
+import shapeRendering from '../shape-rendering';
 
 var {isNumber, isObject} = is;
 
 var {shimBoundingClientRect, defineSecretAccessors, serializeProperties, cloneProperties} = shapeFN;
 var {getComputedMatrix} = pathFN;
-
+var {dropFlags, raiseFlags} = shapeRendering;
 
 /**
  * A class for creating, manipulating, and rendering text dynamically
@@ -62,7 +63,7 @@ class Text extends Shape {
   }
   set clip(v) {
     this._clip = v;
-    this._flag_clip = true;
+    raiseFlags(this, ['clip']);
   }
 
   // -----------------
@@ -71,9 +72,7 @@ class Text extends Shape {
 
   remove() {
 
-    if (!this.parent) {
-      return this;
-    }
+    if (!this.parent) { return this; }
 
     this.parent.remove(this);
 
@@ -118,10 +117,8 @@ class Text extends Shape {
   // -----------------
 
   flagReset() {
-    'value,family,size,leading,alignment,fill,stroke,linewidth,opacity,visible,clip,decoration'.split(',').forEach((k) => {
-      this['_flag_'+k] = false;
-    });
-    Shape.prototype.flagReset.call(this);
+    super.flagReset();
+    dropFlags(this, ['value','family','size','leading','alignment','fill','stroke','linewidth','opacity','visible','clip','decoration']);
     return this;
 
   }
@@ -142,6 +139,6 @@ class Text extends Shape {
 }
 
 Text.Properties = Object.keys(DefaultValues.Text);
-defineSecretAccessors({proto: Text.prototype, accessors: Text.Properties, raisedFlags: 'family,size,leading,alignment,baseline,style,weight,decoration'.split(''), secrets: DefaultValues.Text} );
+defineSecretAccessors({proto: Text.prototype, accessors: Text.Properties, raisedFlags: 'family,size,leading,alignment,baseline,style,weight,decoration'.split(','), secrets: DefaultValues.Text} );
 
 export default Text;

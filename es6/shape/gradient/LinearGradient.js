@@ -6,10 +6,12 @@ import VectorEvent    from '../../constant/VectorEvent';
 import Vector    from '../../struct/Vector';
 import Gradient  from '../Gradient';
 import shapeFN    from '../../shape-fn';
+import shapeRendering from '../../shape-rendering';
 
 var {bind, map} = _;
-var {cloned} = shapeFN;
 var {isNumber} = is;
+var {cloned} = shapeFN;
+var {dropFlags, raiseFlags} = shapeRendering;
 
 /*
 This is a class for creating a LinearGradient in two.js. By itself a Two.LinearGradient doesn't render anything specifically to the screen. However, in conjunction with a Two.Path you can style Two.Path.fill or Two.Path.stroke with a Two.LinearGradient to render a gradient for that part of the Two.Path. Check the examples page for exact usage.
@@ -35,7 +37,7 @@ class LinearGradient extends Gradient {
     this._renderer.type = 'linear-gradient';
 
     var flagEndPoints = (function() {
-      this._flag_endPoints = true;
+      raiseFlags(this, ['endPoints']);
     }).bind(this);
 
     this.left = new Vector();
@@ -56,7 +58,7 @@ class LinearGradient extends Gradient {
       this.right.y = y2;
     }
 
-   this._flag_endPoints = false;
+    dropFlags(this, ['endPoints']);
 
   }
 
@@ -65,11 +67,8 @@ class LinearGradient extends Gradient {
   // -----------------
 
   flagReset() {
-
-    this._flag_endPoints = false;
-
-    Gradient.prototype.flagReset.call(this);
-
+    super.flagReset();
+    dropFlags(this, ['endPoints']);
     return this;
 
   }

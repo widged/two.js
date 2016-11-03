@@ -92,7 +92,7 @@ FN.renderPath = (gl, program, shp, assertShapeChange, getBoundingClientRect, for
 
   // if (mask) {
   //  var maskRenderer = getShapeRenderer(mask);
-  //  webgl[maskRenderer.type].render.call(mask, gl, program, shp);
+  //  webgl[maskRenderer.type].render(mask, gl, program, shp);
   // }
 
   updateShape(shp);

@@ -18,6 +18,15 @@ var Types = require('../es6/constant/RendererTypes').default;
 
 var appNode = document.getElementById('app');
 
+appNode.appendChild(h('svg'))
+
+  var two = new TwoClassic({
+    width: 600,
+    height: 400,
+    type: Types.svg
+  }).appendTo(appNode);
+  renderShapes(two);
+
 appNode.appendChild(h('webgl'))
   var two = new TwoClassic({
     width: 600,
@@ -35,14 +44,6 @@ appNode.appendChild(h('canvas'))
   }).appendTo(appNode);
   renderShapes(two);
 
-appNode.appendChild(h('svg'))
-
-  var two = new TwoClassic({
-    width: 600,
-    height: 400,
-    type: Types.svg
-  }).appendTo(appNode);
-  renderShapes(two);
 
 
 }

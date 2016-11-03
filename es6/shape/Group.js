@@ -9,12 +9,14 @@ import shapeFN    from '../shape-fn';
 import groupFN  from './group-fn';
 import Children  from '../ChildrenCollection';
 import DefaultValues from '../constant/DefaultValues';
+import shapeRendering from '../shape-rendering';
 
 var {isNumber, isArray} = is;
 var {exclude, arrayOrArguments}  = _;
 var {cloneProperties, serializeProperties, defineSecretAccessors, rectCentroid, rectTopLeft} = shapeFN;
 var {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
 var {translateChildren} = groupFN;
+var {dropFlags, raiseFlags} = shapeRendering;
 
 var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
 
@@ -41,7 +43,7 @@ class Group extends Shape {
     this.bound = {
       whenChildrenInserted: ((children) => { adoptShapes(this, children); }).bind(this),
       whenChildrenRemoved: ((children) => { dropShapes(this, children); }).bind(this),
-      whenChildrenShuffled: (() => { this._flag_order = true; }).bind(this)
+      whenChildrenShuffled: (() => { raiseFlags(this, ['order']); }).bind(this)
     };
 
     /**
@@ -81,7 +83,7 @@ class Group extends Shape {
   }
   set mask(v) {
     this._mask = v;
-    this._flag_mask = true;
+    raiseFlags(this, ['mask']);
     if (!v.clip) {
       v.clip = true;
     }
@@ -185,21 +187,11 @@ class Group extends Shape {
 
 
   flagReset() {
-
-    if (this._flag_additions) {
-      this.additions = [];
-      this._flag_additions = false;
-    }
-
-    if (this._flag_subtractions) {
-      this.subtractions = [];
-      this._flag_subtractions = false;
-    }
-
-    this._flag_order = this._flag_mask = this._flag_opacity = false;
-
-    Shape.prototype.flagReset.call(this);
-
+    super.flagReset();
+    dropFlags(this, ['additions','subtractions']);
+    dropFlags(this, ['order','mask','opacity']);
+    this.additions = [];
+    this.subtractions = [];
     return this;
 
   }

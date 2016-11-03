@@ -2,8 +2,10 @@
 
 import is  from './util/is';
 import _  from './util/common';
+import shapeRendering from './shape-rendering';
 
 var {isArray} = is;
+var {raiseFlags} = shapeRendering;
 
 var FN = {};
 
@@ -47,32 +49,23 @@ FN.serialized = (shape) => {
   return obj;
 };
 
-FN.secretAccessor = (k) => { return '_'+k; };
-FN.flagAccessor   = (k) => { return '_flag_'+k; };
 
 FN.defineSecretAccessors = ({proto, accessors, secrets, raisedFlags, onlyWhenChanged}) => {
   if(!accessors) { accessors = []; }
   if (!isArray(accessors)) { accessors = [accessors]; }
 
-  var {secretAccessor, flagAccessor} = FN;
-  if(raisedFlags)   {  raisedFlags.forEach((k) => { k = flagAccessor(k); proto[k] = true; return; } );       }
+  if(raisedFlags)   { raiseFlags(proto, raisedFlags); /* return; */ }
+  if(secrets)       { proto.setState(secrets); }
 
   var each =   (k) => {
-    var secret = secretAccessor(k);
-    var flag   = flagAccessor(k);
     var onChange = Array.isArray(onlyWhenChanged) && onlyWhenChanged.includes(k);
-    if(secrets) { proto[secretAccessor(k)] = secrets[k]; }
 
     Object.defineProperty(proto, k, {
       enumerable: true,
-      get() {
-        return this[secret];
-      },
       set(v) {
-        if(!onChange || v !== this[secret]) {
-          this[secret] = v;
-          this[flag] = true;
-        }
+          var o = {}; o[k] = v;
+          this.setState(o);
+          raiseFlags(this, [k]);
       }
     });
 

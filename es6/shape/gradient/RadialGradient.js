@@ -6,9 +6,10 @@ import VectorEvent    from '../../constant/VectorEvent';
 import Vector    from '../../struct/Vector';
 import shapeFN    from '../../shape-fn';
 import Gradient  from '../Gradient';
+import shapeRendering from '../../shape-rendering';
 
 var {cloned, serialized, defineSecretAccessors} = shapeFN;
-
+var {dropFlags, raiseFlags} = shapeRendering;
 var {isNumber} = is;
 
 /*
@@ -57,14 +58,14 @@ class RadialGradient extends Gradient {
     this.center = new Vector();
 
     this.center.dispatcher.on(VectorEvent.change, () => {
-      this._flag_center = true;
+      raiseFlags(this, ['center']);
     });
 
     this.radius = isNumber(r) ? r : 20;
 
     this.focal = new Vector();
     this.focal.dispatcher.on(VectorEvent.change, () => {
-      this._flag_focal = true;
+      raiseFlags(this, ['focal']);
     });
 
     if (isNumber(cx)) {
@@ -83,7 +84,7 @@ class RadialGradient extends Gradient {
       this.focal.y = fy;
     }
 
-    this._flag_endPoints = false;
+    dropFlags(this, ['endPoints']);
 
   }
 
@@ -92,8 +93,8 @@ class RadialGradient extends Gradient {
   // -----------------
 
   flagReset() {
-    this._flag_radius = this._flag_center = this._flag_focal = false;
-    Gradient.prototype.flagReset.call(this);
+    super.flagReset();
+    dropFlags(this, ['radius','center','focal']);
     return this;
   }
 

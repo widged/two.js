@@ -5,8 +5,10 @@ import Stop      from './gradient/Stop';
 import Shape     from '../Shape';
 import shapeFN    from '../shape-fn';
 import Collection  from '../struct/Collection';
+import shapeRendering from '../shape-rendering';
 
 var {cloned, serializeProperties, cloneProperties, defineSecretAccessors} = shapeFN;
+var {dropFlags} = shapeRendering;
 
 class Gradient extends Shape {
 
@@ -40,8 +42,8 @@ class Gradient extends Shape {
   // -----------------
 
   flagReset() {
-    this._flag_spread = this._flag_stops = false;
-    Shape.prototype.flagReset.call(this);
+    super.flagReset();
+    dropFlags(this, ['spread', 'stops']);
     return this;
   }
 

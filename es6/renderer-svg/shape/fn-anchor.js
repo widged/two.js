@@ -33,8 +33,8 @@ FN.toString = function(anchors, closed) {
 
    // Access x and y directly,
    // bypassing the getter
-   var x = toFixed(b._x);
-   var y = toFixed(b._y);
+   var x = toFixed(b.x);
+   var y = toFixed(b.y);
 
    switch (b.command) {
 

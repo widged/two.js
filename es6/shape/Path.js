@@ -7,6 +7,7 @@ import Commands from '../constant/CommandTypes';
 import _  from '../util/common';
 import is  from '../util/is';
 import Collection  from '../struct/Collection';
+import shapeRendering from '../shape-rendering';
 
 import Anchor  from '../Anchor';
 import Shape   from '../Shape';
@@ -18,6 +19,7 @@ var {arrayLast} = _;
 var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertices, rectTopLeft, rectCentroid} = pathFN;
 var {min, max, round} = Math;
 var {cloneProperties, serializeProperties, getPathBoundingRect, defineSecretAccessors} = shapeFN;
+var {dropFlags, anyPropChanged, raiseFlags} = shapeRendering;
 
 /**
  * This is the base class for creating all drawable shapes in two.js. By default,
@@ -69,7 +71,7 @@ class Path extends Shape {
   // --------------------
 
   get length() {
-    if (this._flag_length) {
+    if(anyPropChanged(this, ['length'])) {
       this._updateLength();
     }
     return this._length;
@@ -80,7 +82,7 @@ class Path extends Shape {
   }
   set closed(v) {
     this._closed = !!v;
-    this._flag_vertices = true;
+    raiseFlags(this, ['vertices']);
   }
 
   get curved() {
@@ -88,7 +90,7 @@ class Path extends Shape {
   }
   set curved(v) {
     this._curved = !!v;
-    this._flag_vertices = true;
+    raiseFlags(this, ['vertices']);
   }
 
   get automatic() {
@@ -110,7 +112,7 @@ class Path extends Shape {
   }
   set beginning(v) {
     this._beginning = min(max(v, 0.0), this._ending);
-    this._flag_vertices = true;
+    raiseFlags(this, ['vertices']);
   }
 
   get ending() {
@@ -118,7 +120,7 @@ class Path extends Shape {
   }
   set ending(v) {
     this._ending = min(max(v, this._beginning), 1.0);
-    this._flag_vertices = true;
+    raiseFlags(this, ['vertices']);
   }
 
   /**
@@ -131,8 +133,7 @@ class Path extends Shape {
   set vertices(vertices) {
 
     var whenVerticesChange = (() => {
-        this._flag_vertices = true;
-        this._flag_length = true;
+      raiseFlags(this, ['vertices','length']);
     }).bind(this);
 
     var whenVerticesInserted = ((items) => {
@@ -177,7 +178,7 @@ class Path extends Shape {
   }
   set clip(v) {
     this._clip = v;
-    this._flag_clip = true;
+    raiseFlags(this, ['clip']);
   }
 
   // -----------------
@@ -297,8 +298,7 @@ class Path extends Shape {
   }
 
   _update() {
-
-    if (this._flag_vertices) {
+    if(anyPropChanged(this, ['vertices']))  {
       this._vertices = copyVertices({
         vertices:  this.vertices,
         beginning: this._beginning,
@@ -337,13 +337,10 @@ class Path extends Shape {
   // -----------------
 
   flagReset() {
-
-    this._flag_vertices =  this._flag_fill =  this._flag_stroke =
-       this._flag_linewidth = this._flag_opacity = this._flag_visible =
-       this._flag_cap = this._flag_join = this._flag_miter =
-       this._flag_clip = false;
-
-    Shape.prototype.flagReset.call(this);
+    super.flagReset();
+    dropFlags(this, ['fill','stroke','linewidth','opacity','visible','clip','decoration']);
+    dropFlags(this, ['vertices']);
+    dropFlags(this, ['cap, join, miter']);
 
     return this;
 

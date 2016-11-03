@@ -8,10 +8,11 @@ import UidGenerator from './util/uid-generator';
 import shapeFN    from './shape-fn';
 import DefaultValues from './constant/DefaultValues';
 import Store from './util/Store';
+import shapeRendering from './shape-rendering';
 
 var uniqueId = UidGenerator();
 var {cloneProperties, serializeProperties} = shapeFN;
-
+var {raiseFlags, dropFlags, anyPropChanged} = shapeRendering;
 var shapeDefaults = DefaultValues.Shape;
 
 var store = Store.create(() => {});
@@ -41,9 +42,27 @@ class Shape {
     this.rotation = 0;
     this.scale = 1;
 
-    var flagMatrix = () => { this._flag_matrix = true; };
+    var flagMatrix = () => {  raiseFlags(this, ['matrix']);   };
     this.translation.dispatcher.on(VectorEvent.change, flagMatrix);
 
+  }
+
+  // --------------------
+  // IStated
+  // --------------------
+  getState() {
+    console.log('getstate')
+    return this.state;
+  }
+
+  setState(obj) {
+    if(typeof obj === 'object') {
+      this.state = Object.assign(this.state || {}, obj);
+      // :TODO: remove once all ._ have been replaced.
+      Object.keys(obj).forEach((k) => {
+        this['_'+k] = obj[k];
+      });
+    }
   }
 
   // --------------------
@@ -55,15 +74,14 @@ class Shape {
   }
   set rotation(v) {
     this._rotation = v;
-    this._flag_matrix = true;
+    raiseFlags(this, ['matrix']);
   }
   get scale() {
     return this._scale;
   }
   set scale(v) {
     this._scale = v;
-    this._flag_matrix = true;
-    this._flag_scale = true;
+    raiseFlags(this, ['matrix','scale']);
   }
 
   get rendererType() {
@@ -82,10 +100,6 @@ class Shape {
     return this;
   }
 
-  flagReset() {
-    this._flag_matrix = this._flag_scale = false;
-    return this;
-  }
 
 
   // -----------------
@@ -98,7 +112,7 @@ class Shape {
    */
   _update(deep) {
 
-    if (!this._matrix.manual && this._flag_matrix) {
+    if (!this._matrix.manual && anyPropChanged(this, ['matrix'])) {
       this._matrix
         .identity()
         .translate(this.translation.x, this.translation.y)
@@ -118,10 +132,14 @@ class Shape {
 
   }
 
+  // -----------------
+  // IRenderable
+  // -----------------
 
-  // -----------------
-  // Utils
-  // -----------------
+  flagReset() {
+    dropFlags(this, ['matrix','scale']);
+    return this;
+  }
 
 
   clone() {

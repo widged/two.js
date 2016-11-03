@@ -1,76 +1,62 @@
 /* jshint esnext: true */
 
+import shapeRendering   from '../../shape-rendering';
 import svgFN    from './fn-svg';
 
+var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
 var {createElement, setAttributes} = svgFN;
+
+var renderElement = (parentNode, nodeType, attrs, defs) => {
+  // If there is no attached DOM element yet, create it with all necessary attributes.
+  if (!parentNode) {
+    parentNode = createElement(nodeType, attrs);
+    if(defs) { defs.appendChild(parentNode); }
+  // Otherwise apply all pending attributes
+  } else {
+    setAttributes(parentNode, attrs);
+  }
+  return parentNode;
+};
 
 var radialGradient = function(domElement) {
 
-  this._update();
+  var shp = this;
+
+  updateShape(shp);
 
   var changed = {};
-
-  if (this._flag_center) {
-    changed.cx = this.center._x;
-    changed.cy = this.center._y;
-  }
-  if (this._flag_focal) {
-    changed.fx = this.focal._x;
-    changed.fy = this.focal._y;
-  }
-
-  if (this._flag_radius) {
-    changed.r = this._radius;
-  }
-
-  if (this._flag_spread) {
-    changed.spreadMethod = this._spread;
-  }
-
-  // If there is no attached DOM element yet,
-  // create it with all necessary attributes.
-  if (!this._renderer.elem) {
-
-    changed.id = this.id;
-    changed.gradientUnits = 'userSpaceOnUse';
-    this._renderer.elem = createElement('radialGradient', changed);
-    domElement.defs.appendChild(this._renderer.elem);
-
-  // Otherwise apply all pending attributes
-  } else {
-
-    setAttributes(this._renderer.elem, changed);
-
-  }
-
-  if (this._flag_stops) {
-
-    svgFN.clear(this._renderer.elem);
+  var renderer = getShapeRenderer(shp);
 
 
-    for (var i = 0; i < this.stops.length; i++) {
+  if ( anyPropChanged(shp, ['center','focal','radius','stops']) ) {
+    var {center, focal, radius, stops} = getShapeProps(shp, ['center','focal','radius','stops']);
+    var {x: cx,y: cy} = getShapeProps(center, ['x','y']);
+    var {x: fx,y: fy} = getShapeProps(focal, ['x','y']);
 
-      var stop = this.stops[i];
-      var attrs = {};
+    renderer.elem = renderElement(
+      renderer.elem, 'radialGradient',
+      {id: shp.id, gradientUnits: 'userSpaceOnUse', cx, cy, fx, fy, r:radius},
+      domElement.defs
+    );
 
-      if (stop._flag_offset) {
-        attrs.offset = 100 * stop._offset + '%';
+    if (true || anyPropChanged(shp, ['stops'] ) ) {
+
+      svgFN.clear(renderer.elem);
+
+      for (var i = 0; i < stops.length; i++) {
+        var stop = stops[i];
+        if( anyPropChanged(stop, ['offset','color','opacity']) ) {
+          var {offset, color, opacity} = getShapeProps(['offset','color','opacity']);
+          var stopRenderer = getShapeRenderer(stop);
+          stopRenderer.elem = renderElement(
+            stopRenderer.elem, 'stop',
+            {offset: (100 * offset) + '%', 'stop-color': color, 'stop-opacity': opacity}
+          );
+
+          renderer.elem.appendChild(stopRenderer.elem);
+        }
+
       }
-      if (stop._flag_color) {
-        attrs['stop-color'] = stop._color;
-      }
-      if (stop._flag_opacity) {
-        attrs['stop-opacity'] = stop._opacity;
-      }
-
-      if (!stop._renderer.elem) {
-        stop._renderer.elem = createElement('stop', attrs);
-      } else {
-        setAttributes(stop._renderer.elem, attrs);
-      }
-
-      this._renderer.elem.appendChild(stop._renderer.elem);
-      stop.flagReset();
 
     }
 
