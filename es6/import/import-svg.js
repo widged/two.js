@@ -11,7 +11,7 @@ import RadialGradient from '../shape/gradient/RadialGradient';
 import LinearGradient from '../shape/gradient/RadialGradient';
 import Vector from '../struct/Vector';
 import Matrix from '../struct/Matrix';
-import pathFN  from '../shape/path-fn';
+import pathFN  from '../shape/fn-path';
 import Anchor from '../Anchor';
 
 var {isObject, isUndefined, isNotNumber, isArray, isNull} = is;

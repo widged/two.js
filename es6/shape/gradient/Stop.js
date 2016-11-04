@@ -19,7 +19,7 @@ class Stop {
    * also a 0 to 1 value.
    */
   constructor(offset, color, opacity) {
-    this._renderer = {};
+    this.state = {renderer : {}};
     // offset -- A 0 to 1 offset value which defines where on the trajectory of the gradient the full color is rendered.
     this.offset  = isNumber(offset) ? offset : stopIndex <= 0 ? 0 : 1;
     // opacity -- A 0 to 1 value which defines the opacity of the stop. This only renders in `svg` mode.

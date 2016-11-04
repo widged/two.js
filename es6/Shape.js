@@ -66,11 +66,14 @@ class Shape {
     this.id = DefaultValues.ShapeIdentifier + uniqueId();
     // parent  - A reference to the `Group` that contains this instance.
     this.parent = undefined;
-    this.changeTracker = new ChangeTracker(['matrix','scale','clip']); // clip, mask
+    var changeTracker = new ChangeTracker(['matrix','scale','clip']); // clip, mask
     // set on svg import only
     this.classList = [];
     // Private object for renderer specific variables.
-    this._renderer = {};
+    this.state = {
+      renderer: {},
+      changeTracker
+    };
     // Define matrix properties which all inherited objects of Shape have.
     this._matrix = new Matrix();
     this.translation = new Vector();
@@ -122,7 +125,7 @@ class Shape {
   }
 
   get rendererType() {
-    return this._renderer && this._renderer.type;
+    return this.state.renderer && this.state.renderer.type;
   }
 
   // -----------------

@@ -2,7 +2,7 @@
 
 import is  from '../util/is';
 import shapeRendering from '../shape-rendering';
-var {dropFlags, raiseFlags} = shapeRendering;
+var {raiseFlags} = shapeRendering;
 
 var {isNumber} = is;
 

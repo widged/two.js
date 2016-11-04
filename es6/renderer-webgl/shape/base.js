@@ -21,7 +21,7 @@ FN.renderShape = (shp, ctx, condi, clip) => {
   var renderFn = shapeCache.get(shp.rendererType);
   if(!renderFn) { console.log('[webgl.renderShape] Renderer not found', shp.rendererType); }
   // console.log('--------------')
-  // console.log(shp.constructor.name, shp.changeTracker.listChanges());
+  // console.log(shp.constructor.name, shp.state.changeTracker.listChanges());
   renderFn.render(shp, ctx, condi, clip);
 };
 

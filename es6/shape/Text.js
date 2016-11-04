@@ -4,15 +4,13 @@ import _  from '../util/common';
 import is  from '../util/is';
 import Shape from '../Shape';
 import shapeFN    from '../shape-fn';
-import pathFN    from '../shape/path-fn';
+import pathFN    from '../shape/fn-path';
 import DefaultValues from '../constant/DefaultValues';
-import shapeRendering from '../shape-rendering';
 
 var {isNumber, isObject} = is;
 
 var {shimBoundingClientRect, defineSecretAccessors, serializeProperties, cloneProperties} = shapeFN;
 var {getComputedMatrix} = pathFN;
-var {dropFlags, raiseFlags} = shapeRendering;
 
 /**
  * A class for creating, manipulating, and rendering text dynamically
@@ -37,7 +35,7 @@ class Text extends Shape {
     super();
 
 
-    this._renderer.type = 'text';
+    this.state.renderer.type = 'text';
 
 
     this.value = message;
@@ -53,9 +51,10 @@ class Text extends Shape {
       return this;
     }
 
-    this.changeTracker.raise(['family','size','leading','alignment','baseline','style','weight','decoration']);
+    this.state.changeTracker.raise(['family','size','leading','alignment','baseline','style','weight','decoration']);
 
   }
+
 
   // --------------------
   // Accessors
@@ -65,7 +64,7 @@ class Text extends Shape {
   }
   set clip(v) {
     this._clip = v;
-    raiseFlags(this, ['clip']);
+    this.state.changeTracker.raise(['clip']);
   }
 
   // -----------------
@@ -120,7 +119,7 @@ class Text extends Shape {
 
   flagReset() {
     super.flagReset();
-    this.changeTracker.drop(['value','family','size','leading','alignment','fill','stroke','linewidth','opacity','visible','clip','decoration']);
+    this.state.changeTracker.drop(['value','family','size','leading','alignment','fill','stroke','linewidth','opacity','visible','clip','decoration']);
     return this;
 
   }

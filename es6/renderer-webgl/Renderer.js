@@ -58,10 +58,6 @@ class WebglRenderer extends Renderer {
 
   }
 
-  get _renderer() {
-    return this.state.renderer;
-  }
-  set _renderer(_) { throw('webgl - set _renderer'); }
 
 
   get matrix() {

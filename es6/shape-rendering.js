@@ -9,7 +9,7 @@ rdrKeys = rdrKeys.concat(["scale","opacity","rect"]);
 var FN = {}, NotInUse = {};
 
 FN.getShapeRenderer = (shape) => {
-  return shape._renderer;
+  return shape.renderer || (shape.state && shape.state.renderer);
 };
 
 
@@ -75,8 +75,8 @@ FN.updateShape = (shape) => {
 
 var useTracker = true;
 FN.anyPropChanged = (shp, keys) => {
-  if(useTracker && shp.changeTracker !== undefined) {
-    return shp.changeTracker.anyChange(keys);
+  if(useTracker && shp.state && shp.state.changeTracker !== undefined) {
+    return shp.state.changeTracker.anyChange(keys);
   } else {
     if(!shp.__flags) { shp.__flags = {}; }
     return keys.filter((k) => {
@@ -86,8 +86,8 @@ FN.anyPropChanged = (shp, keys) => {
 };
 
 FN.raiseFlags = (shp, keys) => {
-  if(useTracker && shp.changeTracker !== undefined) {
-    shp.changeTracker.raise(keys);
+  if(useTracker && shp.state && shp.state.changeTracker !== undefined) {
+    shp.state.changeTracker.raise(keys);
   } else {
     if(!shp.__flags) { shp.__flags = {}; }
     keys.forEach((k) => {

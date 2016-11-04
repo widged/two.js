@@ -7,19 +7,17 @@ import Commands from '../constant/CommandTypes';
 import _  from '../util/common';
 import is  from '../util/is';
 import Collection  from '../struct/Collection';
-import shapeRendering from '../shape-rendering';
 
 import Anchor  from '../Anchor';
 import Shape   from '../Shape';
 import shapeFN from '../shape-fn';
-import pathFN  from './path-fn';
+import pathFN  from './fn-path';
 
 var {isUndefined, isNull} = is;
 var {arrayLast} = _;
 var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertices, rectTopLeft, rectCentroid} = pathFN;
 var {min, max, round} = Math;
 var {cloneProperties, serializeProperties, getPathBoundingRect, defineSecretAccessors} = shapeFN;
-var {dropFlags, anyPropChanged, raiseFlags} = shapeRendering;
 
 /**
  * This is the base class for creating all drawable shapes in two.js. By default,
@@ -44,9 +42,9 @@ class Path extends Shape {
   constructor(vertices, closed, curved, manual) {
     super();
 
-    this.changeTracker.raise(['vertices,length']);
+    this.state.changeTracker.raise(['vertices,length']);
 
-    this._renderer.type = 'path';
+    this.state.renderer.type = 'path';
 
     this._closed = !!closed;
     this._curved = !!curved;
@@ -73,7 +71,7 @@ class Path extends Shape {
   // --------------------
 
   get length() {
-    if(anyPropChanged(this, ['length'])) {
+    if(this.state.changeTracker.oneChange('length')) {
       this._updateLength();
     }
     return this._length;
@@ -84,7 +82,7 @@ class Path extends Shape {
   }
   set closed(v) {
     this._closed = !!v;
-    raiseFlags(this, ['vertices']);
+    this.state.changeTracker.raise(['vertices']);
   }
 
   get curved() {
@@ -92,7 +90,7 @@ class Path extends Shape {
   }
   set curved(v) {
     this._curved = !!v;
-    raiseFlags(this, ['vertices']);
+    this.state.changeTracker.raise(['vertices']);
   }
 
   get automatic() {
@@ -114,7 +112,7 @@ class Path extends Shape {
   }
   set beginning(v) {
     this._beginning = min(max(v, 0.0), this._ending);
-    raiseFlags(this, ['vertices']);
+    this.state.changeTracker.raise(['vertices']);
   }
 
   get ending() {
@@ -122,7 +120,7 @@ class Path extends Shape {
   }
   set ending(v) {
     this._ending = min(max(v, this._beginning), 1.0);
-    raiseFlags(this, ['vertices']);
+    this.state.changeTracker.raise(['vertices']);
   }
 
   /**
@@ -135,7 +133,7 @@ class Path extends Shape {
   set vertices(vertices) {
 
     var whenVerticesChange = (() => {
-      raiseFlags(this, ['vertices','length']);
+      this.state.changeTracker.raise(['vertices','length']);
     }).bind(this);
 
     var whenVerticesInserted = ((items) => {
@@ -180,7 +178,7 @@ class Path extends Shape {
   }
   set clip(v) {
     this._clip = v;
-    raiseFlags(this, ['clip']);
+    this.state.changeTracker.raise(['clip']);
   }
 
   // -----------------
@@ -300,7 +298,7 @@ class Path extends Shape {
   }
 
   _update() {
-    if(anyPropChanged(this, ['vertices']))  {
+    if(this.state.changeTracker.oneChange('vertices'))  {
       this._vertices = copyVertices({
         vertices:  this.vertices,
         beginning: this._beginning,
@@ -340,9 +338,11 @@ class Path extends Shape {
 
   flagReset() {
     super.flagReset();
-    dropFlags(this, ['fill','stroke','linewidth','opacity','visible','clip','decoration']);
-    dropFlags(this, ['vertices']);
-    dropFlags(this, ['cap, join, miter']);
+    var {changeTracker} = this.state;
+    changeTracker.drop(['opacity','visible','clip']);
+    changeTracker.drop(['fill','stroke','linewidth','decoration']);
+    changeTracker.drop(['vertices']);
+    changeTracker.drop(['cap, join, miter']);
 
     return this;
 

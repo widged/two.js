@@ -6,17 +6,15 @@ import is  from '../util/is';
 import Path  from './Path';
 import Shape  from '../Shape';
 import shapeFN    from '../shape-fn';
-import groupFN  from './group-fn';
+import groupFN  from './fn-group';
 import Children  from '../ChildrenCollection';
 import DefaultValues from '../constant/DefaultValues';
-import shapeRendering from '../shape-rendering';
 
 var {isNumber, isArray} = is;
 var {exclude, arrayOrArguments}  = _;
 var {cloneProperties, serializeProperties, defineSecretAccessors, rectCentroid, rectTopLeft} = shapeFN;
 var {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
 var {translateChildren} = groupFN;
-var {dropFlags, raiseFlags} = shapeRendering;
 
 var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
 
@@ -35,21 +33,22 @@ class Group extends Shape {
    */
   constructor(...shapes) {
     super(true);
-    var changeTracker = this.changeTracker;
+    var changeTracker = this.state.changeTracker;
 
     // :FIXME: track down the issue that causes infinite recursions
     // with this.setState({children});
     var children;
     this.state = {
       children: new Children(shapes),
-      changeTracker
+      changeTracker,
+      renderer : {type : 'group'}
     };
     changeTracker.raise(['opacity']);
 
     this.bound = {
       whenChildrenInserted: ((children) => { adoptShapes(this, children); }).bind(this),
       whenChildrenRemoved: ((children) => { dropShapes(this, children); }).bind(this),
-      whenChildrenShuffled: (() => { raiseFlags(this, ['order']); }).bind(this)
+      whenChildrenShuffled: (() => { this.state.changeTracker.raise(['order']); }).bind(this)
     };
 
     /**
@@ -58,7 +57,6 @@ class Group extends Shape {
     * parent - A reference to the Two.Group that contains this instance.
     * mask - A reference to the Two.Path that masks the content within the group. Automatically sets the referenced Two.Path.clip to true.
     */
-    this._renderer.type = 'group';
     this.additions = [];
     this.subtractions = [];
 
@@ -89,7 +87,7 @@ class Group extends Shape {
   }
   set mask(v) {
     this._mask = v;
-    raiseFlags(this, ['mask']);
+    this.state.changeTracker.raise(['mask']);
     if (!v.clip) {
       v.clip = true;
     }
@@ -194,8 +192,8 @@ class Group extends Shape {
 
   flagReset() {
     super.flagReset();
-    dropFlags(this, ['additions','subtractions']);
-    dropFlags(this, ['order','mask','opacity']);
+    this.state.changeTracker.drop(['additions','subtractions']);
+    this.state.changeTracker.drop(['order','mask','opacity']);
     this.additions = [];
     this.subtractions = [];
     return this;
