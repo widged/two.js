@@ -232,12 +232,12 @@ class Path extends Shape {
    * corner of the path.
    */
   corner() {
-    var shp;
+    var shp = this;
     var {vertices} = getState();
-    // :NOTE: this.getBoundingClientRect will call update shape first
-    var {x,y} = rectTopLeft(this.getBoundingClientRect(true));
+    // :NOTE: getBoundingClientRect will call update shape first
+    var {x,y} = rectTopLeft(shp.getBoundingClientRect(true));
     (vertices || []).forEach(function(v) { v.subSelf(x,y); });
-    return this;
+    return shp;
   }
 
   /**
@@ -245,21 +245,24 @@ class Path extends Shape {
    * path.
    */
   center() {
-    // :NOTE: this.getBoundingClientRect will call update shape first
-    var {x,y} = rectCentroid(this.getBoundingClientRect(true));
-    (this.vertices || []).forEach(function(v) { v.subSelf(x,y); });
-    return this;
+    var shp = this;
+    var {vertices} = getState();
+    // :NOTE: getBoundingClientRect will call update shape first
+    var {x,y} = rectCentroid(shp.getBoundingClientRect(true));
+    (vertices || []).forEach(function(v) { v.subSelf(x,y); });
+    return shp;
   }
 
   /**
    * If added to a `scene`, removes itself from it.
    */
   remove() {
+    var shp = this;
     // early exit
-    if (!this.parent) { return this; }
+    if (!shp.parent) { return shp; }
     // main
-    this.parent.remove(this);
-    return this;
+    shp.parent.remove(shp);
+    return shp;
   }
 
 
@@ -270,15 +273,16 @@ class Path extends Shape {
    * If not, then goes through the vertices and calculates the lines.
    */
   plot() {
-    var {vertices, closed} = this.getState();
-    if (this.curved) {
+    var shp = this;
+    var {vertices, closed, curved} = shp.getState();
+    if (curved) {
       pathFN.getCurveFromPoints(vertices, closed);
-      return this;
+      return shp;
     }
     for (var i = 0; i < vertices.length; i++) {
       vertices[i].command = i === 0 ? Commands.MOVE : Commands.LINE;
     }
-    return this;
+    return shp;
   }
 
   /**
@@ -313,8 +317,8 @@ class Path extends Shape {
     var {changeTracker,vertices, beginning, ending, automatic} = shp.getState();
     if(changeTracker.oneChange('vertices'))  {
       vertices = copyVertices({ vertices, beginning, ending });
-      this.setState({vertices});
-      if (automatic) { this.plot(); }
+      shp.setState({vertices});
+      if (automatic) { shp.plot(); }
     }
 
     Shape.prototype._update.apply(shp, arguments);

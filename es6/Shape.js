@@ -12,7 +12,7 @@ import shapeRendering from './shape-rendering';
 
 var uniqueId = UidGenerator();
 var {cloneProperties, serializeProperties} = shapeFN;
-var {raiseFlags, dropFlags, anyPropChanged} = shapeRendering;
+var {updateShape} = shapeRendering;
 var shapeDefaults = DefaultValues.Shape;
 
 
@@ -45,7 +45,7 @@ class Shape {
     this.rotation = 0;
     this.scale = 1;
 
-    var flagMatrix = () => {  raiseFlags(this, ['matrix']);   };
+    var flagMatrix = () => {  changeTracker.raise(['matrix']);   };
     this.translation.dispatcher.on(VectorEvent.change, flagMatrix);
 
   }
@@ -65,7 +65,12 @@ class Shape {
       keys.forEach((k) => {
         this['_'+k] = obj[k];
       });
-      raiseFlags(this, keys);
+      var {changeTracker} = this.getState();
+      if(changeTracker) {
+        changeTracker.raise(keys);
+      }  else {
+        console.log('[WARN] Shape.setState, no chanteTracker', obj, this)
+      }
     }
   }
   setProps(obj) {
@@ -75,7 +80,8 @@ class Shape {
     this.setState(obj);
   }
   listFlags() {
-    return this.state.changeTracker.listChanges();
+    var {changeTracker} = this.getState();
+    return changeTracker.listChanges();
   }
 
 
@@ -89,7 +95,8 @@ class Shape {
   set rotation(v) {
     if(this.state) {
       this.state.rotation = v;
-      raiseFlags(this, ['matrix']);
+      var {changeTracker} = this.getState();
+      changeTracker.raise(['matrix']);
     } else {
       console.log('[WARN] Shape.rotation(_) this has no state', v, this);
     }
@@ -100,7 +107,8 @@ class Shape {
   set scale(v) {
     if(this.state) {
       this.state.scale = v;
-      raiseFlags(this, ['matrix','scale']);
+      var {changeTracker} = this.getState();
+      changeTracker.raise(['matrix','scale']);
     } else {
       console.log('[WARN] Shape.scale(_) this has no state', v, this);
     }
@@ -142,11 +150,13 @@ class Shape {
         .scale(this.scale)
         .rotate(this.rotation);
     }
-    if(!matrix) { console.log('[WARN] matrix is undefed', shp.toString()) }
+    if(!matrix) {
+      console.log('[WARN] matrix is undefed', shp.toString())
+    }
 
     if (deep) {
       // Bubble up to parents mainly for `getBoundingClientRect` method.
-      updateShape(shp.parent)
+      updateShape(shp.parent);
     }
 
     return this;
@@ -158,7 +168,8 @@ class Shape {
   // -----------------
 
   flagReset() {
-    dropFlags(this, ['matrix','scale']);
+    var {changeTracker} = this.getState();
+    changeTracker.drop(['matrix','scale']);
     return this;
   }
 
@@ -167,7 +178,7 @@ class Shape {
     var shp = this;
     var clone = new Shape();
     cloneProperties(clone, shp, Shape.Properties);
-    return clone._update();
+    return updateShape(clone);
   }
 
   toObject() {
