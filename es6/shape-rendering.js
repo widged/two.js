@@ -32,44 +32,22 @@ FN.updateShape = (shape, isDeep) => {
 // PROPS
 // --------------------
 
-FN.defineSecretAccessors = ({proto, accessors, secrets}) => {
-  if(!accessors) { accessors = []; }
-  if (!isArray(accessors)) { accessors = [accessors]; }
-  if(secrets)       { proto.setState(secrets); }
-  var each =   (k) => {
-    Object.defineProperty(proto, k, {
-      enumerable: true,
-      set(v) {
-        console.log(`[WARN] use set state, ${k}, ${proto.toString()}, ${accessors}`)
-        console.trace();
-        var o = {}; o[k] = v;
-        this.setState(o);
-      }
-    });
-  };
-
-  accessors.forEach(each);
-
-};
-
 FN.getShapeProps = (shape, ks) => {
-  var {getMatrixProp} = FN;
-  var acc = {};
-  ks.forEach((k) => {
-    var m;
-    if(typeof shape.getState === 'function') {
-      var obj = shape.getState();
-      m = obj[k];
-    }
-    if(m === undefined && shape[k] !== undefined) {
-      m = shape[k];
-    }
-    if(m === undefined) {
-      console.log('[WARN] getState failed', k, shape.toString())
-    }
-    if(typeof m !== 'undefined') { acc[k] = m; }
-  });
-  return acc;
+
+  if(typeof shape.getState === 'function') {
+    return shape.getState();
+  }  else {
+    var acc = {};
+    ks.forEach((k) => {
+      var m = shape[k];
+      if(m === undefined) {
+        console.log('[WARN] getState failed', k, shape.toString());
+      }
+      if(typeof m !== 'undefined') { acc[k] = m; }
+    });
+    return acc;
+  }
+
 };
 
 // --------------------

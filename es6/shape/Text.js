@@ -8,7 +8,7 @@ import pathFN    from '../shape/fn-path';
 import DefaultValues from '../constant/DefaultValues';
 import shapeRendering   from '../shape-rendering';
 
-var {defineSecretAccessors, updateShape} = shapeRendering;
+var {updateShape} = shapeRendering;
 var {isNumber, isObject} = is;
 
 var {shimBoundingClientRect, serializeProperties} = shapeFN;
@@ -35,11 +35,12 @@ class Text extends Shape {
    * additional styles. Applicable properties can be found in DefaultValues
    */
   constructor(message, x, y, styles) {
+    // init
     super();
     this.setState(DEFAULTS);
+    // this shape
     var {renderer, translation, changeTracker} = this.getState();
     renderer.type = 'text';
-    var {translation} = this.getState();
     if (isNumber(x) && isNumber(y)) {
         translation.set(x,y);
     }
