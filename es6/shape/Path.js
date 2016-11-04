@@ -134,6 +134,7 @@ class Path extends Shape {
     return this.state.length;
   }
   beforePropertySet(key, newV) {
+    newV = super.beforePropertySet(key, newV);
     if(['closed','curved','automatic'].includes(key)) {
       newV = (newV === true) ? true : false;
     }
@@ -157,6 +158,7 @@ class Path extends Shape {
     return newV;
   }
   afterPropertyChange(key, newV, oldV) {
+    super.afterPropertyChange(key, newV, oldV);
     var {changeTracker} = this.getState();
     if(['closed','curved','beginning','ending'].includes(key) && newV !== oldV) {
       changeTracker.raise(['vertices']);

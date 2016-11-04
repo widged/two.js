@@ -49,7 +49,6 @@ class Shape {
 
     var flagMatrix = () => {  changeTracker.raise(['matrix']);   };
     this.state.translation.dispatcher.on(VectorEvent.change, flagMatrix);
-
   }
 
   // --------------------
@@ -71,9 +70,6 @@ class Shape {
           this.state[k] = nv;
           this.afterPropertyChange(k, nv, ov);
       });
-      // :TODO: move this to afterPropertyChange, after adding a raiseOne function to changeTracker
-      var {changeTracker} = this.getState();
-      changeTracker.raise(keys);
     }
   }
   setProps(obj) {
@@ -84,35 +80,27 @@ class Shape {
     var {changeTracker} = this.getState();
     return changeTracker.listChanges();
   }
-  beforePropertySet(name, newValue, oldValue) {
+  beforePropertySet(key, newValue, oldValue) {
     return newValue;
   }
-  afterPropertyChange(name, newValue, oldValue) {
+  afterPropertyChange(key, newValue, oldValue) {
+    if(['rotation','scale'].includes(key) && newValue !== oldValue) {
+      var {changeTracker} = this.getState();
+      changeTracker.raise(['matrix']);
+    }
+    if(newValue !== oldValue) {
+      // :TODO: add a raiseOne function to changeTracker
+      var {changeTracker} = this.getState();
+      changeTracker.raise([key]);
+    }
     return newValue;
   }
-
 
   // --------------------
   // Accessors
   // --------------------
   setTranslation(x,y) {
     this.state.translation.set(x,y);
-  }
-  get rotation() {
-    return this.state.rotation;
-  }
-  set rotation(v) {
-    this.state.rotation = v;
-    var {changeTracker} = this.getState();
-    changeTracker.raise(['matrix']);
-  }
-  get scale() {
-    return this.state.scale;
-  }
-  set scale(v) {
-      this.state.scale = v;
-      var {changeTracker} = this.getState();
-      changeTracker.raise(['matrix','scale']);
   }
 
   get rendererType() {
@@ -130,8 +118,6 @@ class Shape {
     group.add(this);
     return this;
   }
-
-
 
   // -----------------
   // Private
