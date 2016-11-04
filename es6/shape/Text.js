@@ -8,7 +8,7 @@ import pathFN    from '../shape/fn-path';
 import DefaultValues from '../constant/DefaultValues';
 import shapeRendering   from '../shape-rendering';
 
-var {defineSecretAccessors} = shapeRendering;
+var {defineSecretAccessors, updateShape} = shapeRendering;
 var {isNumber, isObject} = is;
 
 var {shimBoundingClientRect, serializeProperties, cloneProperties} = shapeFN;
@@ -33,12 +33,9 @@ class Text extends Shape {
    * additional styles. Applicable properties can be found in DefaultValues
    */
   constructor(message, x, y, styles) {
-
     super();
 
-
     this.state.renderer.type = 'text';
-
 
     this.value = message;
 
@@ -109,8 +106,11 @@ class Text extends Shape {
    */
   getBoundingClientRect(shallow) {
     // TODO: Update this to not __always__ update. Just when it needs to.
-    this._update(true);
-    var matrix = !!shallow ? this._matrix : getComputedMatrix(this);
+    var shp = this;
+    // TODO: Update this to not __always__ update. Just when it needs to.
+    updateShape(shp, true);
+    var {matrix} = shp.getState();
+    if(!shallow) { matrix = getComputedMatrix(shp); }
     return shimBoundingClientRect(matrix);
   }
 

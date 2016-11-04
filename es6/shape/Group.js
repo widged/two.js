@@ -35,7 +35,7 @@ class Group extends Shape {
    * forget to add the group to the instance's scene, two.add(group).
    */
   constructor(...shapes) {
-    super(true);
+    super();
     var changeTracker = this.state.changeTracker;
 
     // :FIXME: track down the issue that causes infinite recursions

@@ -14,7 +14,7 @@ import shapeFN from '../shape-fn';
 import pathFN  from './fn-path';
 import shapeRendering   from '../shape-rendering';
 
-var {defineSecretAccessors} = shapeRendering;
+var {defineSecretAccessors, updateShape} = shapeRendering;
 
 var {isUndefined, isNull} = is;
 var {arrayLast} = _;
@@ -320,16 +320,16 @@ class Path extends Shape {
    * parameters of the path. Pass true if you're interested in the shallow
    * positioning, i.e in the space directly affecting the object and not where it is nested.
    */
-  getBoundingClientRect(shallow) {
-    var shp = this;
-    // TODO: Update this to not __always__ update. Just when it needs to.
-    shp._update(true);
-    var {linewidth, vertices} = shp.getState();
-    var matrix = !!shallow ? this._matrix : getComputedMatrix(this);
-    var border = linewidth / 2;
-    var length = vertices.length;
-    return getPathBoundingRect(matrix, border, length, vertices);
-  }
+   getBoundingClientRect(shallow) {
+     var shp = this;
+     // TODO: Update this to not __always__ update. Just when it needs to.
+     updateShape(shp, true);
+     var {linewidth, vertices, matrix} = shp.getState();
+     if(!shallow) { matrix = getComputedMatrix(shp); }
+     var border = linewidth / 2;
+     var length = vertices.length;
+     return getPathBoundingRect(matrix, border, length, vertices);
+   }
 
   // -----------------
   // IRenderable
