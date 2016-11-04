@@ -14,6 +14,8 @@ var {isNumber, isObject} = is;
 var {shimBoundingClientRect, serializeProperties, cloneProperties} = shapeFN;
 var {getComputedMatrix} = pathFN;
 
+const DEFAULTS = DefaultValues.Text;
+
 /**
  * A class for creating, manipulating, and rendering text dynamically
  * It is rather primitive. You can use custom fonts through @Font Face spec.
@@ -36,7 +38,7 @@ class Text extends Shape {
     super();
 
     this.state.renderer.type = 'text';
-    this.setState(DefaultValues.Text);
+    this.setState(DEFAULTS);
 
     this.value = message;
 
@@ -133,17 +135,16 @@ class Text extends Shape {
     var shp = this;
     if(!parent) { parent = shp.parent; }
     var {value} = shp.getState();
-    var clone = cloneProperties(shp, new Text(value), Object.keys(Text.Properties));
+    var clone = cloneProperties(shp, new Text(value), Object.keys(DEFAULTS));
     parent.add(clone);
     return clone;
   }
 
   toObject() {
     var shp = this;
-    return serializeProperties(shp, {}, Object.keys(Text.Properties));
+    return serializeProperties(shp, {}, Object.keys(DEFAULTS));
   }
 }
 
-Text.Properties = DefaultValues.Text;
 
 export default Text;

@@ -13,7 +13,8 @@ import shapeRendering from './shape-rendering';
 var uniqueId = UidGenerator();
 var {cloneProperties, serializeProperties} = shapeFN;
 var {updateShape} = shapeRendering;
-var shapeDefaults = DefaultValues.Shape;
+
+var DEFAULTS = DefaultValues.Shape;
 
 
 /**
@@ -175,7 +176,7 @@ class Shape {
   clone() {
     var shp = this;
     var clone = new Shape();
-    cloneProperties(clone, shp, Shape.Properties);
+    cloneProperties(clone, shp, Object.keys(DEFAULTS));
     return updateShape(clone);
   }
 
@@ -185,8 +186,6 @@ class Shape {
   }
 
 }
-Shape.Properties = Object.keys(shapeDefaults);
 
-Shape.Properties.forEach((k) => { Shape.prototype[k] = shapeDefaults[k]; });
 
 export default Shape;

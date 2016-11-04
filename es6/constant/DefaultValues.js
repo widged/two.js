@@ -165,4 +165,10 @@ FN.Text = {
 };
  // rotation, translation, scale, mask, clip from Shape
 
+FN.Stop = {
+  offset : 0.0,
+  opacity : 1.0,
+  color: '#000'
+};
+
 export default FN;

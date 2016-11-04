@@ -1,10 +1,13 @@
 /* jshint esnext: true */
 
 import is  from '../../util/is';
+import DefaultValues from '../../constant/DefaultValues';
 
 var {isNumber, isString} = is;
 
 var stopIndex = 0;
+
+const DEFAULTS = DefaultValues.Stop;
 
 /**
  * This is a class for defining how gradients are colored. By itself a `Stop`
@@ -39,24 +42,19 @@ class Stop {
   clone() {
     var shp = this;
     var clone = new Stop();
-    Stop.Properties.forEach((k) => {  clone[k] = shp[k]; });
+    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
     return clone;
   }
 
   toObject() {
     var shp = this;
     var obj = {};
-    Stop.Properties.forEach((k) => {  obj[k] = shp[k]; });
+    Object.keys(DEFAULTS).forEach((k) => {  obj[k] = shp[k]; });
     return obj;
   }
 
 }
 
-Stop.Properties = [
-  'offset',
-  'opacity',
-  'color'
-];
 
 
 export default Stop;

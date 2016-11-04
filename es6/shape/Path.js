@@ -22,6 +22,7 @@ var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertice
 var {min, max, round} = Math;
 var {cloneProperties, serializeProperties, getPathBoundingRect} = shapeFN;
 
+var DEFAULTS = DefaultValues.Path;
 /**
  * This is the base class for creating all drawable shapes in two.js. By default,
  * methods return their instance of Path for the purpose of chaining.
@@ -55,7 +56,7 @@ class Path extends Shape {
     });
     this.state.renderer.type = 'path';
 
-    this.setState(DefaultValues.Path);
+    this.setState(DEFAULTS);
     // automatic --  whether two.js curves, lines, and commands should be computed
     // automatically or left to the developer.
     this.setState({
@@ -403,7 +404,7 @@ class Path extends Shape {
     var  {closed, curved, automatic, vertices} = shp.getState();
     var points = vertices.map((d) => { return d.clone(); });
     var clone = cloneProperties(
-      shp, new Path(points, closed, curved, !automatic), Path.Properties
+      shp, new Path(points, closed, curved, !automatic), Object.keys(DEFAULTS)
     );
     parent.add(clone);
     return clone;
@@ -419,7 +420,6 @@ class Path extends Shape {
 }
 
 
-Path.Properties = Object.keys(DefaultValues.Path);
 
 
 export default Path;
