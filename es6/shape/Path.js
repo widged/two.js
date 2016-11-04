@@ -67,9 +67,8 @@ class Path extends Shape {
       automatic: !manual
     });
     // length,closed,curved,automatic,beginning,ending,clip
+    this.state.changeTracker.raise(['vertices,length']);     // unraisedFlag: clip
     this.whenVerticesChange();
-    this.state.changeTracker.raise(['vertices,length']);
-    // unraisedFlag: clip
   }
 
   // --------------------
@@ -133,9 +132,6 @@ class Path extends Shape {
     }
     return this.state.length;
   }
-  set length(_) {
-    this.setState({length: _});
-  }
 
   get closed() {
     return this.state.closed;
@@ -143,11 +139,7 @@ class Path extends Shape {
   set closed(_) {
     this.state.closed = !!_;
     var {changeTracker} = this.getState();
-    if(changeTracker) {
-      changeTracker.raise(['vertices']);
-    } else {
-      console.log('[WARN] Path.closed(_) change Tracker not set', _, this);
-    }
+    changeTracker.raise(['vertices']);
   }
 
   get curved() {
@@ -156,11 +148,7 @@ class Path extends Shape {
   set curved(v) {
     this.state.curved = !!v;
     var {changeTracker} = this.getState();
-    if(changeTracker) {
-      changeTracker.raise(['vertices']);
-    } else {
-      console.log('[WARN] Path.closed(_) change Tracker not set', _, this);
-    }
+    changeTracker.raise(['vertices']);
   }
 
   get automatic() {
@@ -183,11 +171,7 @@ class Path extends Shape {
   set beginning(v) {
     this.state.beginning = min(max(v, 0.0), this.state.ending);
     var {changeTracker} = this.getState();
-    if(changeTracker) {
-      changeTracker.raise(['vertices']);
-    } else {
-      console.log('[WARN] Path.closed(_) change Tracker not set', _, this);
-    }
+    changeTracker.raise(['vertices']);
   }
 
   get ending() {
@@ -198,11 +182,7 @@ class Path extends Shape {
       ending : min(max(v, this.state.beginning), 1.0)
     });
     var {changeTracker} = this.getState();
-    if(changeTracker) {
-      changeTracker.raise(['vertices']);
-    } else {
-      console.log('[WARN] Path.closed(_) change Tracker not set', _, this);
-    }
+    changeTracker.raise(['vertices']);
   }
 
   /**
@@ -226,11 +206,7 @@ class Path extends Shape {
   set clip(v) {
     this.state.clip = v;
     var {changeTracker} = this.getState();
-    if(changeTracker) {
-      changeTracker.raise(['clip']);
-    } else {
-      console.log('[WARN] Path.closed(_) change Tracker not set', _, this);
-    }
+    changeTracker.raise(['clip']);
   }
 
   // -----------------

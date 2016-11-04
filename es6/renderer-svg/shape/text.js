@@ -76,9 +76,9 @@ var text = function(shp, domElement) {
     getShapeRenderer(shp.parent).elem.appendChild(renderer.elem); // TODO: should be insertBefore
 
   }
-
   if (anyPropChanged(shp, ['value'])) {
     var { value } = getShapeProps(shp, ['value']);
+    console.log(value)
     renderer.elem.textContent = value;
   }
 

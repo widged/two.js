@@ -111,7 +111,7 @@ class TwoLight {
 
   addGeometry({points, translation, rotation}) {
     var pth = makeShape.geometry(points);
-    pth.translation.set(...translation);
+    if(translation) { pth.setTranslation(...translation) } ;
     if(rotation) { pth.rotation = rotation; }
     this.state.scene.add(pth);
     return pth;

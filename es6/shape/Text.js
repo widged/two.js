@@ -36,66 +36,50 @@ class Text extends Shape {
    */
   constructor(message, x, y, styles) {
     super();
-
-    this.state.renderer.type = 'text';
     this.setState(DEFAULTS);
-
-    this.value = message;
-
-    if (isNumber(x)) {
-        this.translation.x = x;
+    var {renderer, translation, changeTracker} = this.getState();
+    renderer.type = 'text';
+    var {translation} = this.getState();
+    if (isNumber(x) && isNumber(y)) {
+        translation.set(x,y);
     }
-    if (isNumber(y)) {
-        this.translation.y = y;
-    }
-
+    this.setState({
+      value: message
+    });
     if (!isObject(styles)) {
-      return this;
+      this.setState(styles);
+      changeTracker.raise(['family','size','leading','alignment','baseline','style','weight','decoration']);
     }
-
-    this.state.changeTracker.raise(['family','size','leading','alignment','baseline','style','weight','decoration']);
-
-  }
-
-
-  // --------------------
-  // Accessors
-  // --------------------
-  get clip() {
-    return this.state.clip;
-  }
-  set clip(v) {
-    this.state.clip = v;
     this.state.changeTracker.raise(['clip']);
   }
+
+  // -----------------
+  // Pseudo accessors
+  // -----------------
+
+  /**
+  * Removes the stroke.
+  */
+   noStroke() {
+     this.stroke = 'transparent';
+     return this;
+   }
+
+   /**
+    * Removes the fill.
+    */
+   noFill() {
+     this.fill = 'transparent';
+     return this;
+   }
 
   // -----------------
   // Main
   // -----------------
 
   remove() {
-
     if (!this.parent) { return this; }
-
     this.parent.remove(this);
-
-    return this;
-
-  }
-
- /**
- * Removes the stroke.
- */
-  noStroke() {
-    this.stroke = 'transparent';
-    return this;
-  }
-
-  /**
-   * Removes the fill.
-   */
-  noFill() {
-    this.fill = 'transparent';
     return this;
   }
 
@@ -123,9 +107,8 @@ class Text extends Shape {
 
   flagReset() {
     super.flagReset();
-    this.state.changeTracker.drop(['value','family','size','leading','alignment','fill','stroke','linewidth','opacity','visible','clip','decoration']);
+    this.state.changeTracker.drop(Object.keys(DEFAULTS));
     return this;
-
   }
 
   /**
@@ -146,6 +129,5 @@ class Text extends Shape {
     return serializeProperties(shp, {}, Object.keys(DEFAULTS));
   }
 }
-
 
 export default Text;

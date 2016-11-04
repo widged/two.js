@@ -45,10 +45,10 @@ class Shape {
       translation: new Vector()
     };
     // Define matrix properties which all inherited objects of Shape have.
-    this.translation = this.state.translation;
+    this.state.translation = this.state.translation;
 
     var flagMatrix = () => {  changeTracker.raise(['matrix']);   };
-    this.translation.dispatcher.on(VectorEvent.change, flagMatrix);
+    this.state.translation.dispatcher.on(VectorEvent.change, flagMatrix);
 
   }
 
@@ -85,7 +85,9 @@ class Shape {
   // --------------------
   // Accessors
   // --------------------
-
+  setTranslation(x,y) {
+    this.state.translation.set(x,y);
+  }
   get rotation() {
     return this.state.rotation;
   }
@@ -143,7 +145,7 @@ class Shape {
     if (matrix && !matrix.manual && changeTracker.oneChange('matrix')) {
       matrix
         .identity()
-        .translate(this.translation.x, this.translation.y)
+        .translate(this.state.translation.x, this.state.translation.y)
         .scale(this.state.scale)
         .rotate(this.state.rotation);
     }
