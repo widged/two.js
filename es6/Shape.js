@@ -16,7 +16,6 @@ var {updateShape} = shapeRendering;
 
 var DEFAULTS = DefaultValues.Shape;
 
-
 /**
 *
 */
