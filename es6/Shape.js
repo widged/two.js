@@ -39,12 +39,13 @@ class Shape {
     this.state = {
       renderer: {},
       changeTracker,
-      matrix: new Matrix()
+      matrix: new Matrix(),
+      rotation: 0,
+      scale: 1,
+      translation: new Vector()
     };
     // Define matrix properties which all inherited objects of Shape have.
-    this.translation = new Vector();
-    this.rotation = 0;
-    this.scale = 1;
+    this.translation = this.state.translation;
 
     var flagMatrix = () => {  changeTracker.raise(['matrix']);   };
     this.translation.dispatcher.on(VectorEvent.change, flagMatrix);
@@ -143,8 +144,8 @@ class Shape {
       matrix
         .identity()
         .translate(this.translation.x, this.translation.y)
-        .scale(this.scale)
-        .rotate(this.rotation);
+        .scale(this.state.scale)
+        .rotate(this.state.rotation);
     }
     if(!matrix) {
       console.log('[WARN] matrix is undefed', shp.toString());
