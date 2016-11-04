@@ -8,7 +8,6 @@ import Gradient  from '../Gradient';
 import shapeFN    from '../../shape-fn';
 import DefaultValues from '../../constant/DefaultValues';
 
-var {bind, map} = _;
 var {isNumber} = is;
 var {cloned} = shapeFN;
 
@@ -32,31 +31,20 @@ class LinearGradient extends Gradient {
 
     super(stops);
 
-    this.state.renderer.type = 'linear-gradient';
+    var {renderer, changeTracker} = this.getState();
+    renderer.type = 'linear-gradient';
+
+    var left = new Vector().set(isNumber(x1) ? x1 : undefined, isNumber(y1) ? y1 : undefined);
+    var right = new Vector().set(isNumber(x2) ? x2 : undefined, isNumber(y2) ? y2 : undefined);
+    this.setState({ left, right });
+
+    changeTracker.drop(['endPoints']);
 
     var flagEndPoints = (function() {
       this.state.changeTracker.raise(['endPoints']);
     }).bind(this);
-
-    this.left = new Vector();
-    this.left.dispatcher.on(VectorEvent.change, flagEndPoints);
-    this.right = new Vector();
-    this.right.dispatcher.on(VectorEvent.change, flagEndPoints);
-
-    if (isNumber(x1)) {
-      this.left.x = x1;
-    }
-    if (isNumber(y1)) {
-      this.left.y = y1;
-    }
-    if (isNumber(x2)) {
-      this.right.x = x2;
-    }
-    if (isNumber(y2)) {
-      this.right.y = y2;
-    }
-
-    this.state.changeTracker.drop(['endPoints']);
+    left.dispatcher.on(VectorEvent.change, flagEndPoints);
+    right.dispatcher.on(VectorEvent.change, flagEndPoints);
 
   }
 
@@ -68,7 +56,6 @@ class LinearGradient extends Gradient {
     super.flagReset();
     this.state.changeTracker.drop(['endPoints']);
     return this;
-
   }
 
   /**
@@ -96,10 +83,6 @@ class LinearGradient extends Gradient {
     result.right = right.toObject();
     return result;
   }
-
-
 }
-
-
 
 export default LinearGradient;

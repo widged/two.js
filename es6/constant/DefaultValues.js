@@ -166,7 +166,7 @@ FN.Text = {
 
 
 FN.Gradient = {
-  spread: undefined
+  spread: 'pad'
 };
 
 /*
@@ -177,7 +177,7 @@ spread -- Defines how the gradient is rendered by the renderer. For more details
 stops -- A `Collection` of `Stops` that is two-way databound. Individual stops may be manipulated.
 */
 FN.RadialGradient = {
-  radius: undefined
+  radius: 20
 };
 
 /**

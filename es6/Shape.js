@@ -61,15 +61,18 @@ class Shape {
 
   setState(obj) {
     if(typeof obj === 'object') {
-      this.state = Object.assign(this.state || {}, obj);
+      // this.state = Object.assign(this.state || {}, obj);
       // :TODO: remove once all ._ have been replaced.
       var keys = Object.keys(obj);
+      keys.forEach((k) => {
+          var ov = this.state[k];
+          var nv = obj[k];
+          nv = this.beforePropertyChange(k, nv, ov);
+          this.state[k] = nv;
+          this.afterPropertyChange(k, nv, ov);
+      });
       var {changeTracker} = this.getState();
-      if(changeTracker) {
-        changeTracker.raise(keys);
-      }  else {
-        console.log('[WARN] Shape.setState, no chanteTracker', obj, this)
-      }
+      changeTracker.raise(keys);
     }
   }
   setProps(obj) {
@@ -79,6 +82,12 @@ class Shape {
   listFlags() {
     var {changeTracker} = this.getState();
     return changeTracker.listChanges();
+  }
+  beforePropertyChange(name, newValue, oldValue) {
+    return newValue;
+  }
+  afterPropertyChange(name, newValue, oldValue) {
+    return newValue;
   }
 
 
@@ -92,25 +101,17 @@ class Shape {
     return this.state.rotation;
   }
   set rotation(v) {
-    if(this.state) {
-      this.state.rotation = v;
-      var {changeTracker} = this.getState();
-      changeTracker.raise(['matrix']);
-    } else {
-      console.log('[WARN] Shape.rotation(_) this has no state', v, this);
-    }
+    this.state.rotation = v;
+    var {changeTracker} = this.getState();
+    changeTracker.raise(['matrix']);
   }
   get scale() {
     return this.state.scale;
   }
   set scale(v) {
-    if(this.state) {
       this.state.scale = v;
       var {changeTracker} = this.getState();
       changeTracker.raise(['matrix','scale']);
-    } else {
-      console.log('[WARN] Shape.scale(_) this has no state', v, this);
-    }
   }
 
   get rendererType() {

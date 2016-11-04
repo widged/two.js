@@ -13,7 +13,6 @@ var {isNumber} = is;
 
 var DEFAULTS = DefaultValues.RadialGradient;
 
-
 /**
  * A `RadialGradient` defines a radial color transition with a given radius,
  * center point and focal point
@@ -32,39 +31,31 @@ class RadialGradient extends Gradient {
 
     super(stops);
 
-    this.state.renderer.type = 'radial-gradient';
+    var {renderer, changeTracker} = this.getState();
+    renderer.type = 'radial-gradient';
 
-    this.center = new Vector();
+    var center = new Vector();
+    center.x = isNumber(cx) ? cx : undefined;
+    center.y = isNumber(cy) ? cy : undefined;
+    var focal = new Vector();
+    focal.x = isNumber(fx) ? fx : center.x;
+    focal.y = isNumber(fy) ? fy : center.y;
 
-    this.center.dispatcher.on(VectorEvent.change, () => {
+    this.setState({
+      center,
+      radius : isNumber(r) ? r : 20,
+      focal
+    });
+
+    changeTracker.drop(['endPoints']);
+
+    center.dispatcher.on(VectorEvent.change, () => {
       this.state.changeTracker.raise(['center']);
     });
 
-    this.radius = isNumber(r) ? r : 20;
-
-    this.focal = new Vector();
-    this.focal.dispatcher.on(VectorEvent.change, () => {
+    focal.dispatcher.on(VectorEvent.change, () => {
       this.state.changeTracker.raise(['focal']);
     });
-
-    if (isNumber(cx)) {
-      this.center.x = cx;
-    }
-    if (isNumber(cy)) {
-      this.center.y = cy;
-    }
-
-    this.focal.copy(this.center);
-
-    if (isNumber(fx)) {
-      this.focal.x = fx;
-    }
-    if (isNumber(fy)) {
-      this.focal.y = fy;
-    }
-
-    this.state.changeTracker.drop(['endPoints']);
-
   }
 
   // -----------------
@@ -89,7 +80,6 @@ class RadialGradient extends Gradient {
     Object.keys(DEFAULTS).forEach((k) => { clone[k] = shp[k]; });
     parent.add(clone);
     return clone;
-
   }
 
   toObject() {
@@ -99,8 +89,6 @@ class RadialGradient extends Gradient {
     return obj;
   }
 
-
 }
-
 
 export default RadialGradient;

@@ -612,12 +612,12 @@ NotInUse.getPointAt = (t, obj, pth) => {
       var a = null;
       var b = null;
 
-      var {lengths} = pht.getState();
-      for (var i = 0, l = engths.length, sum = 0; i < l; i++) {
+      var {lengths, closed, vertices} = pth.getState();
+      for (var i = 0, l = lengths.length, sum = 0; i < l; i++) {
 
         if (sum + lengths[i] > target) {
-          a = pth.vertices[this.closed ? mod(i, length) : i];
-          b = pth.vertices[min(max(i - 1, 0), last)];
+          a = vertices[closed ? mod(i, length) : i];
+          b = vertices[min(max(i - 1, 0), last)];
           target -= sum;
           t = target / lengths[i];
           break;

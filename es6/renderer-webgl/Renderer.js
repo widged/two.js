@@ -58,10 +58,7 @@ class WebglRenderer extends Renderer {
 
   }
 
-
-
   get matrix() {
-    console.log('matrix')
     return this.state.matrix;
   }
   set matrix(_) { throw('webgl - set matrix'); }

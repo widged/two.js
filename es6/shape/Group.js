@@ -89,21 +89,14 @@ class Group extends Shape {
   // Accessors
   // --------------------
 
-  get children() {
-    return this.state.children;
-  }
+  get children() { return this.state.children; }
   set children(shapes) {
     var oldChildren = this.state.children;
     this.state.children = new Children(shapes);
     this.whenChildrenChange(oldChildren);
   }
 
-  get additions() { return this.state.additions; }
-  get substractions() { return this.state.substractions; }
-
-  get mask() {
-    return this.state.mask;
-  }
+  get mask() { return this.state.mask; }
   set mask(v) {
     this.state.mask = v;
     this.state.changeTracker.raise(['mask']);

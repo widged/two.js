@@ -12,7 +12,7 @@ var {cloned, serializeProperties} = shapeFN;
 var DEFAULTS  = DefaultValues.Gradient;
 
 /**
- * A `Gradient` defines a color transition. By itself a `Gradient` doesn't render anything 
+ * A `Gradient` defines a color transition. By itself a `Gradient` doesn't render anything
  * to the screen. However, in conjunction with a `Path` you can style `Path.fill`
  * or `Path`.stroke with a `Gradient` to render a gradient for that part of the `Path`.
  * Check the examples page for exact usage.
@@ -25,23 +25,12 @@ class Gradient extends Shape {
 
   constructor(stops) {
     super();
-    this.state.renderer.type = 'gradient';
-    this.state.spread = 'pad';
-    this.state.stops = stops;
-  }
-
-  // --------------------
-  // Accessors
-  // --------------------
-
-  get stops() {
-    return this.state.stops;
-  }
-
-  set stops(stops) {
-    // :CHANGE: bindStops removed as Stop never dispaches a change event.
-    // Create new Collection with copy of Stops
-    this.state.stops = new Collection((stops || []).slice(0));
+    var {renderer} = this.getState();
+    renderer.type = 'gradient';
+    this.setState(DEFAULTS);
+    this.setState({
+      stops: new Collection((stops || []).slice(0))
+    });
   }
 
   // -----------------

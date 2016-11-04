@@ -63,8 +63,6 @@ var linearGradient = function(shp, domElement) {
 
       renderer.elem.appendChild(stopRenderer.elem);
 
-      stop.flagReset();
-
     }
 
   }

@@ -46,28 +46,27 @@ class Path extends Shape {
 
   constructor(vertices, closed, curved, manual) {
     super();
-    // let's clone to be on the safe side
-    vertices = (vertices || []).slice(0);
     // init
+    this.setState(DEFAULTS);
+    var {renderer, changeTracker} = this.getState();
+    renderer.type = 'path';
+
+    // let's clone to be on the safe side
+    var clone = (vertices || []).slice(0);
     this.setState({
+      cap: 'butt', // Default of Adobe Illustrator
+      join: 'miter', // Default of Adobe Illustrator
+      vertices: new Collection(clone),
+      // automatic --  whether two.js curves, lines, and commands should be computed
+      // automatically or left to the developer.
+      automatic: !manual,
       closed: !!closed,
       curved: !!curved,
       beginning: 0,
       ending: 1,
     });
-    this.state.renderer.type = 'path';
-
-    this.setState(DEFAULTS);
-    // automatic --  whether two.js curves, lines, and commands should be computed
-    // automatically or left to the developer.
-    this.setState({
-      cap: 'butt', // Default of Adobe Illustrator
-      join: 'miter', // Default of Adobe Illustrator
-      vertices: new Collection(vertices),
-      automatic: !manual
-    });
     // length,closed,curved,automatic,beginning,ending,clip
-    this.state.changeTracker.raise(['vertices,length']);     // unraisedFlag: clip
+    changeTracker.raise(['vertices,length']);     // unraisedFlag: clip
     this.whenVerticesChange();
   }
 
@@ -132,6 +131,7 @@ class Path extends Shape {
     }
     return this.state.length;
   }
+
 
   get closed() {
     return this.state.closed;

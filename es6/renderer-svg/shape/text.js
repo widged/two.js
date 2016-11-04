@@ -78,7 +78,6 @@ var text = function(shp, domElement) {
   }
   if (anyPropChanged(shp, ['value'])) {
     var { value } = getShapeProps(shp, ['value']);
-    console.log(value)
     renderer.elem.textContent = value;
   }
 
