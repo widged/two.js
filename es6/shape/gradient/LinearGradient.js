@@ -15,8 +15,8 @@ var {cloned} = shapeFN;
 var DEFAULTS = DefaultValues.LinearGradient;
 
 /**
- * A `LinearGradient` defines a linear color transition characterised by a beginning and
- * ending endPoints.
+ * A `LinearGradient` defines a linear color transition between a beginning and
+ * an ending endPoint.
  */
 class LinearGradient extends Gradient {
 

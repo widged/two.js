@@ -63,7 +63,6 @@ class Shape {
       this.state = Object.assign(this.state || {}, obj);
       // :TODO: remove once all ._ have been replaced.
       var keys = Object.keys(obj);
-      
       var {changeTracker} = this.getState();
       if(changeTracker) {
         changeTracker.raise(keys);
