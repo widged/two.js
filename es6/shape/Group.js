@@ -11,7 +11,7 @@ import Children  from '../ChildrenCollection';
 import DefaultValues from '../constant/DefaultValues';
 import shapeRendering   from '../shape-rendering';
 
-var {defineSecretAccessors, updateShape} = shapeRendering;
+var {updateShape} = shapeRendering;
 
 var {isNumber, isArray} = is;
 var {exclude, arrayOrArguments}  = _;
@@ -37,6 +37,7 @@ class Group extends Shape {
   constructor(...shapes) {
     super();
 
+    this.setState(DefaultValues.Group);
     this.setState({
       renderer : {type : 'group'},
       children: new Children(shapes),
@@ -63,6 +64,9 @@ class Group extends Shape {
 
     this.whenChildrenChange();
     changeTracker.raise(['opacity']);
+
+    // var excluded = 'closed,curved,automatic,beginning,ending,mask'.split(',')
+    // unraised flags: 'additions,substractions,order,mask'
 
   }
 
@@ -262,8 +266,5 @@ class Group extends Shape {
 Group.Children = Children;
 Group.Properties = Object.keys(DefaultValues.Group);
 
-// var excluded = 'closed,curved,automatic,beginning,ending,mask'.split(',')
-// unraised flags: 'additions,substractions,order,mask'
-defineSecretAccessors({proto: Group.prototype, accessors: Group.Properties, secrets: DefaultValues.Group, onlyWhenChanged: ['opacity'] });
 
 export default Group;

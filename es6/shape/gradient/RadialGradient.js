@@ -6,9 +6,6 @@ import VectorEvent    from '../../constant/VectorEvent';
 import Vector    from '../../struct/Vector';
 import shapeFN    from '../../shape-fn';
 import Gradient  from '../Gradient';
-import shapeRendering   from '../../shape-rendering';
-
-var {defineSecretAccessors} = shapeRendering;
 
 var {cloned, serialized} = shapeFN;
 var {isNumber} = is;
@@ -106,7 +103,7 @@ class RadialGradient extends Gradient {
     var shp = this;
     parent = parent || shp.parent;
     var {stops, center, radius, focal} = shp;
-    var stops = (stops || []).map(cloned);
+    stops = (stops || []).map(cloned);
     var clone = new RadialGradient( center.x,  center.y, radius, stops, focal.x, focal.y );
     Object.keys(RadialGradient.Properties).forEach((k) => { clone[k] = shp[k]; });
     parent.add(clone);
@@ -126,6 +123,5 @@ class RadialGradient extends Gradient {
 
 RadialGradient.Stop = Gradient.Stop;
 RadialGradient.Properties = [ 'radius' ];
-defineSecretAccessors({proto: RadialGradient.prototype, accessors: RadialGradient.Properties});
 
 export default RadialGradient;

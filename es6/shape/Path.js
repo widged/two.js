@@ -55,6 +55,7 @@ class Path extends Shape {
     });
     this.state.renderer.type = 'path';
 
+    this.setState(DefaultValues.Path);
     // automatic --  whether two.js curves, lines, and commands should be computed
     // automatically or left to the developer.
     this.setState({
@@ -63,9 +64,10 @@ class Path extends Shape {
       vertices: new Collection(vertices),
       automatic: !manual
     });
-
+    // length,closed,curved,automatic,beginning,ending,clip
     this.whenVerticesChange();
     this.state.changeTracker.raise(['vertices,length']);
+    // unraisedFlag: clip
   }
 
   // --------------------
@@ -129,13 +131,21 @@ class Path extends Shape {
     }
     return this.state.length;
   }
+  set length(_) {
+    this.setState({length: _});
+  }
 
   get closed() {
     return this.state.closed;
   }
-  set closed(v) {
-    this.state.closed = !!v;
-    this.state.changeTracker.raise(['vertices']);
+  set closed(_) {
+    this.state.closed = !!_;
+    var {changeTracker} = this.getState();
+    if(changeTracker) {
+      changeTracker.raise(['vertices']);
+    } else {
+      console.log('[WARN] Path.closed(_) change Tracker not set', _, this);
+    }
   }
 
   get curved() {
@@ -143,7 +153,12 @@ class Path extends Shape {
   }
   set curved(v) {
     this.state.curved = !!v;
-    this.state.changeTracker.raise(['vertices']);
+    var {changeTracker} = this.getState();
+    if(changeTracker) {
+      changeTracker.raise(['vertices']);
+    } else {
+      console.log('[WARN] Path.closed(_) change Tracker not set', _, this);
+    }
   }
 
   get automatic() {
@@ -165,7 +180,12 @@ class Path extends Shape {
   }
   set beginning(v) {
     this.state.beginning = min(max(v, 0.0), this.state.ending);
-    this.state.changeTracker.raise(['vertices']);
+    var {changeTracker} = this.getState();
+    if(changeTracker) {
+      changeTracker.raise(['vertices']);
+    } else {
+      console.log('[WARN] Path.closed(_) change Tracker not set', _, this);
+    }
   }
 
   get ending() {
@@ -175,7 +195,12 @@ class Path extends Shape {
     this.setState({
       ending : min(max(v, this.state.beginning), 1.0)
     });
-    this.state.changeTracker.raise(['vertices']);
+    var {changeTracker} = this.getState();
+    if(changeTracker) {
+      changeTracker.raise(['vertices']);
+    } else {
+      console.log('[WARN] Path.closed(_) change Tracker not set', _, this);
+    }
   }
 
   /**
@@ -198,7 +223,12 @@ class Path extends Shape {
   }
   set clip(v) {
     this.state.clip = v;
-    this.state.changeTracker.raise(['clip']);
+    var {changeTracker} = this.getState();
+    if(changeTracker) {
+      changeTracker.raise(['clip']);
+    } else {
+      console.log('[WARN] Path.closed(_) change Tracker not set', _, this);
+    }
   }
 
   // -----------------
@@ -321,7 +351,7 @@ class Path extends Shape {
       if (automatic) { shp.plot(); }
     }
 
-    Shape.prototype._update.apply(shp, arguments);
+    super._update(arguments);
 
     return shp;
 
@@ -390,14 +420,6 @@ class Path extends Shape {
 
 
 Path.Properties = Object.keys(DefaultValues.Path);
-
-// unraisedFlag: clip
-// don't require???
-defineSecretAccessors({
-  proto: Path.prototype,
-  accessors: Path.Properties.filter((d) => { return true || !'length,closed,curved,automatic,beginning,ending,clip'.includes(d); }),
-  secrets: Path.Properties
-});
 
 // direct, not secreted
 Path.Properties.forEach((k) => { Path.prototype[k] = DefaultValues.Path[k]; });

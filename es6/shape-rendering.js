@@ -117,11 +117,6 @@ export default FN;
 
 
 
-NotInUse.setDefaultShapeKey = (shape, k, v, dontReplace) => {
-  var secret = '_' + k;
-  if(!shape.hasOwnProperty(secret) || dontReplace) { shape[secret] = v; }
-  return shape[secret];
-};
 
 NotInUse.setValueAndGetShapeProps = (shape, defaults, dontReplace) => {
   var {setDefaultMatrixKey, setDefaultShapeKey} = FN;

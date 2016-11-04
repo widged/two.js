@@ -5,9 +5,6 @@ import Stop      from './gradient/Stop';
 import Shape     from '../Shape';
 import shapeFN    from '../shape-fn';
 import Collection  from '../struct/Collection';
-import shapeRendering   from '../shape-rendering';
-
-var {defineSecretAccessors} = shapeRendering;
 
 var {cloned, serializeProperties, cloneProperties} = shapeFN;
 
@@ -69,8 +66,6 @@ class Gradient extends Shape {
 
 Gradient.Stop = Stop;
 Gradient.Properties = [ 'spread' ];
-
-defineSecretAccessors({proto: Gradient.prototype, accessors: Gradient.Properties});
 
 
 export default Gradient;
