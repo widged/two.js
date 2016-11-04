@@ -8,7 +8,7 @@ var {isDefaultMatrix, renderShape} = base;
 
 var group = function(shp, ctx) {
 
-  // TODO: Add a check here to only invoke _update if need be.
+  // TODO: Add a check here to only invoke update if need be.
 
   updateShape(shp);
 

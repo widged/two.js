@@ -6,10 +6,12 @@ import Shape from '../Shape';
 import shapeFN    from '../shape-fn';
 import pathFN    from '../shape/fn-path';
 import DefaultValues from '../constant/DefaultValues';
+import shapeRendering   from '../shape-rendering';
 
+var {defineSecretAccessors} = shapeRendering;
 var {isNumber, isObject} = is;
 
-var {shimBoundingClientRect, defineSecretAccessors, serializeProperties, cloneProperties} = shapeFN;
+var {shimBoundingClientRect, serializeProperties, cloneProperties} = shapeFN;
 var {getComputedMatrix} = pathFN;
 
 /**
@@ -60,10 +62,10 @@ class Text extends Shape {
   // Accessors
   // --------------------
   get clip() {
-    return this._clip;
+    return this.state.clip;
   }
   set clip(v) {
-    this._clip = v;
+    this.state.clip = v;
     this.state.changeTracker.raise(['clip']);
   }
 
@@ -112,7 +114,6 @@ class Text extends Shape {
     return shimBoundingClientRect(matrix);
   }
 
-
   // -----------------
   // IRenderable
   // -----------------
@@ -128,14 +129,17 @@ class Text extends Shape {
   * Returns a new instance of a Two.Text with the same settings.
   */
   clone(parent) {
-    if(!parent) { parent = this.parent; }
-    var clone = cloneProperties(this, new Text(this.value), Text.Properties);
+    var shp = this;
+    if(!parent) { parent = shp.parent; }
+    var {value} = shp.getState();
+    var clone = cloneProperties(shp, new Text(value), Text.Properties);
     parent.add(clone);
     return clone;
   }
 
   toObject() {
-    return serializeProperties(this, {}, Text.Properties);
+    var shp = this;
+    return serializeProperties(shp, {}, Text.Properties);
   }
 }
 

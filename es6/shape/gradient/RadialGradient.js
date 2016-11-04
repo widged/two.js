@@ -6,8 +6,11 @@ import VectorEvent    from '../../constant/VectorEvent';
 import Vector    from '../../struct/Vector';
 import shapeFN    from '../../shape-fn';
 import Gradient  from '../Gradient';
+import shapeRendering   from '../../shape-rendering';
 
-var {cloned, serialized, defineSecretAccessors} = shapeFN;
+var {defineSecretAccessors} = shapeRendering;
+
+var {cloned, serialized} = shapeFN;
 var {isNumber} = is;
 
 /*
@@ -100,22 +103,21 @@ class RadialGradient extends Gradient {
    * A function to clone a radialGradient. Also, clones each `Stop` in the radialGradient.stops array.
    */
   clone(parent) {
-    parent = parent || this.parent;
-    var stops = (this.stops || []).map(cloned);
-    var clone = new RadialGradient(
-      this.center._x,  this.center._y,
-      this._radius, stops,
-      this.focal._x, this.focal._y
-    );
-    Object.keys(RadialGradient.Properties).forEach((k) => { clone[k] = this[k]; });
+    var shp = this;
+    parent = parent || shp.parent;
+    var {stops, center, radius, focal} = shp;
+    var stops = (stops || []).map(cloned);
+    var clone = new RadialGradient( center.x,  center.y, radius, stops, focal.x, focal.y );
+    Object.keys(RadialGradient.Properties).forEach((k) => { clone[k] = shp[k]; });
     parent.add(clone);
     return clone;
 
   }
 
   toObject() {
-    var obj = Gradient.prototype.toObject.call(this);
-    Object.keys(RadialGradient.Properties).forEach((k) => { obj[k] = serialized(this[k]); });
+    var shp = this;
+    var obj = Gradient.prototype.toObject.call(shp);
+    Object.keys(RadialGradient.Properties).forEach((k) => { obj[k] = serialized(shp[k]); });
     return obj;
   }
 

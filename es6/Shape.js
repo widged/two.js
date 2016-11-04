@@ -103,6 +103,12 @@ class Shape {
       raiseFlags(this, keys);
     }
   }
+  setProps(obj) {
+    this.setState(obj);
+  }
+  setConfig(obj) {
+    this.setState(obj);
+  }
 
 
   // --------------------
@@ -158,7 +164,6 @@ class Shape {
         .translate(this.translation.x, this.translation.y)
         .scale(this.scale)
         .rotate(this.rotation);
-
     }
 
     if (deep) {
@@ -183,13 +188,15 @@ class Shape {
 
 
   clone() {
+    var shp = this;
     var clone = new Shape();
-    cloneProperties(clone, this, Shape.Properties);
+    cloneProperties(clone, shp, Shape.Properties);
     return clone._update();
   }
 
   toObject() {
-    return serializeProperties({}, this);
+    var shp = this;
+    return serializeProperties({}, shp);
   }
 
 }

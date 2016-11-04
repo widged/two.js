@@ -12,12 +12,15 @@ import Anchor  from '../Anchor';
 import Shape   from '../Shape';
 import shapeFN from '../shape-fn';
 import pathFN  from './fn-path';
+import shapeRendering   from '../shape-rendering';
+
+var {defineSecretAccessors} = shapeRendering;
 
 var {isUndefined, isNull} = is;
 var {arrayLast} = _;
 var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertices, rectTopLeft, rectCentroid} = pathFN;
 var {min, max, round} = Math;
-var {cloneProperties, serializeProperties, getPathBoundingRect, defineSecretAccessors} = shapeFN;
+var {cloneProperties, serializeProperties, getPathBoundingRect} = shapeFN;
 
 /**
  * This is the base class for creating all drawable shapes in two.js. By default,
@@ -41,85 +44,133 @@ class Path extends Shape {
 
   constructor(vertices, closed, curved, manual) {
     super();
-
-    this.state.changeTracker.raise(['vertices,length']);
-
+    // let's clone to be on the safe side
+    vertices = (vertices || []).slice(0);
+    // init
+    this.setState({
+      closed: !!closed,
+      curved: !!curved,
+      beginning: 0,
+      ending: 1,
+    });
     this.state.renderer.type = 'path';
 
-    this._closed = !!closed;
-    this._curved = !!curved;
+    // automatic --  whether two.js curves, lines, and commands should be computed
+    // automatically or left to the developer.
+    this.setConfig({
+      cap: 'butt', // Default of Adobe Illustrator
+      join: 'miter', // Default of Adobe Illustrator
+      vertices: new Collection(vertices),
+      automatic: !manual
+    });
 
-    this.beginning = 0;
-    this.ending = 1;
+    this.whenVerticesChange();
+    this.state.changeTracker.raise(['vertices,length']);
+  }
 
-    // Style properties
-    this.cap = 'butt';      // Default of Adobe Illustrator
-    this.join = 'miter';    // Default of Adobe Illustrator
+  // --------------------
+  // Flow
+  // --------------------
 
-    this._vertices = [];
-    this.vertices = vertices;
+  whenVerticesChange(oldVerticesColl) {
+    if (oldVerticesColl && oldVerticesColl.dispatcher) { oldVerticesColl.dispatcher.off(); }
 
-    // Determines whether or not two.js should calculate curves, lines, and
-    // commands automatically for you or to let the developer manipulate them
-    // for themselves.
-    this.automatic = !manual;
+    var whenVectorChange = (() => {
+      this.state.changeTracker.raise(['vertices','length']);
+    }).bind(this);
+
+    var whenVerticesInserted = ((items) => {
+      // This function is called a lot
+      // when importing a large SVG
+      var i = items.length;
+      while(i--) { items[i].dispatcher.on(VectorEvent.change, whenVectorChange); }
+      whenVectorChange();
+    }).bind(this);
+
+    var whenVerticesRemoved = ((items) => {
+      var i = items.length;
+      while(i--) { items[i].dispatcher.off(VectorEvent.change, whenVectorChange); }
+      whenVectorChange();
+    }).bind(this);
+
+    // Listen for Collection changes and bind / unbind
+    var {vertices} = this.state;
+    vertices.dispatcher.on(CollectionEvent.insert, whenVerticesInserted);
+    vertices.dispatcher.on(CollectionEvent.remove, whenVerticesRemoved);
+    // Bind Initial Vertices
+    whenVerticesInserted(this.state.vertices);
 
   }
 
+  whenLengthChange(limit) {
+    this._update();
+    var {lengths, sum} = updateLength({
+      limit,
+      vertices: this.vertices,
+      pathClosed: this.state.closed,
+      lastClosed: (arrayLast(this.vertices).command === Commands.CLOSE) ? true : false,
+      lengths: this.state.lengths
+    });
+    this.state.lengths = lengths;
+    this.state.length = sum;
+
+    return this;
+
+  }
   // --------------------
   // Accessors
   // --------------------
 
   get length() {
     if(this.state.changeTracker.oneChange('length')) {
-      this._updateLength();
+      this.whenLengthChange();
     }
-    return this._length;
+    return this.state.length;
   }
 
   get closed() {
-    return this._closed;
+    return this.state.closed;
   }
   set closed(v) {
-    this._closed = !!v;
+    this.state.closed = !!v;
     this.state.changeTracker.raise(['vertices']);
   }
 
   get curved() {
-    return this._curved;
+    return this.state.curved;
   }
   set curved(v) {
-    this._curved = !!v;
+    this.state.curved = !!v;
     this.state.changeTracker.raise(['vertices']);
   }
 
   get automatic() {
-    return this._automatic;
+    return this.state.automatic;
   }
   set automatic(v) {
-    if (v === this._automatic) {
+    if (v === this.state.automatic) {
       return;
     }
-    this._automatic = !!v;
-    var method = this._automatic ? 'ignore' : 'listen';
+    this.state.automatic = !!v;
+    var method = this.state.automatic ? 'ignore' : 'listen';
     (this.vertices || []).forEach(function(v) {
       v[method]();
     });
   }
 
   get beginning() {
-    return this._beginning;
+    return this.state.beginning;
   }
   set beginning(v) {
-    this._beginning = min(max(v, 0.0), this._ending);
+    this.state.beginning = min(max(v, 0.0), this.state.ending);
     this.state.changeTracker.raise(['vertices']);
   }
 
   get ending() {
-    return this._ending;
+    return this.state.ending;
   }
   set ending(v) {
-    this._ending = min(max(v, this._beginning), 1.0);
+    this.state.ending = min(max(v, this.state.beginning), 1.0);
     this.state.changeTracker.raise(['vertices']);
   }
 
@@ -128,56 +179,21 @@ class Path extends Shape {
    * Individual vertices may be manipulated.
    */
   get vertices() {
-    return this._collection;
+    return this.state.vertices;
   }
   set vertices(vertices) {
-
-    var whenVerticesChange = (() => {
-      this.state.changeTracker.raise(['vertices','length']);
-    }).bind(this);
-
-    var whenVerticesInserted = ((items) => {
-
-      // This function is called a lot
-      // when importing a large SVG
-      var i = items.length;
-      while(i--) {
-        items[i].dispatcher.on(VectorEvent.change, whenVerticesChange);
-      }
-      whenVerticesChange();
-    }).bind(this);
-
-    var whenVerticesRemoved = ((items) => {
-      var i = items.length;
-      while(i--) {
-        items[i].dispatcher.off(VectorEvent.change, whenVerticesChange);
-      }
-      whenVerticesChange();
-    }).bind(this);
-
-    // Remove previous listeners
-    if (this._collection) {
-      this._collection.dispatcher.off();
-    }
-
+    var oldVerticesColl = this.state.vertices;
     // Create new Collection with copy of vertices
-    this._collection = new Collection((vertices || []).slice(0));
-
-    // Listen for Collection changes and bind / unbind
-    this._collection.dispatcher.on(CollectionEvent.insert, whenVerticesInserted);
-    this._collection.dispatcher.on(CollectionEvent.remove, whenVerticesRemoved);
-
-    // Bind Initial Vertices
-    whenVerticesInserted(this._collection);
-
+    var clone = (vertices || []).slice(0);
+    this.setState({vertices: new Collection(clone)});
+    this.whenVerticesChange(oldVerticesColl);
   }
-
 
   get clip() {
-    return this._clip;
+    return this.state.clip;
   }
   set clip(v) {
-    this._clip = v;
+    this.state.clip = v;
     this.state.changeTracker.raise(['clip']);
   }
 
@@ -189,7 +205,8 @@ class Path extends Shape {
    * Removes the fill.
    */
   noFill() {
-    this.fill = 'transparent';
+    this.state.fill = 'transparent';
+    this.state.changeTracker.raise(['fill']);
     return this;
   }
 
@@ -197,7 +214,8 @@ class Path extends Shape {
    * Removes the stroke.
    */
   noStroke() {
-    this.stroke = 'transparent';
+    this.state.stroke = 'transparent';
+    this.state.changeTracker.raise(['stroke']);
     return this;
   }
 
@@ -246,18 +264,15 @@ class Path extends Shape {
    * If not, then goes through the vertices and calculates the lines.
    */
   plot() {
-
+    var {vertices, closed} = this.getState();
     if (this.curved) {
-      _.getCurveFromPoints(this._vertices, this.closed);
+      pathFN.getCurveFromPoints(vertices, closed);
       return this;
     }
-
-    for (var i = 0; i < this._vertices.length; i++) {
-      this._vertices[i].command = i === 0 ? Commands.MOVE : Commands.LINE;
+    for (var i = 0; i < vertices.length; i++) {
+      vertices[i].command = i === 0 ? Commands.MOVE : Commands.LINE;
     }
-
     return this;
-
   }
 
   /**
@@ -265,14 +280,14 @@ class Path extends Shape {
    */
   subdivide(limit) {
     this._update();
-    this._automatic = false;
-    this._curved = false;
+    this.state.automatic = false;
+    this.state.curved = false;
     this.vertices = subdivideTo({
       limit,
       vertices: this.vertices,
-      pathClosed : this._closed,
+      pathClosed : this.state.closed,
       lastClosed : (arrayLast(this.vertices).command === Commands.CLOSE) ? true : false,
-      automatic: this._automatic
+      automatic: this.state.automatic
     });
     return this;
   }
@@ -281,33 +296,16 @@ class Path extends Shape {
   // Private
   // -----------------
 
-  _updateLength(limit) {
-    this._update();
-    var {lengths, sum} = updateLength({
-      limit,
-      vertices: this.vertices,
-      pathClosed: this._closed,
-      lastClosed: (arrayLast(this.vertices).command === Commands.CLOSE) ? true : false,
-      lengths: this._lengths
-    });
-    this._lengths = lengths;
-    this._length = sum;
-
-    return this;
-
-  }
-
   _update() {
+    var shp = this;
     if(this.state.changeTracker.oneChange('vertices'))  {
-      this._vertices = copyVertices({
-        vertices:  this.vertices,
-        beginning: this._beginning,
-        ending:    this._ending
-      });
-      if (this._automatic) { this.plot(); }
+      var {vertices, beginning, ending, automatic} = shp.getState();
+      vertices = copyVertices({ vertices, beginning, ending });
+      this.setState({vertices});
+      if (automatic) { this.plot(); }
     }
 
-    Shape.prototype._update.apply(this, arguments);
+    Shape.prototype._update.apply(shp, arguments);
 
     return this;
 
@@ -323,12 +321,13 @@ class Path extends Shape {
    * positioning, i.e in the space directly affecting the object and not where it is nested.
    */
   getBoundingClientRect(shallow) {
+    var shp = this;
     // TODO: Update this to not __always__ update. Just when it needs to.
-    this._update(true);
+    shp._update(true);
+    var {linewidth, vertices} = shp.getState();
     var matrix = !!shallow ? this._matrix : getComputedMatrix(this);
-    var border = this.linewidth / 2;
-    var length = this._vertices.length;
-    var vertices = this._vertices;
+    var border = linewidth / 2;
+    var length = vertices.length;
     return getPathBoundingRect(matrix, border, length, vertices);
   }
 
@@ -352,20 +351,22 @@ class Path extends Shape {
    * Returns a new instance of a `Path` with the same settings.
    */
   clone(parent) {
-    parent = parent || this.parent;
-    var points = this.vertices.map((d) => { return d.clone(); });
+    var shp = this;
+    parent = parent || shp.parent;
+    var  {closed, curved, automatic, vertices} = shp.getState();
+    var points = vertices.map((d) => { return d.clone(); });
     var clone = cloneProperties(
-      this,
-      new Path(points, this.closed, this.curved, !this.automatic),
-      Path.Properties
+      shp, new Path(points, closed, curved, !automatic), Path.Properties
     );
     parent.add(clone);
     return clone;
   }
 
   toObject() {
-    var obj = serializeProperties(this, {}, []);
-    obj.vertices = this.vertices.map((d) => { return d.clone(); });
+    var shp = this;
+    var obj = serializeProperties(shp, {}, []);
+    var  {closed, curved, automatic, vertices} = shp.getState();
+    obj.vertices = vertices.map((d) => { return d.toObject(); });
     return obj;
   }
 }

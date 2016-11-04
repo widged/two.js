@@ -37,14 +37,16 @@ class Stop {
    * Returns a new `Stop`.
    */
   clone() {
+    var shp = this;
     var clone = new Stop();
-    Stop.Properties.forEach((k) => {  clone[k] = this[k]; });
+    Stop.Properties.forEach((k) => {  clone[k] = shp[k]; });
     return clone;
   }
 
   toObject() {
+    var shp = this;
     var obj = {};
-    Stop.Properties.forEach((k) => {  obj[k] = this[k]; });
+    Stop.Properties.forEach((k) => {  obj[k] = shp[k]; });
     return obj;
   }
 

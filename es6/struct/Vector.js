@@ -238,13 +238,14 @@ import VectorEvent    from '../constant/VectorEvent';
     return new Vector(this.state.x, this.state.y);
   }
 
+  toObject() {
+    return { x: this.state.x, y: this.state.y };
+  }
+
   toString() {
     return this.state.x + ',' + this.state.y;
   }
 
-  toObject() {
-    return { x: this.state.x, y: this.state.y };
-  }
 
 }
 

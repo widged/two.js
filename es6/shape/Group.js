@@ -9,10 +9,13 @@ import shapeFN    from '../shape-fn';
 import groupFN  from './fn-group';
 import Children  from '../ChildrenCollection';
 import DefaultValues from '../constant/DefaultValues';
+import shapeRendering   from '../shape-rendering';
+
+var {defineSecretAccessors} = shapeRendering;
 
 var {isNumber, isArray} = is;
 var {exclude, arrayOrArguments}  = _;
-var {cloneProperties, serializeProperties, defineSecretAccessors, rectCentroid, rectTopLeft} = shapeFN;
+var {cloneProperties, serializeProperties, rectCentroid, rectTopLeft} = shapeFN;
 var {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
 var {translateChildren} = groupFN;
 
@@ -60,7 +63,19 @@ class Group extends Shape {
     this.additions = [];
     this.subtractions = [];
 
-    this.whenChildrenSet();
+    this.whenChildrenChange();
+  }
+
+  // --------------------
+  // Flow
+  // --------------------
+
+  whenChildrenChange(oldChildren) {
+    if (oldChildren && oldChildren.state) { oldChildren.dispatcher.off(); }
+    var children = this.state.children;
+    children.dispatcher.on(CollectionEvent.insert, this.bound.whenChildrenInserted);
+    children.dispatcher.on(CollectionEvent.remove, this.bound.whenChildrenRemoved);
+    children.dispatcher.on(CollectionEvent.order, this.bound.whenChildrenShuffled);
   }
 
   // --------------------
@@ -71,16 +86,11 @@ class Group extends Shape {
     return this.state.children;
   }
   set children(shapes) {
-    if (this.state.children) { this.state.children.dispatcher.off(); }
+    var oldChildren = this.state.children;
     this.state.children = new Children(shapes);
-    this.whenChildrenSet();
+    this.whenChildrenChange(oldChildren);
   }
 
-  whenChildrenSet() {
-    this.state.children.dispatcher.on(CollectionEvent.insert, this.bound.whenChildrenInserted);
-    this.state.children.dispatcher.on(CollectionEvent.remove, this.bound.whenChildrenRemoved);
-    this.state.children.dispatcher.on(CollectionEvent.order, this.bound.whenChildrenShuffled);
-  }
 
   get mask() {
     return this._mask;
@@ -209,12 +219,12 @@ class Group extends Shape {
    * be rethought and fixed.
    */
   clone(parent) {
-
-    parent = parent || this.parent;
-    var clone = cloneProperties(this, new Group(), []);
+    var shp = this;
+    parent = parent || shp.parent;
+    var clone = cloneProperties(shp, new Group(), []);
     parent.add(clone);
     // now clone all children recursively
-    var children = (this.state.children || []).map((child) => {
+    var children = (shp.state.children || []).map((child) => {
       return child.clone(clone);
     });
     return clone;
@@ -226,10 +236,11 @@ class Group extends Shape {
    * for turning into JSON and storing in a database.
    */
   toObject() {
-    var obj = serializeProperties(this, {}, []);
+    var shp = this;
+    var obj = serializeProperties(shp, {}, []);
     // now copy all children recursively
-    obj.children =  (this.state.children || []).map((child) => {
-      return child.toObject();
+    obj.children =  (shp.state.children || []).map((child) => {
+      return shp.toObject();
     });
     return obj;
 

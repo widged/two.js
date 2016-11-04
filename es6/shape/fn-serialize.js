@@ -135,7 +135,7 @@ FN.getEnclosingRect = ({shallow, children}) => {
       return;
     }
     // :NOTE: before refactoring this, consider that child.getBoundingClientRect
-    // will call this._update() before computing the rectangle.
+    // will call shp.update() before computing the rectangle.
     rect = child.getBoundingClientRect(shallow);
 
     if (!isNumber(rect.top)   || !isNumber(rect.left)   ||

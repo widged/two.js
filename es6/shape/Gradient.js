@@ -5,8 +5,11 @@ import Stop      from './gradient/Stop';
 import Shape     from '../Shape';
 import shapeFN    from '../shape-fn';
 import Collection  from '../struct/Collection';
+import shapeRendering   from '../shape-rendering';
 
-var {cloned, serializeProperties, cloneProperties, defineSecretAccessors} = shapeFN;
+var {defineSecretAccessors} = shapeRendering;
+
+var {cloned, serializeProperties, cloneProperties} = shapeFN;
 
 class Gradient extends Shape {
 
@@ -17,7 +20,7 @@ class Gradient extends Shape {
   constructor(stops) {
     super();
     this.state.renderer.type = 'gradient';
-    this.spread = 'pad';
+    this.state.spread = 'pad';
     this.stops = stops;
   }
 
@@ -46,16 +49,18 @@ class Gradient extends Shape {
   }
 
   clone(parent) {
-    parent = parent || this.parent;
-    var clone = cloneProperties(this, new Gradient(), Gradient.Properties);
-    clone.stops = this.stops.map(cloned);
+    var shp = this;
+    parent = parent || shp.parent;
+    var clone = cloneProperties(shp, new Gradient(), Gradient.Properties);
+    clone.stops = shp.stops.map(cloned);
     parent.add(clone);
     return clone;
   }
 
   toObject() {
-    var obj = serializeProperties(this, {}, Gradient.Properties);
-    obj.stops = this.stops.map(function(s) { return s.toObject(); });
+    var shp = this;
+    var obj = serializeProperties(shp, {}, Gradient.Properties);
+    obj.stops = shp.stops.map(function(s) { return s.toObject(); });
     return obj;
   }
 

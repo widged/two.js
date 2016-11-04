@@ -60,52 +60,37 @@ function renderShapes(two) {
 
   var Rectangle = require('../es6/geometry/Rectangle').default;
   var rect = two.makeGeometry(Rectangle(115, 90, 150, 100));
-  rect.fill = "orange";
-  rect.opacity = 0.25;
-  rect.noStroke();
+  rect.setProps({fill: "orange", opacity: 0.25, stroke: 'transparent'});
   gp.add(rect);
 
   var Circle = require('../es6/geometry/Circle').default;
   var Ellipse = require('../es6/geometry/Ellipse').default;
   var ell = two.makeGeometry(Ellipse(40, 60, 30,20, 20));
-  ell.fill = "blue";
-  ell.opacity = 0.25;
-  ell.noStroke();
+  ell.setProps({fill: "blue", opacity: 0.25, stroke: 'transparent'});
 
   var ArcSegment = require('../es6/geometry/ArcSegment').default;
   var arc = two.makeGeometry(ArcSegment(115, 90, 150, 100, 103, 40, 55));
-  arc.fill = "red";
-  arc.stroke = "green";
-  arc.opacity = 0.25;
+  arc.setProps({fill: "red", stroke: "green", opacity: 0.25});
 
   var SineRing = require('../es6/geometry/SineRing').default;
   var sine = two.makeGeometry(SineRing(115, 90, 150, 100, 103, 40, 5));
-  sine.fill = "red";
-  sine.opacity = 0.25;
-
+  sine.setProps({fill: "red", opacity: 0.25});
+  
   var RoundedRectangle = require('../es6/geometry/RoundedRectangle').default;
   var rrect = two.makeGeometry(RoundedRectangle(390, 300, 150, 100, 9));
-  rrect.fill = "pink";
-  rrect.opacity = 0.25;
-  rrect.noStroke();
+  rrect.setProps({fill: "pink", opacity: 0.25, stroke: 'transparent'});
 
   var Line = require('../es6/geometry/Line').default;
   var line = two.makeGeometry(Line(10,20,300,300));
-  line.fill = "green";
-  line.stroke = "green";
-  line.opacity = 0.25;
+  line.setProps({fill: "green", stroke: "green", opacity: 0.25});
 
   var Polygon = require('../es6/geometry/Polygon').default;
   var poly = two.makeGeometry(Polygon(10,20,300,3));
-  poly.fill = "brown";
-  poly.stroke = "green";
-  poly.opacity = 0.25;
+  poly.setProps({fill: "brown", stroke: "green", opacity: 0.25});
 
   var Star = require('../es6/geometry/Star').default;
   var star = two.makeGeometry(Star(60,60,30,20, 10));
-  star.fill = "purple";
-  star.stroke = "purple";
-  star.opacity = 0.25;
+  star.setProps({fill: "purple", stroke: "purple", opacity: 0.25});
 
 
   // ----------- gradients ------
@@ -121,7 +106,7 @@ function renderShapes(two) {
   var stop = new RadialGradient.Stop(0,  'rgba(255, 0, 0, 1)', 1);
 
   var vignette = two.makeGeometry(RoundedRectangle(390, 70, 150, 100, 10))
-  vignette.fill = radialGradient;
+  vignette.setProps({fill: radialGradient});
 
 
   var LinearGradient = require('../es6/shape/gradient/LinearGradient').default;
@@ -146,12 +131,10 @@ function renderShapes(two) {
   );
 
   var rectangle = two.makeGeometry(Rectangle(390, 185, 150, 100));
-  rectangle.noStroke();
-
-  rectangle.fill = linearGradient;
+  rectangle.setProps({fill: linearGradient, stroke: 'transparent'});
 
   var txt = two.makeText('hello there', 200,200);
-  txt.opacity = 0.75;
+  txt.setProps({opacity: 0.75});
 
   two.update();
 

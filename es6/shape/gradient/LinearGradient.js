@@ -72,27 +72,25 @@ class LinearGradient extends Gradient {
   }
 
   clone(parent) {
+    var shp = this;
+    parent = parent || shp.parent;
 
-    parent = parent || this.parent;
+    var {stops, left, right} = shp;
+    stops = (stops || []).map(cloned);
+    var clone = new LinearGradient(left.x, left.y, right.x, right.y, stops);
+    Object.keys(Gradient.Properties).forEach((k) => { clone[k] = shp[k]; });
 
-    var stops = (this.stops || []).map(cloned);
-    var clone = new LinearGradient(this.left._x, this.left._y,
-      this.right._x, this.right._y, stops);
-
-    Object.keys(Gradient.Properties).forEach((k) => { clone[k] = this[k]; });
-
+    // :TODO: move one level up
     parent.add(clone);
-
     return clone;
-
   }
 
   toObject() {
-
-    var result = Gradient.prototype.toObject.call(this);
-
-    result.left = this.left.toObject();
-    result.right = this.right.toObject();
+    var shp = this;
+    var result = Gradient.prototype.toObject.call(shp);
+    var {left, right} = shp;
+    result.left = left.toObject();
+    result.right = right.toObject();
 
     return result;
 

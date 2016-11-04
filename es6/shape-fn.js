@@ -50,27 +50,6 @@ FN.serialized = (shape) => {
 };
 
 
-FN.defineSecretAccessors = ({proto, accessors, secrets}) => {
-  if(!accessors) { accessors = []; }
-  if (!isArray(accessors)) { accessors = [accessors]; }
-
-  if(secrets)       { proto.setState(secrets); }
-
-  var each =   (k) => {
-
-    Object.defineProperty(proto, k, {
-      enumerable: true,
-      set(v) {
-          var o = {}; o[k] = v;
-          this.setState(o);
-      }
-    });
-
-  };
-
-  accessors.forEach(each);
-
-};
 
 /**
  * A shim for compatibility with matrix math in the various renderers.
