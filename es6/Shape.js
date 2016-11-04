@@ -37,10 +37,10 @@ class Shape {
     // Private object for renderer specific variables.
     this.state = {
       renderer: {},
-      changeTracker
+      changeTracker,
+      matrix: new Matrix()
     };
     // Define matrix properties which all inherited objects of Shape have.
-    this._matrix = new Matrix();
     this.translation = new Vector();
     this.rotation = 0;
     this.scale = 1;
@@ -73,6 +73,9 @@ class Shape {
   }
   setConfig(obj) {
     this.setState(obj);
+  }
+  listFlags() {
+    return this.state.changeTracker.listChanges();
   }
 
 
@@ -122,20 +125,20 @@ class Shape {
    * to be as up-to-date as possible for the render. Called once a frame.
    */
   _update(deep) {
-
-    if (!this._matrix.manual && anyPropChanged(this, ['matrix'])) {
-      this._matrix
+    var shp = this;
+    var {matrix, changeTracker} = this.getState();
+    if (matrix && !matrix.manual && changeTracker.oneChange('matrix')) {
+      matrix
         .identity()
         .translate(this.translation.x, this.translation.y)
         .scale(this.scale)
         .rotate(this.rotation);
     }
+    if(!matrix) { console.log('[WARN] matrix is undefed', shp.toString()) }
 
     if (deep) {
       // Bubble up to parents mainly for `getBoundingClientRect` method.
-      if (this.parent && this.parent._update) {
-        this.parent._update();
-      }
+      updateShape(shp.parent)
     }
 
     return this;

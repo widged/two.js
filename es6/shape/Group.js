@@ -41,11 +41,12 @@ class Group extends Shape {
     // :FIXME: track down the issue that causes infinite recursions
     // with this.setState({children});
     var children;
-    this.state = {
-      children: new Children(shapes),
+    // children: new Children(shapes),
+    this.setState({
       changeTracker,
-      renderer : {type : 'group'}
-    };
+      renderer : {type : 'group'},
+      children: new Children(shapes)
+    });
     changeTracker.raise(['opacity']);
 
     this.bound = {

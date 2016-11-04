@@ -22,6 +22,7 @@ FN.getShapeRenderer = (shape) => {
 };
 
 FN.updateShape = (shape) => {
+  if(!shape || typeof shape._update !== "function") { return; }
   shape._update();
 };
 

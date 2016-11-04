@@ -85,8 +85,9 @@ FN.getComputedMatrix = (object, matrix) => {
   matrix = (matrix && matrix.identity()) || new Matrix();
   var parent = object, matrices = [];
 
-  while (parent && parent._matrix) {
-    matrices.push(parent._matrix);
+  var {matrix: parentMatrix} = parent.getState();
+  while (parent && parentMatrix) {
+    matrices.push(parentMatrix);
     parent = parent.parent;
   }
 
