@@ -11,7 +11,7 @@ import Children  from '../ChildrenCollection';
 import DefaultValues from '../constant/DefaultValues';
 import shapeRendering   from '../shape-rendering';
 
-var {defineSecretAccessors} = shapeRendering;
+var {defineSecretAccessors, updateShape} = shapeRendering;
 
 var {isNumber, isArray} = is;
 var {exclude, arrayOrArguments}  = _;
@@ -112,9 +112,13 @@ class Group extends Shape {
   /**
    * Anchor all children to the top left corner of the group.
    */
+   // :TODO: leave any rendering action (translate) to the renderers
   corner() {
-    this._update(true);
-    this.state.children = translateChildren( this.state.children, rectTopLeft);
+    var shp = this;
+    updateShape(shp, true);
+    var {children} = this.getState();
+    children = translateChildren( children, rectTopLeft);
+    this.setState({children});
     return this;
   }
 
@@ -123,9 +127,13 @@ class Group extends Shape {
    * effectively placing the shape around the unit circle.
    */
    // :REVIEW: this causes unwanted behaviors... optional rather than default behavior?
+   // :TODO: leave any rendering action (translate) to the renderers
   center() {
-    this._update(true);
-    this.state.children = translateChildren( this.state.children, rectCentroid );
+    var shp = this;
+    updateShape(shp, true);
+    var {children} = this.getState();
+    children = translateChildren( children, rectCentroid);
+    this.setState({children});
     return this;
   }
 
