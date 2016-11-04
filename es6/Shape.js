@@ -75,9 +75,7 @@ class Shape {
   }
   setProps(obj) {
     this.setState(obj);
-  }
-  setConfig(obj) {
-    this.setState(obj);
+    return this;
   }
   listFlags() {
     var {changeTracker} = this.getState();

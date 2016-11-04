@@ -57,7 +57,7 @@ class Path extends Shape {
 
     // automatic --  whether two.js curves, lines, and commands should be computed
     // automatically or left to the developer.
-    this.setConfig({
+    this.setState({
       cap: 'butt', // Default of Adobe Illustrator
       join: 'miter', // Default of Adobe Illustrator
       vertices: new Collection(vertices),
