@@ -14,7 +14,7 @@ import shapeFN from '../shape-fn';
 import pathFN  from './fn-path';
 import shapeRendering   from '../shape-rendering';
 
-var {defineSecretAccessors, updateShape} = shapeRendering;
+var {updateShape} = shapeRendering;
 
 var {isUndefined, isNull} = is;
 var {arrayLast} = _;

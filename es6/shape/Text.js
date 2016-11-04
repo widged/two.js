@@ -36,6 +36,7 @@ class Text extends Shape {
     super();
 
     this.state.renderer.type = 'text';
+    this.setState(DefaultValues.Text);
 
     this.value = message;
 
@@ -144,6 +145,5 @@ class Text extends Shape {
 }
 
 Text.Properties = Object.keys(DefaultValues.Text);
-defineSecretAccessors({proto: Text.prototype, accessors: Text.Properties, secrets: DefaultValues.Text} );
 
 export default Text;
