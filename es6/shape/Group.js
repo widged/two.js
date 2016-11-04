@@ -25,7 +25,7 @@ var nodeChildren = (node) => { return (node instanceof Group) ? node.children : 
 
 
 /**
- * This is a container object — it can hold shapes as well as other groups.
+ * A `Group` is a container object — it can hold shapes as well as other groups.
  * At a technical level it can be considered an empty transformation matrix.
  * It is recommended to use two.makeGroup() in order to add groups to your instance
  * of two, but it's not necessary. Unless specified methods return their instance

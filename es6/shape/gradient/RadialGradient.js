@@ -13,33 +13,11 @@ var {isNumber} = is;
 
 var DEFAULTS = DefaultValues.RadialGradient;
 
-/*
-center radialGradient.center
-A `Vector` that represents the position of the x, y coordinates at the center of the gradient.
-
-radius radialGradient.radius
-A number representing the radius of the radialGradient.
-
-focal linearGradient.focal
-A `Vector` that represents the position of the x, y coordinates as the focal point for the gradient's trajectory.
-
-spread radialGradient.spread
-Defines how the gradient is rendered by the renderer. For more details see the w3c svg spec.
-
-stops radialGradient.stops
-A `Collection` of `Stops` that is two-way databound. Individual stops may be manipulated.
-
-
-*/
 
 /**
- *  This is a class for creating a RadialGradient.
- * By itself a `RadialGradient` doesn't render anything specifically to the
- * screen. However, in conjunction with a Path you can style Path.fill
- * or Path.stroke with a RadialGradient to render a gradient for that
- * part of the Path. Check the examples page for exact usage.
+ * A `RadialGradient` defines a radial color transition with a given radius,
+ * center point and focal point
  */
-
 class RadialGradient extends Gradient {
 
   /**

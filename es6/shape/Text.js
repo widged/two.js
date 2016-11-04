@@ -17,7 +17,7 @@ var {getComputedMatrix} = pathFN;
 const DEFAULTS = DefaultValues.Text;
 
 /**
- * A class for creating, manipulating, and rendering text dynamically
+ * A `Text` captures the properties of a textual on screen element.
  * It is rather primitive. You can use custom fonts through @Font Face spec.
  * However, you do not have control over the glyphs themselves. If you'd like
  * to manipulate that specifically it is recommended to use a SVG Interpreter.

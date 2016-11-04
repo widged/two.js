@@ -11,6 +11,12 @@ var {cloned, serializeProperties} = shapeFN;
 
 var DEFAULTS  = DefaultValues.Gradient;
 
+/**
+ * A `Gradient` defines a color transition. By itself a `Gradient` doesn't render anything 
+ * to the screen. However, in conjunction with a `Path` you can style `Path.fill`
+ * or `Path`.stroke with a `Gradient` to render a gradient for that part of the `Path`.
+ * Check the examples page for exact usage.
+ */
 class Gradient extends Shape {
 
   // --------------------

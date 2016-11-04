@@ -23,8 +23,9 @@ var {min, max, round} = Math;
 var {serializeProperties, getPathBoundingRect} = shapeFN;
 
 var DEFAULTS = DefaultValues.Path;
+
 /**
- * This is the base class for creating all drawable shapes in two.js. By default,
+ * A `Path` is the base class for creating all drawable shapes in two.js. By default,
  * methods return their instance of Path for the purpose of chaining.
  *
  * A path takes an array of vertices which are made up of Two.Anchors. This is
