@@ -65,12 +65,13 @@ class Shape {
       // :TODO: remove once all ._ have been replaced.
       var keys = Object.keys(obj);
       keys.forEach((k) => {
-          var ov = this.state[k];
           var nv = obj[k];
-          nv = this.beforePropertyChange(k, nv, ov);
+          nv = this.beforePropertySet(k, nv);
+          var ov = this.state[k];
           this.state[k] = nv;
           this.afterPropertyChange(k, nv, ov);
       });
+      // :TODO: move this to afterPropertyChange, after adding a raiseOne function to changeTracker
       var {changeTracker} = this.getState();
       changeTracker.raise(keys);
     }
@@ -83,7 +84,7 @@ class Shape {
     var {changeTracker} = this.getState();
     return changeTracker.listChanges();
   }
-  beforePropertyChange(name, newValue, oldValue) {
+  beforePropertySet(name, newValue, oldValue) {
     return newValue;
   }
   afterPropertyChange(name, newValue, oldValue) {

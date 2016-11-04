@@ -100,9 +100,7 @@ class Group extends Shape {
   set mask(v) {
     this.state.mask = v;
     this.state.changeTracker.raise(['mask']);
-    if (!v.clip) {
-      v.clip = true;
-    }
+    if (!v.clip) { v.clip = true; }
   }
 
   // --------------------

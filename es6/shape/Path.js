@@ -56,6 +56,7 @@ class Path extends Shape {
     this.setState({
       cap: 'butt', // Default of Adobe Illustrator
       join: 'miter', // Default of Adobe Illustrator
+      // vertices -- A `Collection` of `Anchors` that is two-way databound. Individual vertices may be manipulated.
       vertices: new Collection(clone),
       // automatic --  whether two.js curves, lines, and commands should be computed
       // automatically or left to the developer.
@@ -76,7 +77,6 @@ class Path extends Shape {
 
   whenVerticesChange(oldVerticesColl) {
     var shp;
-    if (oldVerticesColl && oldVerticesColl.dispatcher) { oldVerticesColl.dispatcher.off(); }
 
     var {changeTracker, vertices} = this.getState();
 
@@ -99,8 +99,10 @@ class Path extends Shape {
     }).bind(shp);
 
     // Listen for Collection changes and bind / unbind
-    vertices.dispatcher.on(CollectionEvent.insert, whenVerticesInserted);
-    vertices.dispatcher.on(CollectionEvent.remove, whenVerticesRemoved);
+    if (vertices && typeof vertices.dispatcher === 'function') {
+      vertices.dispatcher.on(CollectionEvent.insert, whenVerticesInserted);
+      vertices.dispatcher.on(CollectionEvent.remove, whenVerticesRemoved);
+    }
     // Bind Initial Vertices
     whenVerticesInserted(vertices);
 
@@ -131,83 +133,40 @@ class Path extends Shape {
     }
     return this.state.length;
   }
-
-
-  get closed() {
-    return this.state.closed;
-  }
-  set closed(_) {
-    this.state.closed = !!_;
-    var {changeTracker} = this.getState();
-    changeTracker.raise(['vertices']);
-  }
-
-  get curved() {
-    return this.state.curved;
-  }
-  set curved(v) {
-    this.state.curved = !!v;
-    var {changeTracker} = this.getState();
-    changeTracker.raise(['vertices']);
-  }
-
-  get automatic() {
-    return this.state.automatic;
-  }
-  set automatic(v) {
-    if (v === this.state.automatic) {
-      return;
+  beforePropertySet(key, newV) {
+    if(['closed','curved','automatic'].includes(key)) {
+      newV = (newV === true) ? true : false;
     }
-    this.state.automatic = !!v;
-    var method = this.state.automatic ? 'ignore' : 'listen';
-    (this.vertices || []).forEach(function(v) {
-      v[method]();
-    });
+    if(key === 'automatic') {
+      var oldAuto = this.getState().automatic;
+      if(newV !== oldAuto) {
+        var method = newV ? 'ignore' : 'listen';
+        (this.getState().vertices || []).forEach(function(v) { v[method](); });
+      }
+    } else if(key === 'beginning') {
+      newV = min(max(newV, 0.0), this.getState().ending || 0);
+    } else if(key === 'ending') {
+      newV = min(max(newV, this.getState().beginning || 0), 1.0);
+    } else if(key === 'vertices') {
+      var oldV = this.getState().vertices;
+      if (oldV && typeof oldV.dispatcher === 'function') { oldV.dispatcher.off(); }
+      if(newV.constructor.name === 'Array') {
+        // newV = new Collection((newV || []).slice(0));
+      }
+    }
+    return newV;
   }
-
-  get beginning() {
-    return this.state.beginning;
-  }
-  set beginning(v) {
-    this.state.beginning = min(max(v, 0.0), this.state.ending);
+  afterPropertyChange(key, newV, oldV) {
     var {changeTracker} = this.getState();
-    changeTracker.raise(['vertices']);
+    if(['closed','curved','beginning','ending'].includes(key) && newV !== oldV) {
+      changeTracker.raise(['vertices']);
+    } else if(['clip'].includes(key) && newV !== oldV) {
+      changeTracker.raise(['clip']);
+    } else if(key === 'vertices') {
+      this.whenVerticesChange();
+    }
   }
 
-  get ending() {
-    return this.state.ending;
-  }
-  set ending(v) {
-    this.setState({
-      ending : min(max(v, this.state.beginning), 1.0)
-    });
-    var {changeTracker} = this.getState();
-    changeTracker.raise(['vertices']);
-  }
-
-  /**
-   * A `Collection` of `Anchors` that is two-way databound.
-   * Individual vertices may be manipulated.
-   */
-  get vertices() {
-    return this.state.vertices;
-  }
-  set vertices(vertices) {
-    var {vertices: oldVerticesColl} = this.getState();
-    // Create new Collection with copy of vertices
-    var clone = (vertices || []).slice(0);
-    this.setState({vertices: new Collection(clone)});
-    this.whenVerticesChange(oldVerticesColl);
-  }
-
-  get clip() {
-    return this.state.clip;
-  }
-  set clip(v) {
-    this.state.clip = v;
-    var {changeTracker} = this.getState();
-    changeTracker.raise(['clip']);
-  }
 
   // -----------------
   // Pseudo accessors
@@ -232,7 +191,7 @@ class Path extends Shape {
   }
 
   // -----------------
-  // Main
+  // :TODO: recode as anchorAt, delaying any rendering action
   // -----------------
 
   /**
@@ -260,6 +219,10 @@ class Path extends Shape {
     (vertices || []).forEach(function(v) { v.subSelf(x,y); });
     return shp;
   }
+
+  // -----------------
+  // Main
+  // -----------------
 
   /**
    * If added to a `scene`, removes itself from it.
