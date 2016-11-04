@@ -91,15 +91,19 @@ class Shape {
       this.state.rotation = v;
       raiseFlags(this, ['matrix']);
     } else {
-      console.log('[WARN]', v, this)
+      console.log('[WARN] Shape.rotation(_) this has no state', v, this);
     }
   }
   get scale() {
-    return this._scale;
+    return this.state.scale;
   }
   set scale(v) {
-    this._scale = v;
-    raiseFlags(this, ['matrix','scale']);
+    if(this.state) {
+      this.state.scale = v;
+      raiseFlags(this, ['matrix','scale']);
+    } else {
+      console.log('[WARN] Shape.scale(_) this has no state', v, this);
+    }
   }
 
   get rendererType() {

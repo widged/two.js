@@ -73,11 +73,14 @@ class Path extends Shape {
   // --------------------
 
   whenVerticesChange(oldVerticesColl) {
+    var shp;
     if (oldVerticesColl && oldVerticesColl.dispatcher) { oldVerticesColl.dispatcher.off(); }
 
+    var {changeTracker, vertices} = this.getState();
+
     var whenVectorChange = (() => {
-      this.state.changeTracker.raise(['vertices','length']);
-    }).bind(this);
+      changeTracker.raise(['vertices','length']);
+    }).bind(shp);
 
     var whenVerticesInserted = ((items) => {
       // This function is called a lot
@@ -85,36 +88,35 @@ class Path extends Shape {
       var i = items.length;
       while(i--) { items[i].dispatcher.on(VectorEvent.change, whenVectorChange); }
       whenVectorChange();
-    }).bind(this);
+    }).bind(shp);
 
     var whenVerticesRemoved = ((items) => {
       var i = items.length;
       while(i--) { items[i].dispatcher.off(VectorEvent.change, whenVectorChange); }
       whenVectorChange();
-    }).bind(this);
+    }).bind(shp);
 
     // Listen for Collection changes and bind / unbind
-    var {vertices} = this.state;
     vertices.dispatcher.on(CollectionEvent.insert, whenVerticesInserted);
     vertices.dispatcher.on(CollectionEvent.remove, whenVerticesRemoved);
     // Bind Initial Vertices
-    whenVerticesInserted(this.state.vertices);
+    whenVerticesInserted(vertices);
 
   }
 
   whenLengthChange(limit) {
-    this._update();
+    var shp = this;
+    updateShape(shp);
+    var {vertices, closed, lengths: lns} = shp.getState();
     var {lengths, sum} = updateLength({
       limit,
-      vertices: this.vertices,
-      pathClosed: this.state.closed,
-      lastClosed: (arrayLast(this.vertices).command === Commands.CLOSE) ? true : false,
-      lengths: this.state.lengths
+      vertices: vertices,
+      pathClosed: closed,
+      lastClosed: (arrayLast(vertices).command === Commands.CLOSE) ? true : false,
+      lengths: lns
     });
-    this.state.lengths = lengths;
-    this.state.length = sum;
-
-    return this;
+    shp.setState({lengths, length: sum});
+    return shp;
 
   }
   // --------------------
@@ -170,7 +172,9 @@ class Path extends Shape {
     return this.state.ending;
   }
   set ending(v) {
-    this.state.ending = min(max(v, this.state.beginning), 1.0);
+    this.setState({
+      ending : min(max(v, this.state.beginning), 1.0)
+    });
     this.state.changeTracker.raise(['vertices']);
   }
 
@@ -182,7 +186,7 @@ class Path extends Shape {
     return this.state.vertices;
   }
   set vertices(vertices) {
-    var oldVerticesColl = this.state.vertices;
+    var {vertices: oldVerticesColl} = this.getState();
     // Create new Collection with copy of vertices
     var clone = (vertices || []).slice(0);
     this.setState({vertices: new Collection(clone)});
@@ -228,9 +232,11 @@ class Path extends Shape {
    * corner of the path.
    */
   corner() {
-    // :NOTE: this.getBoundingClientRect will call this._update first
+    var shp;
+    var {vertices} = getState();
+    // :NOTE: this.getBoundingClientRect will call update shape first
     var {x,y} = rectTopLeft(this.getBoundingClientRect(true));
-    (this.vertices || []).forEach(function(v) { v.subSelf(x,y); });
+    (vertices || []).forEach(function(v) { v.subSelf(x,y); });
     return this;
   }
 
@@ -239,7 +245,7 @@ class Path extends Shape {
    * path.
    */
   center() {
-    // :NOTE: this.getBoundingClientRect will call this._update first
+    // :NOTE: this.getBoundingClientRect will call update shape first
     var {x,y} = rectCentroid(this.getBoundingClientRect(true));
     (this.vertices || []).forEach(function(v) { v.subSelf(x,y); });
     return this;
@@ -276,20 +282,26 @@ class Path extends Shape {
   }
 
   /**
-   * Creates a new set of vertices that are lineTo anchors. For previously straight lines the anchors remain the same. For curved lines, however, Two.Utils.subdivide is used to generate a new set of straight lines that are perceived as a curve.
+   * Creates a new set of vertices that are lineTo anchors. For previously
+   * straight lines the anchors remain the same. For curved lines, however,
+   * `subdivide` is used to generate a new set of straight lines that are p
+   * erceived as a curve.
    */
   subdivide(limit) {
-    this._update();
-    this.state.automatic = false;
-    this.state.curved = false;
-    this.vertices = subdivideTo({
+    var shp = this;
+    updateShape(shp);
+    var automatic = false;
+    var curved = false;
+    var {closed, vertices} = shp.getState();
+    var newVertices = subdivideTo({
       limit,
-      vertices: this.vertices,
-      pathClosed : this.state.closed,
-      lastClosed : (arrayLast(this.vertices).command === Commands.CLOSE) ? true : false,
-      automatic: this.state.automatic
+      vertices   : vertices,
+      pathClosed : closed,
+      lastClosed : (arrayLast(vertices).command === Commands.CLOSE) ? true : false,
+      automatic: automatic
     });
-    return this;
+    shp.setState({automatic, curved, vertices: newVertices});
+    return shp;
   }
 
   // -----------------
@@ -298,8 +310,8 @@ class Path extends Shape {
 
   _update() {
     var shp = this;
-    if(this.state.changeTracker.oneChange('vertices'))  {
-      var {vertices, beginning, ending, automatic} = shp.getState();
+    var {changeTracker,vertices, beginning, ending, automatic} = shp.getState();
+    if(changeTracker.oneChange('vertices'))  {
       vertices = copyVertices({ vertices, beginning, ending });
       this.setState({vertices});
       if (automatic) { this.plot(); }
@@ -307,7 +319,7 @@ class Path extends Shape {
 
     Shape.prototype._update.apply(shp, arguments);
 
-    return this;
+    return shp;
 
   }
 
@@ -322,7 +334,7 @@ class Path extends Shape {
    */
    getBoundingClientRect(shallow) {
      var shp = this;
-     // TODO: Update this to not __always__ update. Just when it needs to.
+     // TODO: Update only when it needs to.
      updateShape(shp, true);
      var {linewidth, vertices, matrix} = shp.getState();
      if(!shallow) { matrix = getComputedMatrix(shp); }
@@ -336,14 +348,15 @@ class Path extends Shape {
   // -----------------
 
   flagReset() {
+    var shp = this;
     super.flagReset();
-    var {changeTracker} = this.state;
+    var {changeTracker} = shp.getState();
     changeTracker.drop(['opacity','visible','clip']);
     changeTracker.drop(['fill','stroke','linewidth','decoration']);
     changeTracker.drop(['vertices']);
     changeTracker.drop(['cap, join, miter']);
 
-    return this;
+    return shp;
 
   }
 
