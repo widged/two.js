@@ -29,13 +29,13 @@ class Gradient extends Shape {
   // --------------------
 
   get stops() {
-    return this._stops;
+    return this.state.stops;
   }
 
   set stops(stops) {
     // :CHANGE: bindStops removed as Stop never dispaches a change event.
     // Create new Collection with copy of Stops
-    this._stops = new Collection((stops || []).slice(0));
+    this.state.stops = new Collection((stops || []).slice(0));
   }
 
   // -----------------
