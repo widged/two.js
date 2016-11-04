@@ -84,11 +84,15 @@ class Shape {
   // --------------------
 
   get rotation() {
-    return this._rotation;
+    return this.state.rotation;
   }
   set rotation(v) {
-    this._rotation = v;
-    raiseFlags(this, ['matrix']);
+    if(this.state) {
+      this.state.rotation = v;
+      raiseFlags(this, ['matrix']);
+    } else {
+      console.log('[WARN]', v, this)
+    }
   }
   get scale() {
     return this._scale;

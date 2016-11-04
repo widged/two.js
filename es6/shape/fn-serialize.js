@@ -90,8 +90,8 @@ FN.replaceParent = (that, child, newParent) => {
     if (index >= 0) {
       parent.additions.splice(index, 1);
     } else {
-      parent.subtractions.push(child);
-      raiseFlags(parent, ['subtractions']);
+      parent.substractions.push(child);
+      raiseFlags(parent, ['substractions']);
     }
   }
 
@@ -108,8 +108,8 @@ FN.replaceParent = (that, child, newParent) => {
   if (index >= 0) {
     that.additions.splice(index, 1);
   } else {
-    that.subtractions.push(child);
-    raiseFlags(that, ['subtractions']);
+    that.substractions.push(child);
+    raiseFlags(that, ['substractions']);
   }
 
   delete child.parent;

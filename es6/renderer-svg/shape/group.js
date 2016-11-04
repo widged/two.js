@@ -33,7 +33,7 @@ var elem = getShapeRenderer(object);
 
   if (!tag) { return; }
 
-  // Defer subtractions while clipping.
+  // Defer substractions while clipping.
   var {clip} = getShapeProps(object, ['clip']);
   if (clip) { return; }
 
@@ -87,9 +87,9 @@ var group = function(shp, domElement) {
     additions.forEach((obj) => { appendChild(renderer.elem, obj); });
   }
 
-  if(anyPropChanged(shp, ['subtractions'])) {
-    var {subtractions} = getShapeProps(shp, ['subtractions']);
-    subtractions.forEach((obj) => { removeChild(renderer.elem, obj); });
+  if(anyPropChanged(shp, ['substractions'])) {
+    var {substractions} = getShapeProps(shp, ['substractions']);
+    substractions.forEach((obj) => { removeChild(renderer.elem, obj); });
   }
 
   if (anyPropChanged(shp, ['order'])) {

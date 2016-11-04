@@ -70,43 +70,47 @@ FN.replaceParent = (that, child, newParent) => {
   var parent = child.parent;
   var index;
 
+  var {additions, substractions} = that.getState();
   if (parent === newParent) {
-    that.additions.push(child);
+    additions.push(child);
     raiseFlags(parent, ['additions']);
     return;
   }
 
   if (parent && parent.children.ids[child.id]) {
 
+    var {additions: parentAdditions, substractions: parentSubstrations} = parent.getState();
+
+
     index = (Array.from(parent.children) || []).indexOf(child);
     parent.children.splice(index, 1);
 
     // If we're passing from one parent to another...
-    index = parent.additions.indexOf(child);
+    index = parentAdditions.indexOf(child);
 
     if (index >= 0) {
-      parent.additions.splice(index, 1);
+      parentAdditions.splice(index, 1);
     } else {
-      parent.subtractions.push(child);
-      raiseFlags(parent, ['subtractions']);
+      parentSubstrations.push(child);
+      raiseFlags(parent, ['substractions']);
     }
   }
 
   if (newParent) {
     child.parent = newParent;
-    that.additions.push(child);
+    additions.push(child);
     raiseFlags(that, ['additions']);
     return;
   }
 
   // If we're passing from one parent to another...
-  index = that.additions.indexOf(child);
+  index = additions.indexOf(child);
 
   if (index >= 0) {
-    that.additions.splice(index, 1);
+    additions.splice(index, 1);
   } else {
-    that.subtractions.push(child);
-    raiseFlags(that, ['subtractions']);
+    substractions.push(child);
+    raiseFlags(that, ['substractions']);
   }
 
   delete child.parent;

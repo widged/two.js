@@ -25,7 +25,7 @@ var group = {
       var renderer       = recomputeMatrixAndScaleIfNecessary(shp);
       var parentRenderer = getShapeRenderer(shp.parent);
 
-      var { mask, opacity, subtractions } = getShapeProps( shp, ["mask","opacity","subtractions"] );
+      var { mask, opacity, substractions } = getShapeProps( shp, ["mask","opacity","substractions"] );
       if(anyPropChanged(shp.parent, ['opacity'])) { raiseFlags(shp, ['opacity']);}
       renderer.opacity = opacity * (parentRenderer ? parentRenderer.opacity : 1);
 
@@ -33,8 +33,8 @@ var group = {
 
       if(maskMode) { maskMode.on(); }
 
-      // :NOTE: subtractions array is reset on flag.reset()
-      rendererFN.removeNodes(subtractions, gl);
+      // :NOTE: substractions array is reset on flag.reset()
+      rendererFN.removeNodes(substractions, gl);
 
       // shp.children is a collection, not a proper array
       Array.from(shp.children).forEach((child) => {

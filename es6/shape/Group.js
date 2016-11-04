@@ -36,18 +36,15 @@ class Group extends Shape {
    */
   constructor(...shapes) {
     super();
-    var changeTracker = this.state.changeTracker;
 
-    // :FIXME: track down the issue that causes infinite recursions
-    // with this.setState({children});
-    var children;
-    // children: new Children(shapes),
     this.setState({
-      changeTracker,
       renderer : {type : 'group'},
-      children: new Children(shapes)
+      children: new Children(shapes),
+      additions: [],
+      substractions : []
     });
-    changeTracker.raise(['opacity']);
+    var {renderer, changeTracker} = this.getState();
+    renderer.type = 'group';
 
     this.bound = {
       whenChildrenInserted: ((children) => { adoptShapes(this, children); }).bind(this),
@@ -61,10 +58,12 @@ class Group extends Shape {
     * parent - A reference to the Two.Group that contains this instance.
     * mask - A reference to the Two.Path that masks the content within the group. Automatically sets the referenced Two.Path.clip to true.
     */
-    this.additions = [];
-    this.subtractions = [];
+    this.state.additions = [];
+    this.state.substractions = [];
 
     this.whenChildrenChange();
+    changeTracker.raise(['opacity']);
+
   }
 
   // --------------------
@@ -92,6 +91,8 @@ class Group extends Shape {
     this.whenChildrenChange(oldChildren);
   }
 
+  get additions() { return this.state.additions; }
+  get substractions() { return this.state.substractions; }
 
   get mask() {
     return this.state.mask;
@@ -203,10 +204,10 @@ class Group extends Shape {
 
   flagReset() {
     super.flagReset();
-    this.state.changeTracker.drop(['additions','subtractions']);
+    this.state.changeTracker.drop(['additions','substractions']);
     this.state.changeTracker.drop(['order','mask','opacity']);
-    this.additions = [];
-    this.subtractions = [];
+    this.state.additions = [];
+    this.state.substractions = [];
     return this;
 
   }
