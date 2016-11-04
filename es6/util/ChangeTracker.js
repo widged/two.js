@@ -1,45 +1,37 @@
 /* jshint esnext: true */
 
 class ChangeTracker {
+  constructor(raised) {
+    this.state = {flat : raised};
+  }
 
-  constructor() {
-    var state =  {
-      ks: [],
-      vs: [],
-      changed: []
-    };
 
-    Object.defineProperty(this, 'state',  {
-      value: state,
-      enumerable: false,
-      writable: false,
-      configurable: true
+  listChanges() { return this.state.flat; }
+  raise(keys) {
+    var {flat} = this.state;
+    keys.forEach((k) => {
+      if(!flat.includes(k)) { flat.push(k); }
     });
-
   }
 
-  get state() {
-    throw "not allowed. Use getState()";
+  drop(keys) {
+    var {flat} = this.state;
+    keys.forEach((k) => {
+      var idx = flat.indexOf(k);
+      if(idx !== -1) { flat.splice(idx, 1); }
+    });
   }
 
-  getState() {
-    var {ks, vs, changed} = this.state;
-    return ks.reduce((acc, k) => {
-      acc[k] = vs[k];
-      return acc;
-    }, {});
+  oneChange(k) {
+    var {flat} = this.state;
+    return flat.includes(k);
   }
-
-  setOne(k, v) {
-    var {ks,vs,changes} = this.state;
-    var idx = ks.indexOf(k); if(idx ===-1) { idx = ks.length; ks.push(k); }
-    vs[idx] = v;
-    if(!changes.includes(k)) { changes.push(k); }
-  }
-  setState(o) {
-    Object.keys(o).forEach((k) => { setOne(k, o[k]); })
+  anyChange(keys) {
+    var {flat} = this.state;
+    return keys.filter((k) => {
+      return flat.includes(k);
+    }).length ? true : false;
   }
 }
-
 
 export default ChangeTracker;
