@@ -200,9 +200,11 @@ class Group extends Shape {
    * not where it is nested.
    */
   getBoundingClientRect(shallow) {
+    var shp = this;
     // TODO: Update this to not __always__ update. Just when it needs to.
-    this._update(true);
-    return groupFN.getEnclosingRect({shallow, children: this.state.children});
+    updateShape(shp, true);
+    var {children} = shp.getState();
+    return groupFN.getEnclosingRect({shallow, children: children});
   }
 
   // -----------------

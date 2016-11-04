@@ -21,9 +21,9 @@ FN.getShapeRenderer = (shape) => {
   return shape.renderer || (shape.state && shape.state.renderer);
 };
 
-FN.updateShape = (shape) => {
+FN.updateShape = (shape, isDeep) => {
   if(!shape || typeof shape._update !== "function") { return; }
-  shape._update();
+  shape._update(isDeep);
   return shape;
 };
 

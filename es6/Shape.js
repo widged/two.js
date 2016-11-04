@@ -149,7 +149,7 @@ class Shape {
         .rotate(this.rotation);
     }
     if(!matrix) {
-      console.log('[WARN] matrix is undefed', shp.toString())
+      console.log('[WARN] matrix is undefed', shp.toString());
     }
 
     if (deep) {

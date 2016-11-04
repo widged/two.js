@@ -1,8 +1,6 @@
 /* jshint esnext: true */
 
 import is  from '../util/is';
-import shapeRendering from '../shape-rendering';
-var {raiseFlags} = shapeRendering;
 
 var {isNumber} = is;
 
