@@ -68,48 +68,63 @@ FN.removeGroupFromParent = (group, parent) => {
  * and updates parent-child relationships
  * Calling with one arguments will simply remove the parenting
  */
-FN.replaceParent = (that, child, newParent) => {
+FN.replaceParent = (shp, child, newParent) => {
 
-  var parent = child.parent;
+  var {parent} = child.getState();
+
   var index;
 
+  var {additions, substractions, changeTracker} = shp.getState();
+
   if (parent === newParent) {
-    that.additions.push(child);
-    raiseFlags(parent, ['additions']);
+    additions.push(child);
+    var {changeTracker: parentTracker} = this.getState();
+    parentTracker.raise(['additions']);
     return;
   }
 
-  if (parent && parent.children.ids[child.id]) {
 
-    index = (Array.from(parent.children) || []).indexOf(child);
-    parent.children.splice(index, 1);
 
-    // If we're passing from one parent to another...
-    index = parent.additions.indexOf(child);
+  if (parent)
+    var {
+      children: parentChildren,
+      additions: parentAdditions,
+      substractions, parentSubstractions,
+      changeTracker: parentTracker
+    } = parent.getState();
 
-    if (index >= 0) {
-      parent.additions.splice(index, 1);
-    } else {
-      parent.substractions.push(child);
-      raiseFlags(parent, ['substractions']);
+    if(parentChildren.ids[child.id]) {
+
+      index = (Array.from(parentChildren) || []).indexOf(child);
+      parentChildren.splice(index, 1);
+
+      // If we're passing from one parent to another...
+      index = parentAdditions.indexOf(child);
+
+      if (index >= 0) {
+        parentAdditions.splice(index, 1);
+      } else {
+        parentSubstractions.push(child);
+        parentTracker.raise(['substractions']);
+      }
     }
   }
 
   if (newParent) {
     child.parent = newParent;
-    that.additions.push(child);
-    raiseFlags(that, ['additions']);
+    additions.push(child);
+    changeTracker.raise(['additions']);
     return;
   }
 
   // If we're passing from one parent to another...
-  index = that.additions.indexOf(child);
+  index = additions.indexOf(child);
 
   if (index >= 0) {
-    that.additions.splice(index, 1);
+    additions.splice(index, 1);
   } else {
-    that.substractions.push(child);
-    raiseFlags(that, ['substractions']);
+    substractions.push(child);
+    changeTracker.raise(['substractions']);
   }
 
   delete child.parent;

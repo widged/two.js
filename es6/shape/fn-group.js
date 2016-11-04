@@ -1,8 +1,6 @@
 /* jshint esnext: true */
 
 import is  from '../util/is';
-import shapeRendering from '../shape-rendering';
-var {raiseFlags} = shapeRendering;
 
 var {isNumber} = is;
 
@@ -70,16 +68,18 @@ FN.replaceParent = (that, child, newParent) => {
   var parent = child.parent;
   var index;
 
-  var {additions, substractions} = that.getState();
+  var {additions, substractions, changeTracker} = that.getState();
   if (parent === newParent) {
+    var {changeTracker: parentTracker} = parent.getState();
     additions.push(child);
-    raiseFlags(parent, ['additions']);
+    parentTracker.raise(['additions']);
     return;
   }
 
   if (parent && parent.children.ids[child.id]) {
 
     var {additions: parentAdditions, substractions: parentSubstrations} = parent.getState();
+    var {changeTracker: parentTracker} = parent.getState();
 
 
     index = (Array.from(parent.children) || []).indexOf(child);
@@ -92,14 +92,14 @@ FN.replaceParent = (that, child, newParent) => {
       parentAdditions.splice(index, 1);
     } else {
       parentSubstrations.push(child);
-      raiseFlags(parent, ['substractions']);
+      parentTracker.raise(['substractions']);
     }
   }
 
   if (newParent) {
     child.parent = newParent;
     additions.push(child);
-    raiseFlags(that, ['additions']);
+    changeTracker.raise(['additions']);
     return;
   }
 
@@ -110,7 +110,7 @@ FN.replaceParent = (that, child, newParent) => {
     additions.splice(index, 1);
   } else {
     substractions.push(child);
-    raiseFlags(that, ['substractions']);
+    changeTracker.raise(['substractions']);
   }
 
   delete child.parent;

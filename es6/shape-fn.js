@@ -2,10 +2,8 @@
 
 import is  from './util/is';
 import _  from './util/common';
-import shapeRendering from './shape-rendering';
 
 var {isArray} = is;
-var {raiseFlags} = shapeRendering;
 
 var FN = {};
 
