@@ -94,7 +94,6 @@ FN.raiseFlags = (shp, keys) => {
       shp.__flags[k] = true;
     });
   }
-
 };
 
 FN.dropFlags = (shp, keys) => {

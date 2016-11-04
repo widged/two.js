@@ -59,7 +59,7 @@ var text = function(shp, domElement) {
     setAttributes(renderer.elem, attrs);
   }
 
-  if (true || anyPropChanged(shp, ['clip'])) {
+  if (anyPropChanged(shp, ['clip'])) {
     var clipElem = getClip(shp);
 
     var { clip } = getShapeProps(shp, ['clip']);

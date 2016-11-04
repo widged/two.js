@@ -44,6 +44,8 @@ class Path extends Shape {
   constructor(vertices, closed, curved, manual) {
     super();
 
+    this.changeTracker.raise(['vertices,length']);
+
     this._renderer.type = 'path';
 
     this._closed = !!closed;
@@ -376,7 +378,6 @@ Path.Properties = Object.keys(DefaultValues.Path);
 defineSecretAccessors({
   proto: Path.prototype,
   accessors: Path.Properties.filter((d) => { return true || !'length,closed,curved,automatic,beginning,ending,clip'.includes(d); }),
-  raisedFlags: ['vertices,length'],
   secrets: Path.Properties
 });
 

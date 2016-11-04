@@ -18,26 +18,35 @@ var shapeDefaults = DefaultValues.Shape;
 var store = Store.create(() => {});
 
 class ChangeTracker {
-  constructor() {
-    this.list = {};
+  constructor(raised) {
+    this.state = {flat : raised};
   }
+
+
+  listChanges() { return this.state.flat; }
   raise(keys) {
+    var {flat} = this.state;
     keys.forEach((k) => {
-      this.list[k] = true;
+      if(!flat.includes(k)) { flat.push(k); }
     });
   }
 
   drop(keys) {
+    var {flat} = this.state;
     keys.forEach((k) => {
-      this.list[k] = false;
+      var idx = flat.indexOf(k);
+      if(idx !== -1) { flat.splice(idx, 1); }
     });
   }
 
+  oneChange(k) {
+    var {flat} = this.state;
+    return flat.includes(k);
+  }
   anyChange(keys) {
-    var lst = this.list;
+    var {flat} = this.state;
     return keys.filter((k) => {
-      // return shp.__flags[k] ? true : false;
-      return lst[k] ? true : false;
+      return flat.includes(k);
     }).length ? true : false;
   }
 }
@@ -57,7 +66,7 @@ class Shape {
     this.id = DefaultValues.ShapeIdentifier + uniqueId();
     // parent  - A reference to the `Group` that contains this instance.
     this.parent = undefined;
-    this.changeTracker = new ChangeTracker();
+    this.changeTracker = new ChangeTracker(['matrix','scale','clip']); // clip, mask
     // set on svg import only
     this.classList = [];
     // Private object for renderer specific variables.
@@ -182,10 +191,6 @@ class Shape {
 
 }
 Shape.Properties = Object.keys(shapeDefaults);
-
-// Flags
-var raisedFlags = 'matrix,scale'.split(',');
-// unraisedFlags: mask, clip
 
 Shape.Properties.forEach((k) => { Shape.prototype[k] = shapeDefaults[k]; });
 

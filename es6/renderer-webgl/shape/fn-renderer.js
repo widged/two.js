@@ -71,7 +71,7 @@ FN.drawStroke = (canvas, stroke, renderGradient) => {
   }
 };
 FN.drawGradientShape = (gdt, context, shp) => {
-  // renderShape constructs the gdt _renderer
+  // renderShape constructs the gdt renderer
   renderShape(gdt, context, shp);
   return getShapeRenderer(gdt).gradient;
 };

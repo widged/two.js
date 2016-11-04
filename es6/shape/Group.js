@@ -35,10 +35,16 @@ class Group extends Shape {
    */
   constructor(...shapes) {
     super(true);
+    var changeTracker = this.changeTracker;
 
+    // :FIXME: track down the issue that causes infinite recursions
+    // with this.setState({children});
+    var children;
     this.state = {
-      children: new Children(shapes)
+      children: new Children(shapes),
+      changeTracker
     };
+    changeTracker.raise(['opacity']);
 
     this.bound = {
       whenChildrenInserted: ((children) => { adoptShapes(this, children); }).bind(this),
@@ -237,6 +243,6 @@ Group.Properties = Object.keys(DefaultValues.Group);
 
 // var excluded = 'closed,curved,automatic,beginning,ending,mask'.split(',')
 // unraised flags: 'additions,substractions,order,mask'
-defineSecretAccessors({proto: Group.prototype, accessors: Group.Properties, raisedFlags: ['opacity'] , secrets: DefaultValues.Group, onlyWhenChanged: ['opacity'] });
+defineSecretAccessors({proto: Group.prototype, accessors: Group.Properties, secrets: DefaultValues.Group, onlyWhenChanged: ['opacity'] });
 
 export default Group;

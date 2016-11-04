@@ -36,6 +36,7 @@ class Text extends Shape {
 
     super();
 
+
     this._renderer.type = 'text';
 
 
@@ -52,6 +53,7 @@ class Text extends Shape {
       return this;
     }
 
+    this.changeTracker.raise(['family','size','leading','alignment','baseline','style','weight','decoration']);
 
   }
 
@@ -118,7 +120,7 @@ class Text extends Shape {
 
   flagReset() {
     super.flagReset();
-    dropFlags(this, ['value','family','size','leading','alignment','fill','stroke','linewidth','opacity','visible','clip','decoration']);
+    this.changeTracker.drop(['value','family','size','leading','alignment','fill','stroke','linewidth','opacity','visible','clip','decoration']);
     return this;
 
   }
@@ -139,6 +141,6 @@ class Text extends Shape {
 }
 
 Text.Properties = Object.keys(DefaultValues.Text);
-defineSecretAccessors({proto: Text.prototype, accessors: Text.Properties, raisedFlags: 'family,size,leading,alignment,baseline,style,weight,decoration'.split(','), secrets: DefaultValues.Text} );
+defineSecretAccessors({proto: Text.prototype, accessors: Text.Properties, secrets: DefaultValues.Text} );
 
 export default Text;

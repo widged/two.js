@@ -86,8 +86,8 @@ var applySvgAttributes = function(node, elem) {
 
         // // Option 1: edit the underlying matrix and don't force an auto calc.
         // var m = node.getCTM();
-        // elem._matrix.manual = true;
-        // elem._matrix.set(m.a, m.b, m.c, m.d, m.e, m.f);
+        // matrix.manual = true;
+        // matrix.set(m.a, m.b, m.c, m.d, m.e, m.f);
 
         // Option 2: Decompose and infer Two.js related properties.
         var transforms = decomposeMatrix(node.getCTM());

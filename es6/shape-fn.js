@@ -50,22 +50,19 @@ FN.serialized = (shape) => {
 };
 
 
-FN.defineSecretAccessors = ({proto, accessors, secrets, raisedFlags, onlyWhenChanged}) => {
+FN.defineSecretAccessors = ({proto, accessors, secrets}) => {
   if(!accessors) { accessors = []; }
   if (!isArray(accessors)) { accessors = [accessors]; }
 
-  if(raisedFlags)   { raiseFlags(proto, raisedFlags); /* return; */ }
   if(secrets)       { proto.setState(secrets); }
 
   var each =   (k) => {
-    var onChange = Array.isArray(onlyWhenChanged) && onlyWhenChanged.includes(k);
 
     Object.defineProperty(proto, k, {
       enumerable: true,
       set(v) {
           var o = {}; o[k] = v;
           this.setState(o);
-          raiseFlags(this, [k]);
       }
     });
 
