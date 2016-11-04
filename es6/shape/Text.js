@@ -47,7 +47,7 @@ class Text extends Shape {
     this.setState({
       value: message
     });
-    if (!isObject(styles)) {
+    if (isObject(styles)) {
       this.setState(styles);
       changeTracker.raise(['family','size','leading','alignment','baseline','style','weight','decoration']);
     }

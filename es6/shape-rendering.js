@@ -4,50 +4,40 @@ import is  from './util/is';
 
 var {isArray} = is;
 
-var shpKeys = [];
-shpKeys = shpKeys.concat(["vertices","stroke","linewidth","fill","opacity","cap","join","miter","closed"]);
-
-var rdrKeys = [];
-rdrKeys = rdrKeys.concat(["scale","opacity","rect"]);
-
-
 var FN = {}, NotInUse = {};
 
 // --------------------
 // update and renderer
 // --------------------
 
-FN.getShapeRenderer = (shape) => {
-  return shape.renderer || (shape.state && shape.state.renderer);
+FN.getShapeRenderer = (shp) => {
+  return shp.renderer || (shp.state && shp.state.renderer);
 };
 
-FN.updateShape = (shape, isDeep) => {
-  if(!shape || typeof shape._update !== "function") { return; }
-  shape._update(isDeep);
-  return shape;
+FN.updateShape = (shp, isDeep) => {
+  if(!shp || typeof shp._update !== "function") { return; }
+  shp._update(isDeep);
+  return shp;
 };
-
 
 // --------------------
 // PROPS
 // --------------------
 
-FN.getShapeProps = (shape, ks) => {
-
-  if(typeof shape.getState === 'function') {
-    return shape.getState();
+FN.getShapeProps = (shp, ks) => {
+  if(typeof shp.getState === 'function') {
+    return shp.getState();
   }  else {
     var acc = {};
     ks.forEach((k) => {
-      var m = shape[k];
+      var m = shp[k];
       if(m === undefined) {
-        console.log('[WARN] getState failed', k, shape.toString());
+        console.log('[WARN] getState failed', k, shp.toString());
       }
       if(typeof m !== 'undefined') { acc[k] = m; }
     });
     return acc;
   }
-
 };
 
 // --------------------
@@ -56,14 +46,18 @@ FN.getShapeProps = (shape, ks) => {
 
 var useTracker = true;
 FN.anyPropChanged = (shp, keys) => {
-  if(useTracker && shp.state && shp.state.changeTracker !== undefined) {
-    return shp.state.changeTracker.anyChange(keys);
-  } else {
+  var out;
+  if(typeof shp.getState === 'function') {
+    var changeTracker = shp.getState().changeTracker;
+    if(changeTracker) { out = changeTracker.anyChange(keys); }
+  }
+  if (out === undefined) {
     if(!shp.__flags) { shp.__flags = {}; }
     return keys.filter((k) => {
       return shp.__flags[k] ? true : false;
     }).length ? true : false;
   }
+  return out;
 };
 
 FN.raiseFlags = (shp, keys) => {
@@ -90,19 +84,3 @@ FN.dropFlags = (shp, keys) => {
 };
 
 export default FN;
-
-NotInUse.setValueAndGetShapeProps = (shape, defaults, dontReplace) => {
-  var {setDefaultMatrixKey, setDefaultShapeKey} = FN;
-  var acc = {};
-  Object.keys(defaults).forEach((k) => {
-    var m, v = defaults[k];
-    m = setDefaultShapeKey(shape, k, v, dontReplace);
-    if(m !== undefined) { acc[k] = m; }
-
-  });
-  return acc;
-};
-
-NotInUse.defaultAndGetShapeProps = (shape, defaults, dontReplace) => {
-  return FN.setValueAndGetShapeProps(shape, defaults, true);
-};
