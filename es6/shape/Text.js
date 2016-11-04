@@ -11,7 +11,7 @@ import shapeRendering   from '../shape-rendering';
 var {defineSecretAccessors, updateShape} = shapeRendering;
 var {isNumber, isObject} = is;
 
-var {shimBoundingClientRect, serializeProperties, cloneProperties} = shapeFN;
+var {shimBoundingClientRect, serializeProperties} = shapeFN;
 var {getComputedMatrix} = pathFN;
 
 const DEFAULTS = DefaultValues.Text;
@@ -135,7 +135,8 @@ class Text extends Shape {
     var shp = this;
     if(!parent) { parent = shp.parent; }
     var {value} = shp.getState();
-    var clone = cloneProperties(shp, new Text(value), Object.keys(DEFAULTS));
+    var clone = new Text(value);
+    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
     parent.add(clone);
     return clone;
   }

@@ -20,7 +20,7 @@ var {isUndefined, isNull} = is;
 var {arrayLast} = _;
 var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertices, rectTopLeft, rectCentroid} = pathFN;
 var {min, max, round} = Math;
-var {cloneProperties, serializeProperties, getPathBoundingRect} = shapeFN;
+var {serializeProperties, getPathBoundingRect} = shapeFN;
 
 var DEFAULTS = DefaultValues.Path;
 /**
@@ -403,9 +403,8 @@ class Path extends Shape {
     parent = parent || shp.parent;
     var  {closed, curved, automatic, vertices} = shp.getState();
     var points = vertices.map((d) => { return d.clone(); });
-    var clone = cloneProperties(
-      shp, new Path(points, closed, curved, !automatic), Object.keys(DEFAULTS)
-    );
+    var clone = new Path(points, closed, curved, !automatic);
+    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
     parent.add(clone);
     return clone;
   }

@@ -11,7 +11,7 @@ import ChangeTracker from './util/ChangeTracker';
 import shapeRendering from './shape-rendering';
 
 var uniqueId = UidGenerator();
-var {cloneProperties, serializeProperties} = shapeFN;
+var {serializeProperties} = shapeFN;
 var {updateShape} = shapeRendering;
 
 var DEFAULTS = DefaultValues.Shape;
@@ -63,9 +63,7 @@ class Shape {
       this.state = Object.assign(this.state || {}, obj);
       // :TODO: remove once all ._ have been replaced.
       var keys = Object.keys(obj);
-      keys.forEach((k) => {
-        this['_'+k] = obj[k];
-      });
+      
       var {changeTracker} = this.getState();
       if(changeTracker) {
         changeTracker.raise(keys);
@@ -176,7 +174,7 @@ class Shape {
   clone() {
     var shp = this;
     var clone = new Shape();
-    cloneProperties(clone, shp, Object.keys(DEFAULTS));
+    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
     return updateShape(clone);
   }
 

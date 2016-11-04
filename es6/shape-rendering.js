@@ -61,12 +61,11 @@ FN.getShapeProps = (shape, ks) => {
       var obj = shape.getState();
       m = obj[k];
     }
-    if(m === undefined) {
-      // console.log('[WARN] getState failed', k, shape.toString())
-      m = shape['_' + k];
-    }
-    if(m === undefined && shape.hasOwnProperty(k)) {
+    if(m === undefined && shape[k] !== undefined) {
       m = shape[k];
+    }
+    if(m === undefined) {
+      console.log('[WARN] getState failed', k, shape.toString())
     }
     if(typeof m !== 'undefined') { acc[k] = m; }
   });
@@ -112,11 +111,7 @@ FN.dropFlags = (shp, keys) => {
 
 };
 
-
 export default FN;
-
-
-
 
 NotInUse.setValueAndGetShapeProps = (shape, defaults, dontReplace) => {
   var {setDefaultMatrixKey, setDefaultShapeKey} = FN;
@@ -130,8 +125,6 @@ NotInUse.setValueAndGetShapeProps = (shape, defaults, dontReplace) => {
   return acc;
 };
 
-
 NotInUse.defaultAndGetShapeProps = (shape, defaults, dontReplace) => {
   return FN.setValueAndGetShapeProps(shape, defaults, true);
-
 };

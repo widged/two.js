@@ -165,6 +165,20 @@ FN.Text = {
 };
  // rotation, translation, scale, mask, clip from Shape
 
+FN.Gradient = {
+  spread: undefined
+};
+
+FN.RadialGradient = {
+  radius: undefined
+};
+
+FN.LinearGradient = {
+  stops: undefined,
+  left: undefined,
+  right: undefined
+};
+
 FN.Stop = {
   offset : 0.0,
   opacity : 1.0,

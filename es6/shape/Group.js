@@ -15,11 +15,14 @@ var {updateShape} = shapeRendering;
 
 var {isNumber, isArray} = is;
 var {exclude, arrayOrArguments}  = _;
-var {cloneProperties, serializeProperties, rectCentroid, rectTopLeft} = shapeFN;
+var {serializeProperties, rectCentroid, rectTopLeft} = shapeFN;
 var {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
 var {translateChildren} = groupFN;
 
+var DEFAULTS = DefaultValues.Group;
+
 var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
+
 
 /**
  * This is a container object — it can hold shapes as well as other groups.
@@ -237,7 +240,8 @@ class Group extends Shape {
   clone(parent) {
     var shp = this;
     parent = parent || shp.parent;
-    var clone = cloneProperties(shp, new Group(), []);
+    var clone = new Group();
+    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
     parent.add(clone);
     // now clone all children recursively
     var children = (shp.state.children || []).map((child) => {
@@ -264,7 +268,6 @@ class Group extends Shape {
 }
 
 Group.Children = Children;
-Group.Properties = Object.keys(DefaultValues.Group);
 
 
 export default Group;

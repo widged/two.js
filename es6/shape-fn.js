@@ -7,13 +7,6 @@ var {isArray} = is;
 
 var FN = {};
 
-FN.cloneProperties = (source, target, extraProps) => {
-  target.translation.copy(source.translation);
-  target.rotation = source.rotation;
-  target.scale = source.scale;
-  (extraProps || []).forEach((k) => { target[k] = source[k]; });
-  return target;
-};
 
 FN.serializeProperties = (source, target, extraProps) => {
   target.translation = source.translation.toObject();

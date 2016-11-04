@@ -26,8 +26,6 @@ import VectorEvent    from '../constant/VectorEvent';
     this.whenChange();
   }
 
-  get _x() { return this.state.x; }
-  get _y() { return this.state.y; }
 
   get x() { return this.state.x; }
   set x(v){

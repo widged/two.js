@@ -6,9 +6,12 @@ import VectorEvent    from '../../constant/VectorEvent';
 import Vector    from '../../struct/Vector';
 import shapeFN    from '../../shape-fn';
 import Gradient  from '../Gradient';
+import DefaultValues from '../../constant/DefaultValues';
 
 var {cloned, serialized} = shapeFN;
 var {isNumber} = is;
+
+var DEFAULTS = DefaultValues.RadialGradient;
 
 /*
 center radialGradient.center
@@ -105,7 +108,7 @@ class RadialGradient extends Gradient {
     var {stops, center, radius, focal} = shp;
     stops = (stops || []).map(cloned);
     var clone = new RadialGradient( center.x,  center.y, radius, stops, focal.x, focal.y );
-    Object.keys(RadialGradient.Properties).forEach((k) => { clone[k] = shp[k]; });
+    Object.keys(DEFAULTS).forEach((k) => { clone[k] = shp[k]; });
     parent.add(clone);
     return clone;
 
@@ -114,14 +117,12 @@ class RadialGradient extends Gradient {
   toObject() {
     var shp = this;
     var obj = Gradient.prototype.toObject.call(shp);
-    Object.keys(RadialGradient.Properties).forEach((k) => { obj[k] = serialized(shp[k]); });
+    Object.keys(DEFAULTS).forEach((k) => { obj[k] = serialized(shp[k]); });
     return obj;
   }
 
 
 }
 
-RadialGradient.Stop = Gradient.Stop;
-RadialGradient.Properties = [ 'radius' ];
 
 export default RadialGradient;

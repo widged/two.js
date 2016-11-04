@@ -5,8 +5,11 @@ import Stop      from './gradient/Stop';
 import Shape     from '../Shape';
 import shapeFN    from '../shape-fn';
 import Collection  from '../struct/Collection';
+import DefaultValues from '../constant/DefaultValues';
 
-var {cloned, serializeProperties, cloneProperties} = shapeFN;
+var {cloned, serializeProperties} = shapeFN;
+
+var DEFAULTS  = DefaultValues.Gradient;
 
 class Gradient extends Shape {
 
@@ -18,7 +21,7 @@ class Gradient extends Shape {
     super();
     this.state.renderer.type = 'gradient';
     this.state.spread = 'pad';
-    this.stops = stops;
+    this.state.stops = stops;
   }
 
   // --------------------
@@ -48,7 +51,8 @@ class Gradient extends Shape {
   clone(parent) {
     var shp = this;
     parent = parent || shp.parent;
-    var clone = cloneProperties(shp, new Gradient(), Gradient.Properties);
+    var clone = new Gradient();
+    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
     clone.stops = shp.stops.map(cloned);
     parent.add(clone);
     return clone;
@@ -56,7 +60,7 @@ class Gradient extends Shape {
 
   toObject() {
     var shp = this;
-    var obj = serializeProperties(shp, {}, Gradient.Properties);
+    var obj = serializeProperties(shp, {}, Object.keys(DEFAULTS));
     obj.stops = shp.stops.map(function(s) { return s.toObject(); });
     return obj;
   }
@@ -65,7 +69,6 @@ class Gradient extends Shape {
 }
 
 Gradient.Stop = Stop;
-Gradient.Properties = [ 'spread' ];
 
 
 export default Gradient;

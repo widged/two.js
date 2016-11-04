@@ -6,10 +6,13 @@ import VectorEvent    from '../../constant/VectorEvent';
 import Vector    from '../../struct/Vector';
 import Gradient  from '../Gradient';
 import shapeFN    from '../../shape-fn';
+import DefaultValues from '../../constant/DefaultValues';
 
 var {bind, map} = _;
 var {isNumber} = is;
 var {cloned} = shapeFN;
+
+var DEFAULTS = DefaultValues.LinearGradient;
 
 /*
 This is a class for creating a LinearGradient in two.js. By itself a Two.LinearGradient doesn't render anything specifically to the screen. However, in conjunction with a Two.Path you can style Two.Path.fill or Two.Path.stroke with a Two.LinearGradient to render a gradient for that part of the Two.Path. Check the examples page for exact usage.
@@ -78,7 +81,7 @@ class LinearGradient extends Gradient {
     var {stops, left, right} = shp;
     stops = (stops || []).map(cloned);
     var clone = new LinearGradient(left.x, left.y, right.x, right.y, stops);
-    Object.keys(Gradient.Properties).forEach((k) => { clone[k] = shp[k]; });
+    Object.keys(DEFAULTS).forEach((k) => { clone[k] = shp[k]; });
 
     // :TODO: move one level up
     parent.add(clone);
@@ -86,14 +89,12 @@ class LinearGradient extends Gradient {
   }
 
   toObject() {
+    var result = super.toObject();
     var shp = this;
-    var result = Gradient.prototype.toObject.call(shp);
     var {left, right} = shp;
     result.left = left.toObject();
     result.right = right.toObject();
-
     return result;
-
   }
 
 
