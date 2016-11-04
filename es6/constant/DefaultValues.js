@@ -57,8 +57,8 @@ FN.Shape = {
   rotation: 0,
   scale: 1,
   clip: false
-  // _translation
-  // _mask: null,
+  // translation
+  // mask: null,
 };
 
 FN.ShapeIdentifier = 'two_';

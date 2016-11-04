@@ -50,15 +50,15 @@ class Player {
   increments the tick for animation, .
   */
   whenTick() {
-    var animated = !!this._lastFrame;
+    var animated = !!this.state.lastFrame;
     var now = perf.now();
 
     this.frameCount++;
 
     if (animated) {
-      this.timeDelta = parseFloat((now - this._lastFrame).toFixed(3));
+      this.timeDelta = parseFloat((now - this.state.lastFrame).toFixed(3));
     }
-    this._lastFrame = now;
+    this.state.lastFrame = now;
     this.dispatcher.emit('tick', this.frameCount, this.timeDelta);
   }
 

@@ -93,10 +93,10 @@ class Group extends Shape {
 
 
   get mask() {
-    return this._mask;
+    return this.state.mask;
   }
   set mask(v) {
-    this._mask = v;
+    this.state.mask = v;
     this.state.changeTracker.raise(['mask']);
     if (!v.clip) {
       v.clip = true;
