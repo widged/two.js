@@ -133,17 +133,17 @@ class Text extends Shape {
     var shp = this;
     if(!parent) { parent = shp.parent; }
     var {value} = shp.getState();
-    var clone = cloneProperties(shp, new Text(value), Text.Properties);
+    var clone = cloneProperties(shp, new Text(value), Object.keys(Text.Properties));
     parent.add(clone);
     return clone;
   }
 
   toObject() {
     var shp = this;
-    return serializeProperties(shp, {}, Text.Properties);
+    return serializeProperties(shp, {}, Object.keys(Text.Properties));
   }
 }
 
-Text.Properties = Object.keys(DefaultValues.Text);
+Text.Properties = DefaultValues.Text;
 
 export default Text;

@@ -421,7 +421,5 @@ class Path extends Shape {
 
 Path.Properties = Object.keys(DefaultValues.Path);
 
-// direct, not secreted
-Path.Properties.forEach((k) => { Path.prototype[k] = DefaultValues.Path[k]; });
 
 export default Path;
