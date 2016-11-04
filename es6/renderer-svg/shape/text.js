@@ -14,8 +14,6 @@ const ALIGNMENTS = {
 
 var text = function(shp, domElement) {
 
-  console.log(shp)
-
   updateShape(shp);
 
   var attrs = {};

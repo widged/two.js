@@ -73,23 +73,39 @@ FN.updateShape = (shape) => {
 };
 
 
+var useTracker = true;
 FN.anyPropChanged = (shp, keys) => {
-  return keys.filter((k) => {
-    return shp['_flag_'+k] ? true : false;
-  }).length ? true : false;
+  if(useTracker && shp.changeTracker !== undefined) {
+    return shp.changeTracker.anyChange(keys);
+  } else {
+    if(!shp.__flags) { shp.__flags = {}; }
+    return keys.filter((k) => {
+      return shp.__flags[k] ? true : false;
+    }).length ? true : false;
+  }
 };
 
 FN.raiseFlags = (shp, keys) => {
-  keys.forEach((k) => {
-    shp['_flag_'+k] = true;
-  });
+  if(useTracker && shp.changeTracker !== undefined) {
+    shp.changeTracker.raise(keys);
+  } else {
+    if(!shp.__flags) { shp.__flags = {}; }
+    keys.forEach((k) => {
+      shp.__flags[k] = true;
+    });
+  }
 
 };
 
 FN.dropFlags = (shp, keys) => {
-  keys.forEach((k) => {
-    shp['_flag_'+k] = false;
-  });
+  if(useTracker && shp.changeTracker !== undefined) {
+    shp.changeTracker.drop(keys);
+  } else {
+    if(!shp.__flags) { shp.__flags = {}; }
+      keys.forEach((k) => {
+        shp.__flags[k] = false;
+      });
+  }
 
 };
 

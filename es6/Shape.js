@@ -17,6 +17,31 @@ var shapeDefaults = DefaultValues.Shape;
 
 var store = Store.create(() => {});
 
+class ChangeTracker {
+  constructor() {
+    this.list = {};
+  }
+  raise(keys) {
+    keys.forEach((k) => {
+      this.list[k] = true;
+    });
+  }
+
+  drop(keys) {
+    keys.forEach((k) => {
+      this.list[k] = false;
+    });
+  }
+
+  anyChange(keys) {
+    var lst = this.list;
+    return keys.filter((k) => {
+      // return shp.__flags[k] ? true : false;
+      return lst[k] ? true : false;
+    }).length ? true : false;
+  }
+}
+
 /**
 *
 */
@@ -32,6 +57,7 @@ class Shape {
     this.id = DefaultValues.ShapeIdentifier + uniqueId();
     // parent  - A reference to the `Group` that contains this instance.
     this.parent = undefined;
+    this.changeTracker = new ChangeTracker();
     // set on svg import only
     this.classList = [];
     // Private object for renderer specific variables.
@@ -51,7 +77,6 @@ class Shape {
   // IStated
   // --------------------
   getState() {
-    console.log('getstate')
     return this.state;
   }
 
@@ -64,9 +89,9 @@ class Shape {
         this['_'+k] = obj[k];
       });
       raiseFlags(this, keys);
-      console.log(this)
     }
   }
+
 
   // --------------------
   // Accessors
