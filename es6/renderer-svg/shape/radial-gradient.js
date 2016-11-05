@@ -17,7 +17,7 @@ var renderRadialGradient = (shp, domElement) => {
 
 
   if ( anyPropChanged(shp, ['center','focal','radius','stops']) ) {
-    var {center, focal, radius, stops} = getShapeProps(shp, ['center','focal','radius','stops']);
+    var {center, focal, radius, stops} = shapeProps;
     var {x: cx,y: cy} = getShapeProps(center, ['x','y']);
     var {x: fx,y: fy} = getShapeProps(focal, ['x','y']);
 

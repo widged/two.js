@@ -20,7 +20,7 @@ var renderLinearGradient = (shp, domElement) => {
   }
 
   if (anyPropChanged(shp, ['spread'])) {
-    var {spread} = getShapeProps(shp, ['spread']);
+    var {spread} = shapeProps;
     attrs.spreadMethod = spread;
   }
 
@@ -39,7 +39,7 @@ var renderLinearGradient = (shp, domElement) => {
   }
 
   if (anyPropChanged(shp, ['stops'])) {
-    var {stops} = getShapeProps(shp, ['stops']);
+    var {stops} = shapeProps;
     svgFN.clear(renderer.elem);
 
     for (var i = 0; i < stops.length; i++) {

@@ -17,7 +17,7 @@ var renderPath = (shp, domElement) => {
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and
   // applied once the object is visible again
-  var {opacity} = getShapeProps(shp, ['opacity']);
+  var {opacity} = shapeProps;
   if (opacity === 0 && !anyPropChanged(shp, ['opacity'])) {
     return shp;
   }
@@ -25,19 +25,18 @@ var renderPath = (shp, domElement) => {
   // Collect any attribute that needs to be attrs here
   var attrs = {};
 
-  var {matrix} = getShapeProps(shp, ['matrix']);
+  var {matrix} = shapeProps;
   if (matrix.manual || anyPropChanged(shp, ['matrix'])) {
     attrs.transform = 'matrix(' + matrix.toString() + ')';
   }
 
   if(anyPropChanged(shp, ['vertices'])) {
-    var {vertices, closed} = getShapeProps(shp, ['vertices','closed']);
+    var {vertices, closed} = shapeProps;
     attrs.d = toString(vertices, closed);
   }
 
   if(anyPropChanged(shp, ['fill','stroke','linewidth','opacity','visibility'])) {
-    var { fill,  stroke,  linewidth,  opacity,  visible} = getShapeProps(shp,
-        ['fill','stroke','linewidth','opacity','visible']);
+    var { fill,  stroke,  linewidth,  opacity,  visible} = shapeProps;
 
     if (fill && getShapeRenderer(fill)) { renderShape(fill, domElement); }
     attrs.fill = fill && fill.id ? 'url(#' + fill.id + ')' : fill;
@@ -51,8 +50,7 @@ var renderPath = (shp, domElement) => {
   }
 
   if(anyPropChanged(shp, ['cap','join','miter'])) {
-    var { cap,  join,  miter} = getShapeProps(shp,
-        ['cap','join','miter']);
+    var { cap,  join,  miter} = shapeProps;
     attrs['stroke-linecap'] = cap;
     attrs['stroke-linejoin'] = join;
     attrs['stroke-miterlimit'] = miter;
@@ -73,7 +71,7 @@ var renderPath = (shp, domElement) => {
   if (anyPropChanged(shp, ['clip'])) {
     var clipElem = getClip(shp);
 
-    var { clip } = getShapeProps(shp, ['clip']);
+    var { clip } = shapeProps;
 
     if (clip) {
       renderer.elem.removeAttribute('id');
@@ -94,7 +92,7 @@ var renderPath = (shp, domElement) => {
    */
 
   // if (anyPropChanged(shp, ['mask'])) {
-  //  var { mask } = getShapeProps(shp, ['mask']);
+  //  var { mask } = shapeProps;
   //   if (mask) {
   //     elem.setAttribute('clip-path', 'url(#' + mask.id + ')');
   //   } else {

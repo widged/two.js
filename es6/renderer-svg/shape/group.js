@@ -15,7 +15,7 @@ var renderGroup = (shp, domElement) => {
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and
   // applied once the object is visible again
-  var {opacity} = getShapeProps(shp, ['opacity']);
+  var {opacity} = shapeProps;
   if (opacity === 0 && !anyPropChanged(shp, ['opacity'])) {
     return shp;
   }
@@ -28,7 +28,7 @@ var renderGroup = (shp, domElement) => {
   }
 
   // _Update styles for the <g>
-  var {matrix} = getShapeProps(shp, ['matrix']);
+  var {matrix} = shapeProps;
   var context = {
     domElement: domElement,
     elem: renderer.elem
@@ -49,12 +49,12 @@ var renderGroup = (shp, domElement) => {
 
 
   if(anyPropChanged(shp, ['additions'])) {
-    var {additions} = getShapeProps(shp, ['additions']);
+    var {additions} = shapeProps;
     additions.forEach((obj) => { appendChild(renderer.elem, obj); });
   }
 
   if(anyPropChanged(shp, ['substractions'])) {
-    var {substractions} = getShapeProps(shp, ['substractions']);
+    var {substractions} = shapeProps;
     substractions.forEach((obj) => { removeChild(renderer.elem, obj); });
   }
 
@@ -75,7 +75,7 @@ var renderGroup = (shp, domElement) => {
    if (anyPropChanged(shp, ['clip'])) {
      var clipElem = getClip(shp);
 
-     var { clip } = getShapeProps(shp, ['clip']);
+     var { clip } = shapeProps;
 
      if (clip) {
        renderer.elem.removeAttribute('id');
@@ -91,7 +91,7 @@ var renderGroup = (shp, domElement) => {
    */
 
   if (anyPropChanged(shp, ['mask'])) {
-    var { mask } = getShapeProps(shp, ['mask']);
+    var { mask } = shapeProps;
     if (mask) {
       renderer.elem.setAttribute('clip-path', 'url(#' + mask.id + ')');
     } else {
