@@ -49,8 +49,7 @@ class Path extends Shape {
     super();
     // init
     this.setState(PROP_DEFAULTS);
-    var {renderer, changeTracker} = this.getState();
-    renderer.type = 'path';
+    var {changeTracker} = this.getState();
 
     // let's clone to be on the safe side
     var clone = (vertices || []).slice(0);
@@ -291,9 +290,11 @@ class Path extends Shape {
      return getPathBoundingRect(matrix, border, length, vertices);
    }
 
-  // -----------------
-  // IRenderable
-  // -----------------
+   // -----------------
+   // IRenderable
+   // -----------------
+
+   get rendererType() { return 'path'; }
 
   flagReset() {
     var shp = this;

@@ -41,12 +41,6 @@ class LinearGradient extends Gradient {
 
   }
 
-  // -----------------
-  // IRenderable
-  // -----------------
-
-
-  get rendererType() { return 'linear-gradient'; }
 
   // -----------------
   // IShape
@@ -90,6 +84,11 @@ class LinearGradient extends Gradient {
   }
 */
 
+  // -----------------
+  // IRenderable
+  // -----------------
+
+  get rendererType() { return 'linear-gradient'; }
 
   flagReset() {
     super.flagReset();

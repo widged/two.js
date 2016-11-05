@@ -59,6 +59,10 @@ class RadialGradient extends Gradient {
     });
   }
 
+  // -----------------
+  // IShape
+  // -----------------
+
   beforePropertySet(key, newV) {
     newV = super.beforePropertySet(key, newV);
     return newV;
@@ -69,11 +73,6 @@ class RadialGradient extends Gradient {
   // -----------------
 
   get rendererType() { return 'radial-gradient'; }
-
-  // -----------------
-  // IShape
-  // -----------------
-
 
   flagReset() {
     super.flagReset();

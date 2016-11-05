@@ -41,7 +41,6 @@ class Text extends Shape {
     this.setState(PROP_DEFAULTS);
     // this shape
     var {renderer, changeTracker} = this.getState();
-    renderer.type = 'text';
     this.setState({
       value: message
     });
@@ -101,14 +100,20 @@ class Text extends Shape {
   }
 
   // -----------------
-  // IExportable
+  // IRenderable
   // -----------------
+
+  get rendererType() { return 'text'; }
 
   flagReset() {
     super.flagReset();
     this.state.changeTracker.drop(Object.keys(PROP_DEFAULTS));
     return this;
   }
+
+  // -----------------
+  // IExportable
+  // -----------------
 
   /**
   * Returns a new instance of a Two.Text with the same settings.

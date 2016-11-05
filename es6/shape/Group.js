@@ -60,9 +60,6 @@ class Group extends Shape {
       children: shapes,
     });
     var {renderer, changeTracker} = this.getState();
-    renderer.type = 'group';
-
-
 
     /**
     * children - A Collection of all the children of the group.

@@ -19,7 +19,7 @@ FN.getShapeRenderer = (shp) => {
 FN.updateShape = (shp, isDeep) => {
   var {updateShape, updateAnyShape, updatePath} = FN;
   if(!shp) { return; }
-  if(shp.getState().renderer.type === 'path') {
+  if(shp.rendererType === 'path') {
     updatePath(shp);
     updateAnyShape(shp, isDeep);
   } else {
