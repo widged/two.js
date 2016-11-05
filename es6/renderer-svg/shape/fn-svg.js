@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import dom   from '../../platform/dom';
-import shapeRendering   from '../../shape-rendering';
+import shapeRendering   from '../../renderer-bridge';
 
 var {getShapeRenderer} = shapeRendering;
 

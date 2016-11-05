@@ -31,7 +31,7 @@
 /* jshint esnext: true */
 
 // classic interface for two.js
-import TwoLight  from './TwoLight';
+import TwoScene  from './TwoScene';
 import EventEmitter  from './util/EventEmitter';
 import makeShape from './shape/factories';
 import Player from './util/Player';
@@ -47,7 +47,7 @@ var beforeRender = (two, classicConfig) => {
 /**
  * @class
  */
-class TwoClassic extends TwoLight  {
+class TwoClassic extends TwoScene  {
 
   constructor(classicConfig) {
     var {width, height, type, fullscreen, autostart} = Object.assign(DefaultValues.TwoClassic, classicConfig);

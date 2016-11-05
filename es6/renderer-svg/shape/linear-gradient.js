@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import svgFN    from './fn-svg';
-import shapeRendering   from '../../shape-rendering';
+import shapeRendering   from '../../renderer-bridge';
 
 var {createElement, setAttributes} = svgFN;
 var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;

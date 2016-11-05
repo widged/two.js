@@ -3,7 +3,7 @@
 import _   from '../../util/common';
 import is  from '../../util/is';
 import base from './base';
-import shapeRendering   from '../../shape-rendering';
+import shapeRendering   from '../../renderer-bridge';
 
 var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
 var {isDefaultMatrix, renderShape, Commands} = base;

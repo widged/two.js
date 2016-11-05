@@ -1,6 +1,8 @@
 /* jshint esnext: true */
 
-class ChangeTracker {
+// Not In Use
+
+class StateAndChange {
 
   constructor() {
     var state =  {
@@ -37,9 +39,9 @@ class ChangeTracker {
     if(!changes.includes(k)) { changes.push(k); }
   }
   setState(o) {
-    Object.keys(o).forEach((k) => { setOne(k, o[k]); })
+    Object.keys(o).forEach((k) => { this.setOne(k, o[k]); });
   }
 }
 
 
-export default ChangeTracker;
+export default StateAndChange;

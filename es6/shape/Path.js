@@ -12,7 +12,7 @@ import Anchor  from '../Anchor';
 import Shape   from '../Shape';
 import shapeFN from '../shape-fn';
 import pathFN  from './fn-path';
-import shapeRendering   from '../shape-rendering';
+import shapeRendering   from '../renderer-bridge';
 
 var {updateShape} = shapeRendering;
 

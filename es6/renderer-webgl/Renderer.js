@@ -6,7 +6,7 @@ import Array2   from '../struct/Array';
 import dom  from '../platform/dom';
 import Renderer from '../TwoRenderer';
 import base from './shape/base';
-import shapeRendering   from '../shape-rendering';
+import shapeRendering   from '../renderer-bridge';
 import glFN   from './shape/fn-gl';
 
 var {isUndefined} = is;

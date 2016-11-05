@@ -22,7 +22,7 @@ FN.TwoClassic = {
   autostart: false
 };
 
-FN.TwoLight = {
+FN.TwoScene = {
   width: 640,
   height: 480,
   RendererDelegate: undefined, // must be imported and specified by the user.

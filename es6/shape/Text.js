@@ -6,7 +6,7 @@ import Shape from '../Shape';
 import shapeFN    from '../shape-fn';
 import pathFN    from '../shape/fn-path';
 import DefaultValues from '../constant/DefaultValues';
-import shapeRendering   from '../shape-rendering';
+import shapeRendering   from '../renderer-bridge';
 
 var {updateShape} = shapeRendering;
 var {isNumber, isObject} = is;

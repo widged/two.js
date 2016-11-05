@@ -6,10 +6,10 @@ import makeShape from './shape/factories';
 /**
  * @class
  */
-class TwoLight {
+class TwoScene {
 
   constructor(config) {
-    var {width, height, RendererDelegate, beforeRender} = Object.assign(DefaultValues.TwoLight, config);
+    var {width, height, RendererDelegate, beforeRender} = Object.assign(DefaultValues.TwoScene, config);
 
     /**
     renderer- The instantiated rendering class for the instance. For a list of possible rendering types check out RendererTypes.
@@ -145,4 +145,4 @@ class TwoLight {
 
 }
 
-export default TwoLight;
+export default TwoScene;

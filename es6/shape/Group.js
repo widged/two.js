@@ -9,7 +9,7 @@ import shapeFN    from '../shape-fn';
 import groupFN  from './fn-group';
 import Children  from '../ChildrenCollection';
 import DefaultValues from '../constant/DefaultValues';
-import shapeRendering   from '../shape-rendering';
+import shapeRendering   from '../renderer-bridge';
 
 var {updateShape} = shapeRendering;
 

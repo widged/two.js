@@ -8,7 +8,7 @@ import UidGenerator from './util/uid-generator';
 import shapeFN    from './shape-fn';
 import DefaultValues from './constant/DefaultValues';
 import ChangeTracker from './util/ChangeTracker';
-import shapeRendering from './shape-rendering';
+import shapeRendering from './renderer-bridge';
 
 var uniqueId = UidGenerator();
 var {serializeProperties} = shapeFN;
