@@ -308,6 +308,10 @@ class Path extends Shape {
 
   }
 
+  // -----------------
+  // IExportable
+  // -----------------
+
   /**
    * Returns a new instance of a `Path` with the same settings.
    */

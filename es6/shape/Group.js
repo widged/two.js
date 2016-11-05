@@ -49,7 +49,7 @@ class Group extends Shape {
       whenChildrenShuffled : (() => { changeTracker.raise(['order']); }).bind(this)
     };
 
-        
+
     this.setState({
       additions: [],
       substractions : []
@@ -75,6 +75,8 @@ class Group extends Shape {
     // unraised flags: 'additions,substractions,order,mask'
 
   }
+
+
 
   // --------------------
   // Accessors
@@ -222,6 +224,7 @@ class Group extends Shape {
   // IRenderable
   // -----------------
 
+  get rendererType() { return 'group'; }
 
   flagReset() {
     super.flagReset();
@@ -232,6 +235,10 @@ class Group extends Shape {
     return this;
 
   }
+
+  // -----------------
+  // IExportable
+  // -----------------
 
   /**
    * Returns a new instance of a Two.Group with the same settings.

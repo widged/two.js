@@ -41,6 +41,17 @@ class LinearGradient extends Gradient {
 
   }
 
+  // -----------------
+  // IRenderable
+  // -----------------
+
+
+  get rendererType() { return 'linear-gradient'; }
+
+  // -----------------
+  // IShape
+  // -----------------
+
   beforePropertySet(key, newV) {
     newV = super.beforePropertySet(key, newV);
     if(key === 'left' || key === 'right') {
@@ -80,12 +91,6 @@ class LinearGradient extends Gradient {
 */
 
 
-  // -----------------
-  // IRenderable
-  // -----------------
-
-  get rendererType() { return 'linear-gradient'; }
-
   flagReset() {
     super.flagReset();
     this.getState().changeTracker.drop(['endPoints']);
@@ -93,7 +98,7 @@ class LinearGradient extends Gradient {
   }
 
   // -----------------
-  // IShape
+  // IExportable
   // -----------------
 
   /**

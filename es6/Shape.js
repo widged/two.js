@@ -154,6 +154,10 @@ class Shape {
     return this;
   }
 
+  // -----------------
+  // IExportable
+  // -----------------
+
   clone() {
     console.log('ONLY CALLED BY USER')
     var shp = this;

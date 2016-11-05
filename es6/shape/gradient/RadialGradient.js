@@ -81,6 +81,10 @@ class RadialGradient extends Gradient {
     return this;
   }
 
+  // -----------------
+  // IExportable
+  // -----------------
+
   /**
    * A function to clone a radialGradient. Also, clones each `Stop` in the radialGradient.stops array.
    */

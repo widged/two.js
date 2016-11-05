@@ -62,9 +62,8 @@ class Gradient extends Shape {
     return v;
   }
 
-
   // -----------------
-  // IRenderable
+  // IShape
   // -----------------
 
   flagReset() {
@@ -72,6 +71,10 @@ class Gradient extends Shape {
     this.getState().changeTracker.drop(['spread', 'stops']);
     return this;
   }
+
+  // -----------------
+  // IExportable
+  // -----------------
 
   clone() {
     console.log('ONLY CALLED BY USER')

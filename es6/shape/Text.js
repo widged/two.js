@@ -101,7 +101,7 @@ class Text extends Shape {
   }
 
   // -----------------
-  // IRenderable
+  // IExportable
   // -----------------
 
   flagReset() {
