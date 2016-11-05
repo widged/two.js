@@ -39,7 +39,8 @@ FN.getClip = function(shp) {
       root = root.parent;
      }
     clipR = renderer.clip = createElement('clipPath');
-    root.defs.appendChild(clipR);
+    // the root is a Renderer state.
+    root.domElement.defs.appendChild(clipR);
   }
 
   return clipR;

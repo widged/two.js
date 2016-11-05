@@ -5,10 +5,10 @@ class Renderer {
   constructor(scene, options) {
     // Everything drawn on the canvas needs to come from the stage.
     // :REVIEW: parent of a scene, a renderer?
-    scene.parent = this;
     var domElement = this.getDomNode();
     this.setState({ scene, domElement });
     this.initializeContext(options);
+    scene.parent = this.state;
   }
 
   // --------------------

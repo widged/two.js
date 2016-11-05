@@ -9,13 +9,14 @@ var {isDefaultMatrix, renderShape} = base;
 var renderGroup = (shp, ctx) => {
 
   var shapeProps = getShapeProps(shp);
+  var renderer   = getShapeRenderer(shp);
 
-  var renderer       = getShapeRenderer(shp);
-  var parentRenderer = getShapeRenderer(shp.parent);
+  var parent = shp.parent;
+  
+  var parentRenderer = parent ? getShapeRenderer(shp.parent) : undefined;
 
   var { matrix, opacity, mask, clip } = shapeProps;
 
-  var parent = shp.parent;
   renderer.opacity = opacity * (parent && parentRenderer ? parentRenderer.opacity : 1);
 
   if (!renderer.context) { renderer.context = {}; }

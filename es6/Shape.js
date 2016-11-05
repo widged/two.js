@@ -28,8 +28,6 @@ class Shape {
   constructor() {
      // id - The id of the path. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if path.id = 4 then document.querySelector('#two-' + group.id) will return the corresponding svg node.
     this.id = DefaultValues.ShapeIdentifier + uniqueId();
-    // parent  - A reference to the `Group` that contains this instance.
-    this.parent = undefined;
     var changeTracker = new ChangeTracker(); // clip, mask
     // set on svg import only
     // Private object for renderer specific variables.
@@ -37,7 +35,7 @@ class Shape {
     this.setState({
       //  id - The id of the group. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if group.id = 5 then document.querySelector('#two-' + group.id) will return the corresponding node.
       id: this.id,
-      //  parent - A reference to the `Group` that contains this instance.
+      // parent  - A reference to the `Group` that contains this instance.
       parent: undefined,
       //  mask - A reference to the `Path` that masks the content within the group. Automatically sets the referenced Two.Path.clip to true.
       renderer: {},

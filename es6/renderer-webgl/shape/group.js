@@ -18,6 +18,7 @@ var renderGroup = (shp, gl, program) => {
   var shapeProps = getShapeProps(shp);
 
   var renderer       = recomputeMatrixAndScaleIfNecessary(shp);
+  var {parent} = shapeProps;
   var parentRenderer = getShapeRenderer(shp.parent);
 
   var { mask, opacity, substractions } = shapeProps;
@@ -31,8 +32,9 @@ var renderGroup = (shp, gl, program) => {
   // :NOTE: substractions array is reset on flag.reset()
   rendererFN.removeNodes(substractions, gl);
 
+  var {children} = shapeProps;
   // shp.children is a collection, not a proper array
-  Array.from(shp.children).forEach((child) => {
+  Array.from(children).forEach((child) => {
     renderShape(child, gl, program);
   });
 
