@@ -18,14 +18,14 @@ var renderLinearGradient = (shp, canvasContext, elem) => {
 
   if (!renderer.gradient  || anyPropChanged(shp, ['endPoints','stops']) ) {
 
-    var {left, right, stops} = shapeProps;
-    var {x: lx,y: ly} = getShapeProps(left, ['x','y']);
-    var {x: rx,y: ry} = getShapeProps(right, ['x','y']);
-    renderer.gradient = canvasContext.createLinearGradient( lx, ly, rx, ry );
+    var { stops, left, right } = shapeProps;
+    var {x: x1, y: y1} = left  || {x: 0, y: 0};
+    var {x: x2, y: y2} = right || {x: 0, y: 0};
+    renderer.gradient = canvasContext.createLinearGradient( x1, y1, x2, y2 );
 
-    for (var i = 0, ni = stops.length, di = null; i < ni; i++) {
-      di = stops[i];
-      renderer.gradient.addColorStop(di.offset, di.color);
+    for (var i = 0, ni = stops.length; i < ni; i++) {
+      var {offset, color} = getShapeProps(stops[i], ['offset','color']);
+      renderer.gradient.addColorStop(offset, color);
     }
 
   }

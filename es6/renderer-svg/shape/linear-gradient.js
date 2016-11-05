@@ -38,33 +38,20 @@ var renderLinearGradient = (shp, domElement) => {
     setAttributes(renderer.elem, attrs);
   }
 
-  if (anyPropChanged(shp, ['stops'])) {
-    var {stops} = shapeProps;
+  if (!renderer.gradient || anyPropChanged(shp, ['stops', 'endPoints'])) {
     svgFN.clear(renderer.elem);
+    var { stops, left, right } = shapeProps;
+    var {x: x1, y: y1} = left  || {x: 0, y: 0};
+    var {x: x2, y: y2} = right || {x: 0, y: 0};
 
-    for (var i = 0; i < stops.length; i++) {
-
-      var stop = stops[i];
-      var sAttrs = {};
-
-      if (anyPropChanged(stop, ['offset','color','opacity'])) {
-        var {offset,color,opacity} = getShapeProps(stop, ['offset','color','opacity']);
-        sAttrs.offset = 100 * offset + '%';
-        sAttrs['stop-color'] = color;
-        sAttrs['stop-opacity'] = opacity;
-      }
-
-      var stopRenderer = getShapeRenderer(stop);
-      if (!stopRenderer.elem) {
-        stopRenderer.elem = createElement('stop', sAttrs);
-      } else {
-        setAttributes(stopRenderer.elem, sAttrs);
-      }
-
-      renderer.elem.appendChild(stopRenderer.elem);
-
+    for (var i = 0, ni = stops.length, stop, stopRenderer, stopNode; i < ni; i++) {
+      stop = stops[i];
+      var {offset, color, opacity} = getShapeProps(stop, ['offset','color','opacity']);
+      stopRenderer = getShapeRenderer(stop);
+      stopNode = svgFN.createGradientStop(stopRenderer.elem, offset, color, opacity);
+      stopRenderer.elem = stopNode;
+      renderer.elem.appendChild(stopNode);
     }
-
   }
 
   return shp.flagReset();
