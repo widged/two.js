@@ -100,11 +100,10 @@ function renderShapes(two) {
   var radialGradient = two.makeRadialGradient(
     0, 0,
     radius,
-    new RadialGradient.Stop(0,  'rgba(255, 0, 0, 1)', 1),
-    new RadialGradient.Stop(0.5, 'rgba(255, 0, 0, 0)', 0)
+    {offset: 0, color: 'rgba(255, 0, 0, 1)', opacity: 1},
+    {offset: 0.5, color: 'rgba(255, 0, 0, 0)', opacity: 0},
   );
-  var stop = new RadialGradient.Stop(0,  'rgba(255, 0, 0, 1)', 1);
-
+  
   var vignette = two.makeGeometry(RoundedRectangle(390, 70, 150, 100, 10))
   vignette.setProps({fill: radialGradient});
 
@@ -125,9 +124,9 @@ function renderShapes(two) {
   var linearGradient = two.makeLinearGradient(
     150 / 2, - 100 / 2,
     150 / 2, 100 / 2,
-    new LinearGradient.Stop(0, colors[0]),
-    new LinearGradient.Stop(1, colors[1]),
-    new LinearGradient.Stop(1, colors[2])
+    {offset: 0, color: colors[0]},
+    {offset: 1, color: colors[1]},
+    {offset: 1, color: colors[2]}
   );
 
   var rectangle = two.makeGeometry(Rectangle(390, 185, 150, 100));

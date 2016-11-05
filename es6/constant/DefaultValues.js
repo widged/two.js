@@ -194,10 +194,5 @@ FN.LinearGradient = {
   right: undefined
 };
 
-FN.Stop = {
-  offset : 0.0,
-  opacity : 1.0,
-  color: '#000'
-};
 
 export default FN;

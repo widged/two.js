@@ -34,9 +34,7 @@ var renderRadialGradient = (shp, domElement) => {
       for (var i = 0, ni = stops.length, stop, stopRenderer, stopNode; i < ni; i++) {
         stop = stops[i];
         var {offset, color, opacity} = getShapeProps(stop, ['offset','color','opacity']);
-        stopRenderer = getShapeRenderer(stop);
-        stopNode = createGradientStop(stopRenderer.elem, offset, color, opacity);
-        stopRenderer.elem = stopNode;
+        stopNode = createGradientStop(offset, color, opacity);
         renderer.elem.appendChild(stopNode);
       }
 

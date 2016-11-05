@@ -45,9 +45,9 @@ FN.getClip = function(shp) {
   return clipR;
 };
 
-FN.createGradientStop = (node, offset, color, opacity) => {
+FN.createGradientStop = (offset, color, opacity) => {
   let {createElement, setAttributes} = FN;
-  if (!node) { node = createElement('stop'); }
+  var node = createElement('stop');
   setAttributes( node, {
     offset : 100 * offset + '%',
     'stop-color': color,

@@ -82,11 +82,12 @@ class RadialGradient extends Gradient {
     console.log('ONLY CALLED BY USER')
     var shp = this;
     var {stops, center, radius, focal} = shp;
+    var clonedStops = stops.map((d) => { return Object.assign({},d); });
     var clone = new RadialGradient(
       center.x,
       center.y,
       radius,
-      (stops || []).map(cloned),
+      clonedStops,
       focal.x,
       focal.y
     );
