@@ -4,7 +4,7 @@ import shapeRendering   from '../../renderer-lib/renderer-bridge';
 
 var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
-var linearGradient = function(shp, ctx) {
+var renderLinearGradient = (shp, ctx) => {
 
   var renderer = getShapeRenderer(shp);
 
@@ -26,4 +26,4 @@ var linearGradient = function(shp, ctx) {
 };
 
 
-export default linearGradient;
+export default renderLinearGradient;

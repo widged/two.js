@@ -6,7 +6,7 @@ import shapeRendering   from '../../renderer-lib/renderer-bridge';
 var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 var {isDefaultMatrix, renderShape} = base;
 
-var group = function(shp, ctx) {
+var renderGroup = (shp, ctx) => {
 
   var renderer = getShapeRenderer(shp);
   var parentRenderer = getShapeRenderer(shp.parent);
@@ -55,4 +55,4 @@ var group = function(shp, ctx) {
 };
 
 
-  export default group;
+  export default renderGroup;

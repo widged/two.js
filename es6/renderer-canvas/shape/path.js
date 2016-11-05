@@ -11,7 +11,7 @@ var {isDefaultMatrix, renderShape, Commands} = base;
 var {mod, toFixed} = _;
 var {isString, isNumber} = is;
 
-var path = function(shp, ctx, forced, parentClipped) {
+var renderPath = (shp, ctx, forced, parentClipped) => {
 
   var renderer = getShapeRenderer(shp);
   var parentRenderer = getShapeRenderer(shp.parent);
@@ -196,4 +196,4 @@ var path = function(shp, ctx, forced, parentClipped) {
 };
 
 
-export default path;
+export default renderPath;

@@ -16,7 +16,7 @@ const ALIGNMENTS = {
 };
 
 
-var text = function(shp, ctx, forced, parentClipped) {
+var renderText = (shp, ctx, forced, parentClipped) => {
 
   var renderer = getShapeRenderer(shp);
   var parentRenderer = getShapeRenderer(shp.parent);
@@ -102,4 +102,4 @@ var text = function(shp, ctx, forced, parentClipped) {
 };
 
 
-export default text;
+export default renderText;
