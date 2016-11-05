@@ -8,11 +8,9 @@ import shapeRendering   from '../../renderer-lib/renderer-bridge';
 var {renderShape} = base;
 var {createElement, setAttributes, getClip} = svgFN;
 var {toString} = anchorFN;
-var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
+var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 
 var path = function(shp, domElement) {
-
-  updateShape(shp);
 
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and

@@ -3,7 +3,7 @@
 import shapeRendering   from '../../renderer-lib/renderer-bridge';
 import svgFN    from './fn-svg';
 
-var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
+var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 var {createElement, setAttributes} = svgFN;
 
 var renderElement = (parentNode, nodeType, attrs, defs) => {
@@ -19,8 +19,6 @@ var renderElement = (parentNode, nodeType, attrs, defs) => {
 };
 
 var radialGradient = function(shp, domElement) {
-
-  updateShape(shp);
 
   var changed = {};
   var renderer = getShapeRenderer(shp);

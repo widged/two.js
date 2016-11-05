@@ -1,7 +1,9 @@
 /* jshint esnext: true */
 
-import _  from '../../util/common';
 import Cache   from '../../util/Cache';
+import shapeRendering   from '../../renderer-lib/renderer-bridge';
+
+var {updateShape} = shapeRendering;
 
 var FN = {};
 
@@ -20,12 +22,11 @@ FN.renderScene = (gp, ctx, program) => {
 FN.renderShape = (shp, ctx, condi, clip) => {
   var renderFn = shapeCache.get(shp.rendererType);
   if(!renderFn) { console.log('[webgl.renderShape] Renderer not found', shp.rendererType); }
-  // console.log('--------------')
-  // console.log(shp.constructor.name, listChanges(shp));
-  renderFn.render(shp, ctx, condi, clip);
+  // TODO: Add a check here to only invoke update if need be.
+  updateShape(shp);
+  // call the render function for that shape type
+  shapeCache.get(shp.rendererType)(shp, ctx, condi, clip);
 };
-
-
 
 // ------------------------------------
 //  Utilities available to all shapes

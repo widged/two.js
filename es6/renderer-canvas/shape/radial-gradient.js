@@ -2,11 +2,9 @@
 
 import shapeRendering   from '../../renderer-lib/renderer-bridge';
 
-var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
 var radialGradient = function(shp, canvasContext) {
-
-  updateShape(shp);
 
   var renderer = getShapeRenderer(shp);
 

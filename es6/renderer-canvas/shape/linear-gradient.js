@@ -2,10 +2,9 @@
 
 import shapeRendering   from '../../renderer-lib/renderer-bridge';
 
-var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
 var linearGradient = function(shp, ctx) {
-
 
   var renderer = getShapeRenderer(shp);
 

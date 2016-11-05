@@ -4,15 +4,11 @@ import base from './base';
 import shapeRendering   from '../../renderer-lib/renderer-bridge';
 
 var {isCanvasContext} = base;
-var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
+var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 
-var radialGradient = {
-
-  render: function(shp, canvasContext) {
+var radialGradient = function(shp, canvasContext) {
     // :TODO: either WebGLRenderingContent or CanvasContext2D... track down why
     if (!isCanvasContext(canvasContext)) { return; }
-
-    updateShape(shp);
 
     var renderer = getShapeRenderer(shp);
 
@@ -31,8 +27,6 @@ var radialGradient = {
     }
 
     return shp.flagReset();
-
-  }
 
 };
 

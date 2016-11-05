@@ -5,17 +5,13 @@ import is  from '../../util/is';
 import base from './base';
 import shapeRendering   from '../../renderer-lib/renderer-bridge';
 
-var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 var {isDefaultMatrix, renderShape, Commands} = base;
 
 var {mod, toFixed} = _;
 var {isString, isNumber} = is;
 
 var path = function(shp, ctx, forced, parentClipped) {
-
-  // TODO: Add a check here to only invoke update if need be.
-
-  updateShape(shp);
 
   var renderer = getShapeRenderer(shp);
   var parentRenderer = getShapeRenderer(shp.parent);

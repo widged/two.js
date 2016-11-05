@@ -4,18 +4,13 @@ import base from './base';
 import shapeRendering   from '../../renderer-lib/renderer-bridge';
 
 var {isCanvasContext} = base;
-var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
+var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 
 
-var linearGradient = {
-
-  render: function(shp, canvasContext, elem) {
+var linearGradient = function(shp, canvasContext, elem) {
 
     // context can be canvas or webgl... webgl when elem is WebGL program
     if (!isCanvasContext(canvasContext)) { return; }
-
-
-    updateShape(shp);
 
     var renderer = getShapeRenderer(shp);
 
@@ -34,8 +29,6 @@ var linearGradient = {
     }
 
     return shp.flagReset();
-
-  }
 
 };
 

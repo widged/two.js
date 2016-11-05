@@ -6,7 +6,7 @@ import shapeRendering   from '../../renderer-lib/renderer-bridge';
 
 var {createElement, setAttributes} = svgFN;
 var {renderShape} = base;
-var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
 
   // TODO: Can speed up.
@@ -42,9 +42,6 @@ var elem = getShapeRenderer(object);
 };
 
 var group = function(shp, domElement) {
-
-
-  updateShape(shp);
 
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and

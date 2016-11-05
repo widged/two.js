@@ -8,7 +8,7 @@ import anchorFN   from './fn-anchors';
 import base from './base';
 
 var {isNumber, isString} = is;
-var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;
+var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 var {drawPathAnchors} = anchorFN;
 var {getPathBoundingClientRect} = boundingFN;
 var {hasGradientChanged, renderPath, isHidden, updateAndClearCanvasRect} = rendererFN;
@@ -67,10 +67,7 @@ var updateShapeCanvas = function(shp) {
   context.restore();
 };
 
-var path = {
-
-
-  render: function(shp, gl, program, forcedParent) {
+var path = function(shp, gl, program, forcedParent) {
 
 
     // <<< code that varies between text and path
@@ -87,8 +84,6 @@ var path = {
     var rendered = renderPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
     if(rendered) { shp.flagReset(); }
     return shp;
-
-  }
 
 };
 

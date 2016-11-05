@@ -1,7 +1,9 @@
 /* jshint esnext: true */
 
 import Cache   from '../../util/Cache';
-import svgFN   from './fn-svg';
+import shapeRendering   from '../../renderer-lib/renderer-bridge';
+
+var {updateShape} = shapeRendering;
 
 
 var FN = {};
@@ -20,6 +22,9 @@ FN.renderScene = (gp, ctx) => {
 FN.renderShape = (shp, ctx, condi, clip) => {
   var renderFn = shapeCache.get(shp.rendererType);
   if(!renderFn) { console.log('[svg.renderShape] Renderer not found', shp.rendererType); }
+  // TODO: Add a check here to only invoke update if need be.
+  updateShape(shp);
+  // call the render function for that shape type
   shapeCache.get(shp.rendererType)(shp, ctx, condi, clip);
 };
 

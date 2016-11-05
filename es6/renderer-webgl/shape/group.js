@@ -10,43 +10,34 @@ import base from './base';
 var {renderShape} = base;
 var {Multiply: multiplyMatrix} = Matrix;
 var {recomputeMatrixAndScaleIfNecessary} = rendererFN;
-var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged, raiseFlags} = shapeRendering;
+var {getShapeProps, getShapeRenderer, anyPropChanged, raiseFlags} = shapeRendering;
 var {MaskMode, remove} = glFN;
 
+var group = function(shp, gl, program) {
 
+    var renderer       = recomputeMatrixAndScaleIfNecessary(shp);
+    var parentRenderer = getShapeRenderer(shp.parent);
 
-var group = {
+    var { mask, opacity, substractions } = getShapeProps( shp, ["mask","opacity","substractions"] );
+    if(anyPropChanged(shp.parent, ['opacity'])) { raiseFlags(shp, ['opacity']);}
+    renderer.opacity = opacity * (parentRenderer ? parentRenderer.opacity : 1);
 
-    render: function(shp, gl, program) {
+    var maskMode = (mask) ? MaskMode(gl, () => { renderShape(mask, gl, program, shp); }) : undefined;
 
+    if(maskMode) { maskMode.on(); }
 
-      updateShape(shp);
+    // :NOTE: substractions array is reset on flag.reset()
+    rendererFN.removeNodes(substractions, gl);
 
-      var renderer       = recomputeMatrixAndScaleIfNecessary(shp);
-      var parentRenderer = getShapeRenderer(shp.parent);
+    // shp.children is a collection, not a proper array
+    Array.from(shp.children).forEach((child) => {
+      renderShape(child, gl, program);
+    });
 
-      var { mask, opacity, substractions } = getShapeProps( shp, ["mask","opacity","substractions"] );
-      if(anyPropChanged(shp.parent, ['opacity'])) { raiseFlags(shp, ['opacity']);}
-      renderer.opacity = opacity * (parentRenderer ? parentRenderer.opacity : 1);
+    if(maskMode) { maskMode.off(); }
 
-      var maskMode = (mask) ? MaskMode(gl, () => { renderShape(mask, gl, program, shp); }) : undefined;
+    return shp.flagReset();
 
-      if(maskMode) { maskMode.on(); }
-
-      // :NOTE: substractions array is reset on flag.reset()
-      rendererFN.removeNodes(substractions, gl);
-
-      // shp.children is a collection, not a proper array
-      Array.from(shp.children).forEach((child) => {
-        renderShape(child, gl, program);
-      });
-
-      if(maskMode) { maskMode.off(); }
-
-      return shp.flagReset();
-
-    }
-
-  };
+};
 
 export default group;

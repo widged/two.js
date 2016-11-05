@@ -4,7 +4,7 @@ import svgFN    from './fn-svg';
 import shapeRendering from '../../renderer-lib/renderer-bridge';
 
 var {createElement, setAttributes, getClip} = svgFN;
-var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
 const ALIGNMENTS = {
   left: 'start',
@@ -13,8 +13,6 @@ const ALIGNMENTS = {
 };
 
 var text = function(shp, domElement) {
-
-  updateShape(shp);
 
   var attrs = {};
 

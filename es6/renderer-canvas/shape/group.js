@@ -3,14 +3,10 @@
 import base from './base';
 import shapeRendering   from '../../renderer-lib/renderer-bridge';
 
-var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 var {isDefaultMatrix, renderShape} = base;
 
 var group = function(shp, ctx) {
-
-  // TODO: Add a check here to only invoke update if need be.
-
-  updateShape(shp);
 
   var renderer = getShapeRenderer(shp);
   var parentRenderer = getShapeRenderer(shp.parent);
