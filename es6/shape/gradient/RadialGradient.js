@@ -32,8 +32,7 @@ class RadialGradient extends Gradient {
 
     super(stops);
 
-    var {renderer, changeTracker} = this.getState();
-    renderer.type = 'radial-gradient';
+    var {changeTracker} = this.getState();
 
     var center = new Vector();
     center.x = isNumber(cx) ? cx : undefined;
@@ -68,6 +67,13 @@ class RadialGradient extends Gradient {
   // -----------------
   // IRenderable
   // -----------------
+
+  get rendererType() { return 'radial-gradient'; }
+
+  // -----------------
+  // IShape
+  // -----------------
+
 
   flagReset() {
     super.flagReset();

@@ -36,6 +36,13 @@ class Gradient extends Shape {
     });
   }
 
+  // -----------------
+  // IShape
+  // -----------------
+
+  get rendererType() { return 'gradient'; }
+
+
   beforePropertySet(k, v) {
     v = super.beforePropertySet(k, v);
     if(k === 'stops') {
