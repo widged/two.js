@@ -549,23 +549,6 @@ FN.updateLength = ({limit, vertices, pathClosed, lastClosed, lengths}) => {
 };
 
 
-FN.copyVertices = ({vertices, beginning, ending}) => {
-
-  var l = vertices.length;
-  var last = l - 1, v;
-
-  var ia = round((beginning) * last);
-  var ib = round((ending) * last);
-
-  var lst = [];
-  for (var i = ia; i < ib + 1; i++) {
-    v = vertices[i];
-    lst.push(v);
-  }
-
-  return lst;
-
-};
 
 NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  => {
 

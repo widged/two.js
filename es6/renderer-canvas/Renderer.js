@@ -3,7 +3,7 @@
 import is  from '../util/is';
 import dom  from '../platform/dom';
 import base from './shape/base';
-import Renderer from '../TwoRenderer';
+import Renderer from '../renderer-lib/TwoRenderer';
 
 var {isUndefined} = is;
 var {getRatio} = dom;

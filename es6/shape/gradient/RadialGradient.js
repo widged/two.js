@@ -11,7 +11,8 @@ import DefaultValues from '../../constant/DefaultValues';
 var {cloned, serialized} = shapeFN;
 var {isNumber} = is;
 
-var DEFAULTS = DefaultValues.RadialGradient;
+const PROP_DEFAULTS = DefaultValues.RadialGradient;
+const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 /**
  * A `RadialGradient` defines a radial color transition with a given radius,
@@ -41,7 +42,8 @@ class RadialGradient extends Gradient {
     focal.x = isNumber(fx) ? fx : center.x;
     focal.y = isNumber(fy) ? fy : center.y;
 
-    this.setState({
+    this.setProps(PROP_DEFAULTS);
+    this.setProps({
       center,
       radius : isNumber(r) ? r : 20,
       focal
@@ -50,12 +52,17 @@ class RadialGradient extends Gradient {
     changeTracker.drop(['endPoints']);
 
     center.dispatcher.on(VectorEventTypes.change, () => {
-      this.state.changeTracker.raise(['center']);
+      changeTracker.raise(['center']);
     });
 
     focal.dispatcher.on(VectorEventTypes.change, () => {
-      this.state.changeTracker.raise(['focal']);
+      changeTracker.raise(['focal']);
     });
+  }
+
+  beforePropertySet(key, newV) {
+    newV = super.beforePropertySet(key, newV);
+    return newV;
   }
 
   // -----------------
@@ -71,21 +78,30 @@ class RadialGradient extends Gradient {
   /**
    * A function to clone a radialGradient. Also, clones each `Stop` in the radialGradient.stops array.
    */
-  clone(parent) {
+  clone() {
+    console.log('ONLY CALLED BY USER')
     var shp = this;
-    parent = parent || shp.parent;
     var {stops, center, radius, focal} = shp;
-    stops = (stops || []).map(cloned);
-    var clone = new RadialGradient( center.x,  center.y, radius, stops, focal.x, focal.y );
-    Object.keys(DEFAULTS).forEach((k) => { clone[k] = shp[k]; });
-    parent.add(clone);
+    var clone = new RadialGradient(
+      center.x,
+      center.y,
+      radius,
+      (stops || []).map(cloned),
+      focal.x,
+      focal.y
+    );
+    for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
+      k = PROP_KEYS[i];
+      clone[k] = shp[k];
+    }
     return clone;
   }
 
   toObject() {
+    console.log('ONLY CALLED BY USER')
     var shp = this;
     var obj = Gradient.prototype.toObject.call(shp);
-    Object.keys(DEFAULTS).forEach((k) => { obj[k] = serialized(shp[k]); });
+    PROP_KEYS.forEach((k) => { obj[k] = serialized(shp[k]); });
     return obj;
   }
 

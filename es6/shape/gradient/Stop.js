@@ -7,7 +7,8 @@ var {isNumber, isString} = is;
 
 var stopIndex = 0;
 
-const DEFAULTS = DefaultValues.Stop;
+const PROP_DEFAULTS = DefaultValues.Stop;
+const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 /**
  * A `Stop` defines how gradients are colored. By itself a `Stop`
@@ -40,16 +41,24 @@ class Stop {
    * Returns a new `Stop`.
    */
   clone() {
+    console.log('ONLY CALLED BY USER')
     var shp = this;
     var clone = new Stop();
-    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
+    for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
+      k = PROP_KEYS[i];
+      clone[k] = shp[k];
+    }
     return clone;
   }
 
   toObject() {
+    console.log('ONLY CALLED BY USER')
     var shp = this;
     var obj = {};
-    Object.keys(DEFAULTS).forEach((k) => {  obj[k] = shp[k]; });
+    for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
+      k = PROP_KEYS[i];
+      obj[k] = shp[k];
+    }
     return obj;
   }
 

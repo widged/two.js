@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import base   from './shape/base';
-import Renderer from '../TwoRenderer';
+import Renderer from '../renderer-lib/TwoRenderer';
 import svgFN    from './shape/fn-svg';
 
 var {renderScene} = base;

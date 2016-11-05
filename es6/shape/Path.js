@@ -12,17 +12,18 @@ import Anchor  from '../Anchor';
 import Shape   from '../Shape';
 import shapeFN from '../shape-fn';
 import pathFN  from './fn-path';
-import shapeRendering   from '../renderer-bridge';
+import shapeRendering   from '../renderer-lib/renderer-bridge';
 
-var {updateShape} = shapeRendering;
+var {updateShape, copyVertices} = shapeRendering;
 
 var {isUndefined, isNull} = is;
 var {arrayLast} = _;
-var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, copyVertices, rectTopLeft, rectCentroid} = pathFN;
+var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, rectTopLeft, rectCentroid} = pathFN;
 var {min, max, round} = Math;
 var {serializeProperties, getPathBoundingRect} = shapeFN;
 
-var DEFAULTS = DefaultValues.Path;
+const PROP_DEFAULTS = DefaultValues.Path;
+const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 /**
  * A `Path` is the base class for creating all drawable shapes in two.js. By default,
@@ -47,7 +48,7 @@ class Path extends Shape {
   constructor(vertices, closed, curved, manual) {
     super();
     // init
-    this.setState(DEFAULTS);
+    this.setState(PROP_DEFAULTS);
     var {renderer, changeTracker} = this.getState();
     renderer.type = 'path';
 
@@ -202,10 +203,13 @@ class Path extends Shape {
    */
   corner() {
     var shp = this;
-    var {vertices} = getState();
+    var {vertices} = shp.getState();
     // :NOTE: getBoundingClientRect will call update shape first
     var {x,y} = rectTopLeft(shp.getBoundingClientRect(true));
-    (vertices || []).forEach(function(v) { v.subSelf(x,y); });
+    for (var i = 0, ni = (vertices || []).length , v = null; i < ni; i++) {
+      v = vertices[i];
+      v.subSelf(x,y);
+    }
     return shp;
   }
 
@@ -215,10 +219,13 @@ class Path extends Shape {
    */
   center() {
     var shp = this;
-    var {vertices} = getState();
+    var {vertices} = shp.getState();
     // :NOTE: getBoundingClientRect will call update shape first
     var {x,y} = rectCentroid(shp.getBoundingClientRect(true));
-    (vertices || []).forEach(function(v) { v.subSelf(x,y); });
+    for (var i = 0, ni = (vertices || []).length , v = null; i < ni; i++) {
+      v = vertices[i];
+      v.subSelf(x,y);
+    }
     return shp;
   }
 
@@ -239,24 +246,6 @@ class Path extends Shape {
   }
 
 
-  /**
-   * Based on closed / curved and sorting of vertices plot where all points
-   * should be and where the respective handles should be too.
-   * If curved goes through the vertices and calculates the curve.
-   * If not, then goes through the vertices and calculates the lines.
-   */
-  plot() {
-    var shp = this;
-    var {vertices, closed, curved} = shp.getState();
-    if (curved) {
-      pathFN.getCurveFromPoints(vertices, closed);
-      return shp;
-    }
-    for (var i = 0; i < vertices.length; i++) {
-      vertices[i].command = i === 0 ? Commands.MOVE : Commands.LINE;
-    }
-    return shp;
-  }
 
   /**
    * Creates a new set of vertices that are lineTo anchors. For previously
@@ -281,24 +270,6 @@ class Path extends Shape {
     return shp;
   }
 
-  // -----------------
-  // Private
-  // -----------------
-
-  _update() {
-    var shp = this;
-    var {changeTracker,vertices, beginning, ending, automatic} = shp.getState();
-    if(changeTracker.oneChange('vertices'))  {
-      vertices = copyVertices({ vertices, beginning, ending });
-      shp.setState({vertices});
-      if (automatic) { shp.plot(); }
-    }
-
-    super._update(arguments);
-
-    return shp;
-
-  }
 
   // -----------------
   // IBounded
@@ -340,20 +311,26 @@ class Path extends Shape {
   /**
    * Returns a new instance of a `Path` with the same settings.
    */
-  clone(parent) {
+  clone() {
+    console.log('ONLY CALLED BY USER')
     var shp = this;
-    parent = parent || shp.parent;
     var  {closed, curved, automatic, vertices} = shp.getState();
-    var points = vertices.map((d) => { return d.clone(); });
-    var clone = new Path(points, closed, curved, !automatic);
-    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
-    parent.add(clone);
+    var anchors = vertices.map((d) => { return d.clone(); });
+    var clone = new Path(anchors, closed, curved, !automatic);
+    for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
+      k = PROP_KEYS[i];
+      clone[k] = shp[k];
+    }
     return clone;
   }
 
   toObject() {
+    console.log('ONLY CALLED BY USER')
     var shp = this;
+    super.toObject();
+
     var obj = serializeProperties(shp, {}, []);
+
     var  {closed, curved, automatic, vertices} = shp.getState();
     obj.vertices = vertices.map((d) => { return d.toObject(); });
     return obj;

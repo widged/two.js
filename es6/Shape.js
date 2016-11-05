@@ -8,14 +8,14 @@ import UidGenerator from './util/uid-generator';
 import shapeFN    from './shape-fn';
 import DefaultValues from './constant/DefaultValues';
 import ChangeTracker from './util/ChangeTracker';
-import shapeRendering from './renderer-bridge';
+import shapeRendering from './renderer-lib/renderer-bridge';
 
 var uniqueId = UidGenerator();
 var {serializeProperties} = shapeFN;
 var {updateShape} = shapeRendering;
 
-var DEFAULTS = DefaultValues.Shape;
-
+const PROP_DEFAULTS = DefaultValues.Shape;
+const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 /**
 *
 */
@@ -26,33 +26,47 @@ class Shape {
   // --------------------
 
   constructor() {
-
      // id - The id of the path. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if path.id = 4 then document.querySelector('#two-' + group.id) will return the corresponding svg node.
     this.id = DefaultValues.ShapeIdentifier + uniqueId();
     // parent  - A reference to the `Group` that contains this instance.
     this.parent = undefined;
-    var changeTracker = new ChangeTracker(['matrix','scale','clip']); // clip, mask
+    var changeTracker = new ChangeTracker(); // clip, mask
     // set on svg import only
-    this.classList = [];
     // Private object for renderer specific variables.
-    this.state = {
+    this.state = {changeTracker};
+    this.setState({
+      //  id - The id of the group. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if group.id = 5 then document.querySelector('#two-' + group.id) will return the corresponding node.
+      id: this.id,
+      //  parent - A reference to the `Group` that contains this instance.
+      parent: undefined,
+      //  mask - A reference to the `Path` that masks the content within the group. Automatically sets the referenced Two.Path.clip to true.
       renderer: {},
-      changeTracker,
+      // Define matrix properties which all inherited objects of Shape have.
       matrix: new Matrix(),
+    });
+    this.setProps({
+      translation: new Vector(),
       rotation: 0,
       scale: 1,
-      translation: new Vector()
-    };
-    // Define matrix properties which all inherited objects of Shape have.
-    this.state.translation = this.state.translation;
+      classList: [],
+    });
+
+    changeTracker.raise(['matrix','scale','clip']);
 
     var flagMatrix = () => {  changeTracker.raise(['matrix']);   };
-    this.state.translation.dispatcher.on(VectorEventTypes.change, flagMatrix);
+    this.getProps().translation.dispatcher.on(VectorEventTypes.change, flagMatrix);
   }
+
+
 
   // --------------------
   // IStated
   // --------------------
+  bindOnce(key, fn) {
+    if(!this.bound) { this.bound = {}; }
+    if(!this.bound[key]) { this.bound[key] = fn.bind(this); }
+    return this.bound[key];
+  }
   getState() {
     return this.state;
   }
@@ -75,6 +89,9 @@ class Shape {
     this.setState(obj);
     return this;
   }
+  getProps(obj) {
+    return this.getState();
+  }
   listFlags() {
     var {changeTracker} = this.getState();
     return changeTracker.listChanges();
@@ -90,6 +107,7 @@ class Shape {
     if(newValue !== oldValue) {
       // :TODO: add a raiseOne function to changeTracker
       var {changeTracker} = this.getState();
+      console.log(changeTracker, this)
       changeTracker.raise([key]);
     }
     return newValue;
@@ -98,8 +116,14 @@ class Shape {
   // --------------------
   // Accessors
   // --------------------
+
   setTranslation(x,y) {
     this.state.translation.set(x,y);
+  }
+
+  setRendererType(_) {
+    var renderer = this.getState().renderer;
+    renderer.type = _;
   }
 
   get rendererType() {
@@ -119,37 +143,6 @@ class Shape {
   }
 
   // -----------------
-  // Private
-  // -----------------
-
-  /**
-   * To be called before render that calculates and collates all information
-   * to be as up-to-date as possible for the render. Called once a frame.
-   */
-  _update(deep) {
-    var shp = this;
-    var {matrix, changeTracker} = this.getState();
-    if (matrix && !matrix.manual && changeTracker.oneChange('matrix')) {
-      matrix
-        .identity()
-        .translate(this.state.translation.x, this.state.translation.y)
-        .scale(this.state.scale)
-        .rotate(this.state.rotation);
-    }
-    if(!matrix) {
-      console.log('[WARN] matrix is undefed', shp.toString());
-    }
-
-    if (deep) {
-      // Bubble up to parents mainly for `getBoundingClientRect` method.
-      updateShape(shp.parent);
-    }
-
-    return this;
-
-  }
-
-  // -----------------
   // IRenderable
   // -----------------
 
@@ -159,17 +152,26 @@ class Shape {
     return this;
   }
 
-
   clone() {
+    console.log('ONLY CALLED BY USER')
     var shp = this;
     var clone = new Shape();
-    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
-    return updateShape(clone);
+    for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
+      k = PROP_KEYS[i];
+      clone[k] = shp[k];
+    }
+    return clone;
   }
 
   toObject() {
     var shp = this;
-    return serializeProperties({}, shp);
+    var {translation, rotation, scale} = shp.getState();
+    var target = {
+      translation: translation.toObject(),
+      rotation,
+      scale
+    };
+    return target;
   }
 
 }

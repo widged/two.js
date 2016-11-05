@@ -6,7 +6,7 @@ import Shape from '../Shape';
 import shapeFN    from '../shape-fn';
 import pathFN    from '../shape/fn-path';
 import DefaultValues from '../constant/DefaultValues';
-import shapeRendering   from '../renderer-bridge';
+import shapeRendering   from '../renderer-lib/renderer-bridge';
 
 var {updateShape} = shapeRendering;
 var {isNumber, isObject} = is;
@@ -14,7 +14,8 @@ var {isNumber, isObject} = is;
 var {shimBoundingClientRect, serializeProperties} = shapeFN;
 var {getComputedMatrix} = pathFN;
 
-const DEFAULTS = DefaultValues.Text;
+const PROP_DEFAULTS = DefaultValues.Text;
+const PROP_KEYS  = Object.keys(PROP_DEFAULTS);
 
 /**
  * A `Text` captures the properties of a textual on screen element.
@@ -37,7 +38,7 @@ class Text extends Shape {
   constructor(message, x, y, styles) {
     // init
     super();
-    this.setState(DEFAULTS);
+    this.setState(PROP_DEFAULTS);
     // this shape
     var {renderer, translation, changeTracker} = this.getState();
     renderer.type = 'text';
@@ -108,26 +109,29 @@ class Text extends Shape {
 
   flagReset() {
     super.flagReset();
-    this.state.changeTracker.drop(Object.keys(DEFAULTS));
+    this.state.changeTracker.drop(Object.keys(PROP_DEFAULTS));
     return this;
   }
 
   /**
   * Returns a new instance of a Two.Text with the same settings.
   */
-  clone(parent) {
+  clone() {
+    console.log('Only called by user')
     var shp = this;
-    if(!parent) { parent = shp.parent; }
     var {value} = shp.getState();
     var clone = new Text(value);
-    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
-    parent.add(clone);
+    for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
+      k = PROP_KEYS[i];
+      clone[k] = shp[k];
+    }
     return clone;
   }
 
   toObject() {
+    console.log('ONLY CALLED BY USER')
     var shp = this;
-    return serializeProperties(shp, {}, Object.keys(DEFAULTS));
+    return serializeProperties(shp, {}, Object.keys(PROP_DEFAULTS));
   }
 }
 

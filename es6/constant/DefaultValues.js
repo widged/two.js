@@ -54,10 +54,10 @@ translation - A `Vector` that represents x, y translation of the path in the dra
 clip - A `boolean` describing whether to render this shape as a clipping mask. This property is set automatically in correspondence with `Group.mask`. Defaults to false.
 */
 FN.Shape = {
+  translation: [0,0],
   rotation: 0,
   scale: 1,
   clip: false
-  // translation
   // mask: null,
 };
 
@@ -72,6 +72,8 @@ cap - A string representing the type of stroke cap to render for all child shape
 join - A string representing the type of stroke join to render for all child shapes. Use strictly for setting. All applicable values can be found on the w3c spec. Defaults to "round".
 miter - A number representing the miter limit for the stroke of all child objects. Use strictly for setting. Defaults to 1.
 */
+// Path properties can be set at Group level, that will be trickled down to all children
+// :REVIEW: why are text properties not included?
 FN.Group = {
    fill: '#fff',
    stroke: '#000',

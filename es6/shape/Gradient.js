@@ -9,7 +9,8 @@ import DefaultValues from '../constant/DefaultValues';
 
 var {cloned, serializeProperties} = shapeFN;
 
-var DEFAULTS  = DefaultValues.Gradient;
+const PROP_DEFAULTS  = DefaultValues.Gradient;
+const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 /**
  * A `Gradient` defines a color transition. By itself a `Gradient` doesn't render anything
@@ -27,11 +28,20 @@ class Gradient extends Shape {
     super();
     var {renderer} = this.getState();
     renderer.type = 'gradient';
-    this.setState(DEFAULTS);
-    this.setState({
-      stops: new Collection((stops || []).slice(0))
+    this.setProps(PROP_DEFAULTS);
+    this.setProps({
+      stops
     });
   }
+
+  beforePropertySet(key, newV) {
+    newV = super.beforePropertySet(key, newV);
+    if(key === 'stops') {
+      newV = new Collection((newV || []).slice(0));
+    }
+    return newV;
+  }
+
 
   // -----------------
   // IRenderable
@@ -39,23 +49,27 @@ class Gradient extends Shape {
 
   flagReset() {
     super.flagReset();
-    this.state.changeTracker.drop(['spread', 'stops']);
+    this.getState().changeTracker.drop(['spread', 'stops']);
     return this;
   }
 
-  clone(parent) {
+  clone() {
+    console.log('ONLY CALLED BY USER')
     var shp = this;
-    parent = parent || shp.parent;
     var clone = new Gradient();
-    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
-    clone.stops = shp.stops.map(cloned);
-    parent.add(clone);
+    for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
+      k = PROP_KEYS[i];
+      clone[k] = shp[k];
+    }
+    var {stops} = this.getProps();
+    clone.stops = stops.map(cloned);
     return clone;
   }
 
   toObject() {
-    var shp = this;
-    var obj = serializeProperties(shp, {}, Object.keys(DEFAULTS));
+    console.log('ONLY CALLED BY USER')
+  var shp = this;
+    var obj = serializeProperties(shp, {}, Object.keys(PROP_DEFAULTS));
     obj.stops = shp.stops.map(function(s) { return s.toObject(); });
     return obj;
   }

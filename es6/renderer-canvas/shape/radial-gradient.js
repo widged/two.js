@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import shapeRendering   from '../../renderer-bridge';
+import shapeRendering   from '../../renderer-lib/renderer-bridge';
 
 var {anyPropChanged, updateShape, getShapeProps, getShapeRenderer} = shapeRendering;
 

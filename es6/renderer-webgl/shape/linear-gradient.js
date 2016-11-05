@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import base from './base';
-import shapeRendering   from '../../renderer-bridge';
+import shapeRendering   from '../../renderer-lib/renderer-bridge';
 
 var {isCanvasContext} = base;
 var {getShapeProps, getShapeRenderer, updateShape, anyPropChanged} = shapeRendering;

@@ -9,7 +9,7 @@ import shapeFN    from '../shape-fn';
 import groupFN  from './fn-group';
 import Children  from '../ChildrenCollection';
 import DefaultValues from '../constant/DefaultValues';
-import shapeRendering   from '../renderer-bridge';
+import shapeRendering   from '../renderer-lib/renderer-bridge';
 
 var {updateShape} = shapeRendering;
 
@@ -19,7 +19,8 @@ var {serializeProperties, rectCentroid, rectTopLeft} = shapeFN;
 var {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
 var {translateChildren} = groupFN;
 
-var DEFAULTS = DefaultValues.Group;
+const PROP_DEFAULTS = DefaultValues.Group;
+const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
 
@@ -40,49 +41,39 @@ class Group extends Shape {
   constructor(...shapes) {
     super();
 
-    this.setState(DefaultValues.Group);
+    // any definition bound to this should be defined once and only once,
+    // in the constructor
+    this.bound = {
+      whenChildrenInserted : ((children) => { adoptShapes(this, children); }).bind(this),
+      whenChildrenRemoved : ((children) => { dropShapes(this, children); }).bind(this),
+      whenChildrenShuffled : (() => { changeTracker.raise(['order']); }).bind(this)
+    };
+
+        
     this.setState({
-      renderer : {type : 'group'},
-      children: new Children(shapes),
       additions: [],
       substractions : []
+    });
+
+    this.setProps(PROP_DEFAULTS);
+    this.setProps({
+      children: shapes,
     });
     var {renderer, changeTracker} = this.getState();
     renderer.type = 'group';
 
-    this.bound = {
-      whenChildrenInserted: ((children) => { adoptShapes(this, children); }).bind(this),
-      whenChildrenRemoved: ((children) => { dropShapes(this, children); }).bind(this),
-      whenChildrenShuffled: (() => { this.state.changeTracker.raise(['order']); }).bind(this)
-    };
+
 
     /**
-    * id - The id of the group. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if group.id = 5 then document.querySelector('#two-' + group.id) will return the corresponding node.
     * children - A Collection of all the children of the group.
-    * parent - A reference to the Two.Group that contains this instance.
-    * mask - A reference to the Two.Path that masks the content within the group. Automatically sets the referenced Two.Path.clip to true.
     */
-    this.state.additions = [];
-    this.state.substractions = [];
 
-    this.whenChildrenChange();
+
     changeTracker.raise(['opacity']);
 
     // var excluded = 'closed,curved,automatic,beginning,ending,mask'.split(',')
     // unraised flags: 'additions,substractions,order,mask'
 
-  }
-
-  // --------------------
-  // Flow
-  // --------------------
-
-  whenChildrenChange(oldChildren) {
-    if (oldChildren && oldChildren.state) { oldChildren.dispatcher.off(); }
-    var children = this.state.children;
-    children.dispatcher.on(CollectionEventTypes.insert, this.bound.whenChildrenInserted);
-    children.dispatcher.on(CollectionEventTypes.remove, this.bound.whenChildrenRemoved);
-    children.dispatcher.on(CollectionEventTypes.order, this.bound.whenChildrenShuffled);
   }
 
   // --------------------
@@ -92,15 +83,37 @@ class Group extends Shape {
   get children() { return this.state.children; }
   set children(shapes) {
     var oldChildren = this.state.children;
-    this.state.children = new Children(shapes);
-    this.whenChildrenChange(oldChildren);
+    this.setState({
+      children: shapes
+    });
   }
 
   get mask() { return this.state.mask; }
   set mask(v) {
-    this.state.mask = v;
-    this.state.changeTracker.raise(['mask']);
+    var state =
+    this.setState({mask: v});
+    this.getState().changeTracker.raise(['mask']);
     if (!v.clip) { v.clip = true; }
+  }
+
+  beforePropertySet(key, newV) {
+    newV = super.beforePropertySet(key, newV);
+    if(key === 'children') {
+        var oldChildren = this.getState().children;
+        if (oldChildren && oldChildren.dispatcher) { oldChildren.dispatcher.off(); }
+        newV = new Children(newV);
+    }
+    return newV;
+  }
+  afterPropertyChange(key, newV, oldV) {
+    if(key === 'children') {
+      var children = newV;
+      children.dispatcher.on(CollectionEventTypes.insert, this.bound.whenChildrenInserted);
+      children.dispatcher.on(CollectionEventTypes.remove, this.bound.whenChildrenRemoved);
+      children.dispatcher.on(CollectionEventTypes.order, this.bound.whenChildrenShuffled);
+
+    }
+
   }
 
   // --------------------
@@ -228,15 +241,19 @@ class Group extends Shape {
    * an instance of two in order to add elements correctly. This needs to
    * be rethought and fixed.
    */
-  clone(parent) {
+  clone() {
+    console.log('ONLY CALLED BY USER')
     var shp = this;
-    parent = parent || shp.parent;
     var clone = new Group();
-    Object.keys(DEFAULTS).forEach((k) => {  clone[k] = shp[k]; });
-    parent.add(clone);
-    // now clone all children recursively
+    for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
+      k = PROP_KEYS[i];
+      clone[k] = shp[k];
+    }
+    // now clone all children recursively and add them to this group
     var children = (shp.state.children || []).map((child) => {
-      return child.clone(clone);
+      var childClone = child.clone(clone);
+      clone.add(childClone);
+      return childClone;
     });
     return clone;
   }
@@ -248,7 +265,8 @@ class Group extends Shape {
    */
   toObject() {
     var shp = this;
-    var obj = serializeProperties(shp, {}, []);
+    var obj = super.toObject();
+    obj = serializeProperties(shp, obj);
     // now copy all children recursively
     obj.children =  (shp.state.children || []).map((child) => {
       return shp.toObject();

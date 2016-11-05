@@ -4,9 +4,9 @@ import _  from '../util/common';
 import is  from '../util/is';
 import Array2   from '../struct/Array';
 import dom  from '../platform/dom';
-import Renderer from '../TwoRenderer';
+import Renderer from '../renderer-lib/TwoRenderer';
 import base from './shape/base';
-import shapeRendering   from '../renderer-bridge';
+import shapeRendering   from '../renderer-lib/renderer-bridge';
 import glFN   from './shape/fn-gl';
 
 var {isUndefined} = is;

@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
 class ChangeTracker {
-  constructor(raised) {
-    this.state = {flat : raised};
+  constructor() {
+    this.state = {flat : []};
   }
 
 

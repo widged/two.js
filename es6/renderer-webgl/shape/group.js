@@ -2,7 +2,7 @@
 
 import Matrix   from '../../struct/Matrix';
 import Array2   from '../../struct/Array';
-import shapeRendering   from '../../renderer-bridge';
+import shapeRendering   from '../../renderer-lib/renderer-bridge';
 import rendererFN from './fn-renderer';
 import glFN       from './fn-gl';
 import base from './base';

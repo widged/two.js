@@ -8,15 +8,9 @@ var {isArray} = is;
 var FN = {};
 
 
-FN.serializeProperties = (source, target, extraProps) => {
-  target.translation = source.translation.toObject();
-  target.rotation = source.rotation;
-  target.scale = source.scale;
-  (extraProps || []).forEach((k) => { target[k] = source[k]; });
-  return target;
-};
 
 FN.cloned = (shape) => {
+  console.log('NOT CALLED')
   if(!shape) { return; }
   var clone;
   if (typeof shape.clone === 'function') {
@@ -28,6 +22,7 @@ FN.cloned = (shape) => {
 };
 
 FN.serialized = (shape) => {
+  console.log('NOT CALLED')
   if(!shape) { return; }
   var obj;
   if (typeof shape.toObject === 'function') {
