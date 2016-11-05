@@ -10,10 +10,50 @@ import base from './base';
 var {isNumber, isString} = is;
 var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 var {getTextBoundingClientRect} = boundingFN;
-var {hasGradientChanged, renderPath, isHidden, updateAndClearCanvasRect} = rendererFN;
+var {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
 var {drawFill, drawStroke} = rendererFN;
 var {canvas, getContext, renderShape, drawGradientShape} = base;
 var {max} = Math;
+
+
+var renderText = (shp, gl, program, forcedParent) => {
+
+    // <<< code that varies between text and path
+    var getBoundingClientRect = (shp) => {
+      var { stroke, linewidth} = getShapeProps( shp, ["stroke","linewidth"] );
+      var border = (linewidth && !isHidden.test(stroke)) ? linewidth : 0;
+      var {ctx,  value,  style,  weight,  size,  leading,  family,  baseline,  alignment} = getShapeProps( shp,
+         ["ctx","value","style","weight","size","leading","family","baseline","alignment"] );
+
+      var {width, height} = measureTextDimensions(base.canvas, {value,  style,  weight,  size,  leading,  family,  baseline}); // {ctx, style, weight, size, leading, family, baseline}
+      return getTextBoundingClientRect(border, width, height, {alignment, baseline});
+    };
+
+    var assertShapeChange = () => {
+      return hasGradientChanged || anyPropChanged(shp, ['value','family','size','leading','alignment','baseline','style','weight','decoration']);
+    };
+
+    // >>>
+
+    var renderer = renderAnyPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
+    return shp.flagReset();
+
+
+};
+
+var measureTextDimensions = (canvas, {value, style, weight, size, leading, family, baseline}) => {
+  var width, height;
+  var context = getContext(canvas);
+  context.font = [style, weight, size + 'px/' + leading + 'px', family].join(' ');
+  context.textAlign = 'center';
+  context.textBaseline = baseline;
+  // TODO: Estimate this better
+  width = context.measureText(value).width;
+  height = max(size || leading);
+  return {width, height};
+
+};
+
 
 var styleCanvasText = (canvas, {style, weight, size, leading, family}) => {
   var context = getContext(canvas);
@@ -56,43 +96,4 @@ var updateShapeCanvas = function(shp) {
 
 };
 
-var text = function(shp, gl, program, forcedParent) {
-
-    // <<< code that varies between text and path
-    var getBoundingClientRect = (shp) => {
-      var { stroke, linewidth} = getShapeProps( shp, ["stroke","linewidth"] );
-      var border = (linewidth && !isHidden.test(stroke)) ? linewidth : 0;
-      var {ctx,  value,  style,  weight,  size,  leading,  family,  baseline,  alignment} = getShapeProps( shp,
-         ["ctx","value","style","weight","size","leading","family","baseline","alignment"] );
-
-      var {width, height} = measureTextDimensions(base.canvas, {value,  style,  weight,  size,  leading,  family,  baseline}); // {ctx, style, weight, size, leading, family, baseline}
-      return getTextBoundingClientRect(border, width, height, {alignment, baseline});
-    };
-
-    var assertShapeChange = () => {
-      return hasGradientChanged || anyPropChanged(shp, ['value','family','size','leading','alignment','baseline','style','weight','decoration']);
-    };
-
-    // >>>
-
-    var renderer = renderPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
-    return shp.flagReset();
-
-
-};
-
-var measureTextDimensions = (canvas, {value, style, weight, size, leading, family, baseline}) => {
-  var width, height;
-  var context = getContext(canvas);
-  context.font = [style, weight, size + 'px/' + leading + 'px', family].join(' ');
-  context.textAlign = 'center';
-  context.textBaseline = baseline;
-  // TODO: Estimate this better
-  width = context.measureText(value).width;
-  height = max(size || leading);
-  return {width, height};
-
-};
-
-
-export default text;
+export default renderText;

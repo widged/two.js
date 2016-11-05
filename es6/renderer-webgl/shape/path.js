@@ -11,10 +11,32 @@ var {isNumber, isString} = is;
 var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 var {drawPathAnchors} = anchorFN;
 var {getPathBoundingClientRect} = boundingFN;
-var {hasGradientChanged, renderPath, isHidden, updateAndClearCanvasRect} = rendererFN;
+var {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
 var {drawFill, drawStroke, drawGradientShape} = rendererFN;
 var {canvas, getContext, renderShape} = base;
 var {max} = Math;
+
+
+var renderPath = (shp, gl, program, forcedParent) => {
+
+
+    // <<< code that varies between text and path
+    var getBoundingClientRect = (shp) => {
+      var { vertices,  linewidth} = getShapeProps( shp, ["vertices","linewidth"] );
+      return getPathBoundingClientRect(vertices, linewidth);
+    };
+
+    var assertShapeChange = (shp) => {
+      return hasGradientChanged(shp) || anyPropChanged(shp.parent, ['cap','join','miter']);
+    };
+    // >>>
+
+    var rendered = renderAnyPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
+    if(rendered) { shp.flagReset(); }
+    return shp;
+
+};
+
 
 var styleCanvasPath = (canvas, {cap,  join,  miter}) => {
   var context = getContext(canvas);
@@ -67,24 +89,4 @@ var updateShapeCanvas = function(shp) {
   context.restore();
 };
 
-var path = function(shp, gl, program, forcedParent) {
-
-
-    // <<< code that varies between text and path
-    var getBoundingClientRect = (shp) => {
-      var { vertices,  linewidth} = getShapeProps( shp, ["vertices","linewidth"] );
-      return getPathBoundingClientRect(vertices, linewidth);
-    };
-
-    var assertShapeChange = (shp) => {
-      return hasGradientChanged(shp) || anyPropChanged(shp.parent, ['cap','join','miter']);
-    };
-    // >>>
-
-    var rendered = renderPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
-    if(rendered) { shp.flagReset(); }
-    return shp;
-
-};
-
-export default path;
+export default renderPath;

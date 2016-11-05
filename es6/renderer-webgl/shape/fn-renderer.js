@@ -77,7 +77,7 @@ FN.drawGradientShape = (gdt, context, shp) => {
 };
 
 
-FN.renderPath = (gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas) => {
+FN.renderAnyPath = (gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas) => {
 
   var completed = false;
 
