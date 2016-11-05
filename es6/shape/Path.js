@@ -232,19 +232,6 @@ class Path extends Shape {
   // Main
   // -----------------
 
-  /**
-   * If added to a `scene`, removes itself from it.
-   */
-  remove() {
-    var shp = this;
-    // early exit
-    if (!shp.parent) { return shp; }
-    // main
-    shp.parent.remove(shp);
-    return shp;
-  }
-
-
 
   /**
    * Creates a new set of vertices that are lineTo anchors. For previously
@@ -316,8 +303,8 @@ class Path extends Shape {
   /**
    * Returns a new instance of a `Path` with the same settings.
    */
+   // :NOTE: Not used internally, only called by the user
   clone() {
-    console.log('ONLY CALLED BY USER')
     var shp = this;
     var  {closed, curved, automatic, vertices} = shp.getState();
     var anchors = vertices.map((d) => { return d.clone(); });
@@ -329,8 +316,8 @@ class Path extends Shape {
     return clone;
   }
 
+  // :NOTE: Not used internally, only called by the user
   toObject() {
-    console.log('ONLY CALLED BY USER')
     var shp = this;
     super.toObject();
 

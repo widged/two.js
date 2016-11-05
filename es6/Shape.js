@@ -110,11 +110,15 @@ class Shape {
   getProps(obj) {
     return this.getState();
   }
+
+  // --------------------
+  // ITracked
+  // --------------------
+
   listFlags() {
     var {changeTracker} = this.getState();
     return changeTracker.listChanges();
   }
-
 
   // --------------------
   // Accessors
@@ -124,9 +128,6 @@ class Shape {
     this.state.translation.set(x,y);
   }
 
-  get shapeType() {
-    return 'shape';
-  }
 
   // -----------------
   // Main
@@ -140,9 +141,24 @@ class Shape {
     return this;
   }
 
+  /**
+   * If added to a `Group`, removes itself from it.
+   */
+  remove() {
+    var shp = this;
+    // early exit
+    if (!shp.parent) { return shp; }
+    // main
+    shp.parent.remove(shp);
+    return shp;
+  }
+
+
   // -----------------
   // IRenderable
   // -----------------
+
+  get shapeType() { return 'shape'; }
 
   flagReset() {
     var {changeTracker} = this.getState();
@@ -154,8 +170,8 @@ class Shape {
   // IExportable
   // -----------------
 
+  // :NOTE: Not used internally, only called by the user
   clone() {
-    console.log('ONLY CALLED BY USER')
     var shp = this;
     var clone = new Shape();
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
@@ -165,6 +181,7 @@ class Shape {
     return clone;
   }
 
+  // :NOTE: Not used internally, only called by the user
   toObject() {
     var shp = this;
     var {translation, rotation, scale} = shp.getState();

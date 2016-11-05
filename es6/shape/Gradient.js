@@ -13,7 +13,6 @@ var {isString, isNumber} = is;
 const PROP_DEFAULTS  = DefaultValues.Gradient;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
-
 /**
  * A `Gradient` defines a color transition. By itself a `Gradient` doesn't render anything
  * to the screen. However, in conjunction with a `Path` you can style `Path.fill`
@@ -40,8 +39,6 @@ class Gradient extends Shape {
   // IShape
   // -----------------
 
-  get shapeType() { return 'gradient'; }
-
 
   beforePropertySet(k, v) {
     v = super.beforePropertySet(k, v);
@@ -63,8 +60,10 @@ class Gradient extends Shape {
   }
 
   // -----------------
-  // IShape
+  // IRenderable
   // -----------------
+
+  get shapeType() { return 'gradient'; }
 
   flagReset() {
     super.flagReset();
@@ -76,8 +75,8 @@ class Gradient extends Shape {
   // IExportable
   // -----------------
 
+  // :NOTE: Not used internally, only called by the user
   clone() {
-    console.log('ONLY CALLED BY USER')
     var shp = this;
     var clone = new Gradient();
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
@@ -89,9 +88,9 @@ class Gradient extends Shape {
     return clone;
   }
 
+  // :NOTE: Not used internally, only called by the user
   toObject() {
-    console.log('ONLY CALLED BY USER')
-  var shp = this;
+    var shp = this;
     var obj = serializeProperties(shp, {}, Object.keys(PROP_DEFAULTS));
     obj.stops = shp.stops.map(function(s) { return s.toObject(); });
     return obj;

@@ -52,14 +52,14 @@ class Text extends Shape {
   }
 
   // -----------------
-  // Pseudo accessors
+  // Pseudo props setters
   // -----------------
 
   /**
   * Removes the stroke.
   */
    noStroke() {
-     this.stroke = 'transparent';
+     this.setState({stroke: 'transparent'});
      return this;
    }
 
@@ -67,19 +67,10 @@ class Text extends Shape {
     * Removes the fill.
     */
    noFill() {
-     this.fill = 'transparent';
+     this.setState({fill: 'transparent'});
      return this;
    }
 
-  // -----------------
-  // Main
-  // -----------------
-
-  remove() {
-    if (!this.parent) { return this; }
-    this.parent.remove(this);
-    return this;
-  }
 
   // -----------------
   // IBounded
@@ -118,8 +109,8 @@ class Text extends Shape {
   /**
   * Returns a new instance of a Two.Text with the same settings.
   */
+  // :NOTE: Not used internally, only called by the user
   clone() {
-    console.log('Only called by user')
     var shp = this;
     var {value} = shp.getState();
     var clone = new Text(value);
@@ -130,8 +121,8 @@ class Text extends Shape {
     return clone;
   }
 
+  // :NOTE: Not used internally, only called by the user
   toObject() {
-    console.log('ONLY CALLED BY USER')
     var shp = this;
     return serializeProperties(shp, {}, Object.keys(PROP_DEFAULTS));
   }

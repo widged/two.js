@@ -240,13 +240,14 @@ class Group extends Shape {
   /**
    * Returns a new instance of a Two.Group with the same settings.
    * This will copy the children as well, which can be computationally expensive.
-   *
-   * TODO: Group has a gotcha in that it's at the moment required to be bound to
-   * an instance of two in order to add elements correctly. This needs to
-   * be rethought and fixed.
+   */
+   /*
+    :TODO: Group has a gotcha in that it's at the moment required to be bound to
+    an instance of two in order to add elements correctly. This needs to
+    be rethought and fixed.
+    :NOTE: Not used internally, only called by the user
    */
   clone() {
-    console.log('ONLY CALLED BY USER')
     var shp = this;
     var clone = new Group();
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
@@ -267,6 +268,7 @@ class Group extends Shape {
    * object. This also makes all children plain JavaScript objects. Great
    * for turning into JSON and storing in a database.
    */
+   // :NOTE: Not used internally, only called by the user
   toObject() {
     var shp = this;
     var obj = super.toObject();

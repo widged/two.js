@@ -75,7 +75,7 @@ FN.updateAnyShape = (shp, deep) => {
       .rotate(rotation);
   }
   if(!matrix) {
-    console.log('[WARN] matrix is undefed', shp.toString());
+    console.log('[WARN] matrix is undefined', shp.toString());
   }
 
   if (deep) {

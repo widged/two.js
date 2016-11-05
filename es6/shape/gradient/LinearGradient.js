@@ -103,8 +103,8 @@ class LinearGradient extends Gradient {
   /**
    A function to clone a linearGradient. Also, clones each Two.Stop in the linearGradient.stops array.
   */
+  // :NOTE: Not used internally, only called by the user
   clone() {
-    console.log('ONLY CALLED BY USER')
     var shp = this;
     var {stops, left, right} = shp;
     stops = (stops || []).map(cloned);
@@ -116,8 +116,8 @@ class LinearGradient extends Gradient {
     return clone;
   }
 
+  // :NOTE: Not used internally, only called by the user
   toObject() {
-    console.log('ONLY CALLED BY USER')
     var result = super.toObject();
     var shp = this;
     var {left, right} = shp;
