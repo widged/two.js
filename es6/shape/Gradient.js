@@ -40,7 +40,7 @@ class Gradient extends Shape {
   // IShape
   // -----------------
 
-  get rendererType() { return 'gradient'; }
+  get shapeType() { return 'gradient'; }
 
 
   beforePropertySet(k, v) {

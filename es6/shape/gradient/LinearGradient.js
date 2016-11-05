@@ -88,7 +88,7 @@ class LinearGradient extends Gradient {
   // IRenderable
   // -----------------
 
-  get rendererType() { return 'linear-gradient'; }
+  get shapeType() { return 'linear-gradient'; }
 
   flagReset() {
     super.flagReset();

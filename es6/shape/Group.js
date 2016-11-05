@@ -221,7 +221,7 @@ class Group extends Shape {
   // IRenderable
   // -----------------
 
-  get rendererType() { return 'group'; }
+  get shapeType() { return 'group'; }
 
   flagReset() {
     super.flagReset();

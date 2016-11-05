@@ -103,7 +103,7 @@ class Text extends Shape {
   // IRenderable
   // -----------------
 
-  get rendererType() { return 'text'; }
+  get shapeType() { return 'text'; }
 
   flagReset() {
     super.flagReset();

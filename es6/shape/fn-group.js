@@ -132,7 +132,7 @@ FN.getEnclosingRect = ({shallow, children}) => {
 
   for(var i = 0, ni = children.length, child = {}; i < ni; i++ ) {
     child = children[i];
-    if (/(linear-gradient|radial-gradient|gradient)/.test(child.rendererType)) {
+    if (/(linear-gradient|radial-gradient|gradient)/.test(child.shapeType)) {
       return;
     }
     // :NOTE: before refactoring this, consider that child.getBoundingClientRect

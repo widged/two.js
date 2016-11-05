@@ -72,7 +72,7 @@ class RadialGradient extends Gradient {
   // IRenderable
   // -----------------
 
-  get rendererType() { return 'radial-gradient'; }
+  get shapeType() { return 'radial-gradient'; }
 
   flagReset() {
     super.flagReset();

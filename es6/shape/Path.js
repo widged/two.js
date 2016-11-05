@@ -294,7 +294,7 @@ class Path extends Shape {
    // IRenderable
    // -----------------
 
-   get rendererType() { return 'path'; }
+   get shapeType() { return 'path'; }
 
   flagReset() {
     var shp = this;

@@ -124,7 +124,7 @@ class Shape {
     this.state.translation.set(x,y);
   }
 
-  get rendererType() {
+  get shapeType() {
     return 'shape';
   }
 
