@@ -12,13 +12,13 @@ var renderRadialGradient = (shp, canvasContext) => {
 
   if (!renderer.gradient || anyPropChanged(shp, ['center','focal','radius','stops'])) {
     var {center, focal, radius, stops} = shapeProps;
-    renderer.gradient = canvasContext.createRadialGradient(
-      center.x, center.y, 0, focal.x,  focal.y, radius
-    );
+    var {x : cx, y : cy} = center || {x: 0, y: 0};
+    var {x : fx, y : fy} = focal || {x: 0, y: 0};
+    renderer.gradient = canvasContext.createRadialGradient( cx, cy, 0, fx,  fy, radius );
 
-    for (var i = 0; i < stops.length; i++) {
-      var stop = stops[i];
-      renderer.gradient.addColorStop(stop.offset, stop.color);
+    for (var i = 0, ni = stops.length; i < ni; i++) {
+      var {offset, color} = getShapeProps(stops[i], ['offset','color']);
+      renderer.gradient.addColorStop(offset, color);
     }
 
   }
