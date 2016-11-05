@@ -107,7 +107,6 @@ class Shape {
     if(newValue !== oldValue) {
       // :TODO: add a raiseOne function to changeTracker
       var {changeTracker} = this.getState();
-      console.log(changeTracker, this)
       changeTracker.raise([key]);
     }
     return newValue;

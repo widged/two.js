@@ -106,33 +106,34 @@ var renderGroup = (shp, domElement) => {
 
 // TODO: Can speed up.
 // TODO: How does this effect a f
-var appendChild = function(elem, object) {
-  var elem = getShapeRenderer(object);
+var appendChild = function(Relem, shp) {
+  var renderer = getShapeRenderer(shp);
+  var node = renderer.elem;
+  if (!node) { return; }
 
-  if (!elem) { return; }
-  var tag = elem.nodeName;
-  var {clip} = getShapeProps(object, ['clip']);
+  var {clip} = getShapeProps(shp);
+  var tag = node.nodeName;
   if (!tag || /(radial|linear)gradient/i.test(tag) || clip) {
     return;
   }
-  Relem.appendChild(object);
+  Relem.appendChild(node);
 };
 
-var removeChild = function(Relem, object) {
+var removeChild = function(Relem, shp) {
 
-  var elem = getShapeRenderer(object);
+  var renderer = getShapeRenderer(shp);
+  var node = renderer.elem;
 
-  if (!elem || elem.parentNode != elem) { return; }
+  if (!node || node.parentNode != Relem) { return; }
 
-  var tag = elem.nodeName;
-
+  var tag = node.nodeName;
   if (!tag) { return; }
 
   // Defer substractions while clipping.
-  var {clip} = getShapeProps(object, ['clip']);
+  var {clip} = getShapeProps(shp);
   if (clip) { return; }
 
-  Relem.removeChild(elem);
+  Relem.removeChild(node);
 
 };
 
