@@ -31,7 +31,6 @@ class LinearGradient extends Gradient {
   constructor(x1, y1, x2, y2, stops) {
 
     super(stops);
-    this.setRendererType('linear-gradient');
     // this.setProps(PROP_DEFAULTS);
     this.setProps({
       left: {x:x1,y:y1},
@@ -85,11 +84,17 @@ class LinearGradient extends Gradient {
   // IRenderable
   // -----------------
 
+  get rendererType() { return 'linear-gradient'; }
+
   flagReset() {
     super.flagReset();
     this.getState().changeTracker.drop(['endPoints']);
     return this;
   }
+
+  // -----------------
+  // IShape
+  // -----------------
 
   /**
    A function to clone a linearGradient. Also, clones each Two.Stop in the linearGradient.stops array.
