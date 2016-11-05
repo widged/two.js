@@ -11,14 +11,12 @@ var renderLinearGradient = (shp, ctx) => {
 
   if (!renderer.gradient || anyPropChanged(shp, ['stops', 'endPoints'])) {
     var { stops, left, right } = shapeProps;
+    var {x: x1, y: y1} = left  || {x: 0, y: 0};
+    var {x: x2, y: y2} = right || {x: 0, y: 0};
+    renderer.gradient = ctx.createLinearGradient( x1, y1, x2, y2 );
 
-    renderer.gradient = ctx.createLinearGradient(
-      left.x, left.y, right.x, right.y
-    );
-
-    for (var i = 0, ni = stops.length, stop = null; i < ni; i++) {
-      stop = stops[i];
-      var {offset, color, opacity} = getShapeProps(stop);
+    for (var i = 0, ni = stops.length; i < ni; i++) {
+      var {offset, color} = getShapeProps(stops[i], ['offset','color']);
       renderer.gradient.addColorStop(offset, color);
     }
   }
