@@ -8,40 +8,7 @@ var {createElement, setAttributes} = svgFN;
 var {renderShape} = base;
 var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
-
-  // TODO: Can speed up.
-  // TODO: How does this effect a f
-var appendChild = function(elem, object) {
-  var elem = getShapeRenderer(object);
-
-  if (!elem) { return; }
-  var tag = elem.nodeName;
-  var {clip} = getShapeProps(object, ['clip']);
-  if (!tag || /(radial|linear)gradient/i.test(tag) || clip) {
-    return;
-  }
-  Relem.appendChild(object);
-};
-
-var removeChild = function(Relem, object) {
-
-var elem = getShapeRenderer(object);
-
-  if (!elem || elem.parentNode != elem) { return; }
-
-  var tag = elem.nodeName;
-
-  if (!tag) { return; }
-
-  // Defer substractions while clipping.
-  var {clip} = getShapeProps(object, ['clip']);
-  if (clip) { return; }
-
-  Relem.removeChild(elem);
-
-};
-
-var group = function(shp, domElement) {
+var renderGroup = (shp, domElement) => {
 
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and
@@ -135,4 +102,36 @@ var group = function(shp, domElement) {
 };
 
 
-export default group;
+// TODO: Can speed up.
+// TODO: How does this effect a f
+var appendChild = function(elem, object) {
+  var elem = getShapeRenderer(object);
+
+  if (!elem) { return; }
+  var tag = elem.nodeName;
+  var {clip} = getShapeProps(object, ['clip']);
+  if (!tag || /(radial|linear)gradient/i.test(tag) || clip) {
+    return;
+  }
+  Relem.appendChild(object);
+};
+
+var removeChild = function(Relem, object) {
+
+  var elem = getShapeRenderer(object);
+
+  if (!elem || elem.parentNode != elem) { return; }
+
+  var tag = elem.nodeName;
+
+  if (!tag) { return; }
+
+  // Defer substractions while clipping.
+  var {clip} = getShapeProps(object, ['clip']);
+  if (clip) { return; }
+
+  Relem.removeChild(elem);
+
+};
+
+export default renderGroup;

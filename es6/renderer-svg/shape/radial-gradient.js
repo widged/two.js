@@ -6,19 +6,9 @@ import svgFN    from './fn-svg';
 var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 var {createElement, setAttributes} = svgFN;
 
-var renderElement = (parentNode, nodeType, attrs, defs) => {
-  // If there is no attached DOM element yet, create it with all necessary attributes.
-  if (!parentNode) {
-    parentNode = createElement(nodeType, attrs);
-    if(defs) { defs.appendChild(parentNode); }
-  // Otherwise apply all pending attributes
-  } else {
-    setAttributes(parentNode, attrs);
-  }
-  return parentNode;
-};
 
-var radialGradient = function(shp, domElement) {
+
+var renderRadialGradient = (shp, domElement) => {
 
   var changed = {};
   var renderer = getShapeRenderer(shp);
@@ -62,4 +52,16 @@ var radialGradient = function(shp, domElement) {
 
 };
 
-export default radialGradient;
+var renderElement = (parentNode, nodeType, attrs, defs) => {
+  // If there is no attached DOM element yet, create it with all necessary attributes.
+  if (!parentNode) {
+    parentNode = createElement(nodeType, attrs);
+    if(defs) { defs.appendChild(parentNode); }
+  // Otherwise apply all pending attributes
+  } else {
+    setAttributes(parentNode, attrs);
+  }
+  return parentNode;
+};
+
+export default renderRadialGradient;

@@ -10,7 +10,7 @@ var {createElement, setAttributes, getClip} = svgFN;
 var {toString} = anchorFN;
 var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 
-var path = function(shp, domElement) {
+var renderPath = (shp, domElement) => {
 
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and
@@ -105,4 +105,4 @@ var path = function(shp, domElement) {
 };
 
 
-export default path;
+export default renderPath;

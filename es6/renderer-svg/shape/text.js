@@ -12,7 +12,7 @@ const ALIGNMENTS = {
   right: 'end'
 };
 
-var text = function(shp, domElement) {
+var renderText = (shp, domElement) => {
 
   var attrs = {};
 
@@ -85,4 +85,4 @@ var text = function(shp, domElement) {
 
 
 
-export default text;
+export default renderText;

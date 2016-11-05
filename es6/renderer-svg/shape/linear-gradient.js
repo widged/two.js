@@ -6,7 +6,7 @@ import shapeRendering   from '../../renderer-lib/renderer-bridge';
 var {createElement, setAttributes} = svgFN;
 var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
-var linearGradient = function(shp, domElement) {
+var renderLinearGradient = (shp, domElement) => {
 
   var attrs = {};
 
@@ -70,4 +70,4 @@ var linearGradient = function(shp, domElement) {
 };
 
 
-export default linearGradient;
+export default renderLinearGradient;
