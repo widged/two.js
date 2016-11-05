@@ -7,11 +7,10 @@ var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 var renderLinearGradient = (shp, ctx) => {
 
   var shapeProps = getShapeProps(shp);
-
-  var renderer = getShapeRenderer(shp);
+  var renderer   = getShapeRenderer(shp);
 
   if (!renderer.gradient || anyPropChanged(shp, ['stops', 'endPoints'])) {
-    var { stops, left, right } = getShapeProps(shp, ['stops','left','right']);
+    var { stops, left, right } = shapeProps;
 
     renderer.gradient = ctx.createLinearGradient(
       left.x, left.y, right.x, right.y

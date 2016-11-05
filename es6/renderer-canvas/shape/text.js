@@ -23,9 +23,8 @@ var renderText = (shp, ctx, forced, parentClipped) => {
   var renderer = getShapeRenderer(shp);
   var parentRenderer = getShapeRenderer(shp.parent);
 
-  var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = getShapeProps(shp,
-      ['stroke','linewidth','fill','opacity','visible','clip','mask']);
-  var { matrix,  vertices,  closed } = getShapeProps(shp, ['matrix','vertices','closed']);
+  var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
+  var { matrix,  vertices,  closed } = shapeProps;
 
   opacity = opacity * parentRenderer.opacity;
   var anchors = vertices; // Commands
@@ -50,8 +49,7 @@ var renderText = (shp, ctx, forced, parentClipped) => {
   //   renderShape(mask, ctx, true);
   // }
 
-  var { font,  style,  weight , size , leading , family , alignment , baseline , value  } = getShapeProps(shp,
-      ['font','style','weight','size','leading','family','alignment','baseline','value']);
+  var { font,  style,  weight , size , leading , family , alignment , baseline , value  } = shapeProps;
 
   ctx.font = [style, weight, size + 'px/' + leading + 'px', family].join(' ');
 

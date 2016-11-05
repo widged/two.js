@@ -21,10 +21,9 @@ var renderPath = (shp, ctx, forced, parentClipped) => {
   var matrixElem, anchors, length, last, next, prev, a, b, c, d, ux, uy, vx, vy,
       ar, bl, br, cl, x, y, defaultMatrix;
 
-  var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = getShapeProps(shp,
-      ['stroke','linewidth','fill','opacity','visible','clip','mask']);
-  var { matrix,  vertices,  closed } = getShapeProps(shp, ['matrix','vertices','closed']);
-  var { cap,  join,  miter  } = getShapeProps(shp, ['cap','join','miter','closed']);
+  var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
+  var { matrix,  vertices,  closed } = shapeProps;
+  var { cap,  join,  miter  } = shapeProps;
 
   opacity = opacity * parentRenderer.opacity;
   anchors = vertices; // Commands

@@ -10,7 +10,7 @@ var renderGroup = (shp, ctx) => {
 
   var shapeProps = getShapeProps(shp);
 
-  var renderer = getShapeRenderer(shp);
+  var renderer       = getShapeRenderer(shp);
   var parentRenderer = getShapeRenderer(shp.parent);
 
   var { matrix, opacity, mask, clip } = shapeProps;
