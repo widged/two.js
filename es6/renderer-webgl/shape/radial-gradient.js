@@ -18,13 +18,13 @@ var renderRadialGradient = (shp, canvasContext) => {
   if (!renderer.gradient  || anyPropChanged(shp, ['center','focal','radius','stops']) ) {
 
     var {center, focal, radius, stops} = shapeProps;
-    var {x: cx,y: cy} = getShapeProps(center, ['x','y']);
-    var {x: fx,y: fy} = getShapeProps(focal, ['x','y']);
+    var {x : cx, y : cy} = center || {x: 0, y: 0};
+    var {x : fx, y : fy} = focal  || {x: 0, y: 0};
     renderer.gradient = canvasContext.createRadialGradient( cx, cy, 0, fx, fy, radius );
 
-    for (var i = 0, ni = stops.length, di = null; i < ni; i++) {
-      di = stops[i];
-      renderer.gradient.addColorStop(di.offset, di.color);
+    for (var i = 0, ni = stops.length; i < ni; i++) {
+      var {offset, color} = getShapeProps(stops[i], ['offset','color']);
+      renderer.gradient.addColorStop(offset, color);
     }
 
   }

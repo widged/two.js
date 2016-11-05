@@ -46,7 +46,7 @@ FN.getClip = function(shp) {
 };
 
 FN.createGradientStop = (node, offset, color, opacity) => {
-  let {setAttributes, createElement} = FN;
+  let {createElement, setAttributes} = FN;
   if (!node) { node = createElement('stop'); }
   setAttributes( node, {
     offset : 100 * offset + '%',
@@ -56,5 +56,17 @@ FN.createGradientStop = (node, offset, color, opacity) => {
   return node;
 };
 
+FN.renderNode = (parentNode, nodeType, attrs, defs) => {
+  var {createElement, setAttributes} = FN;
+  // If there is no attached DOM element yet, create it with all necessary attributes.
+  if (!parentNode) {
+    parentNode = createElement(nodeType, attrs);
+    if(defs) { defs.appendChild(parentNode); }
+  // Otherwise apply all pending attributes
+  } else {
+    setAttributes(parentNode, attrs);
+  }
+  return parentNode;
+};
 
 export default FN;

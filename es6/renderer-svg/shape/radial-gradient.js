@@ -4,7 +4,7 @@ import shapeRendering   from '../../renderer-lib/renderer-bridge';
 import svgFN    from './fn-svg';
 
 var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
-var {createElement, setAttributes} = svgFN;
+var {renderNode, createGradientStop} = svgFN;
 
 
 
@@ -18,10 +18,10 @@ var renderRadialGradient = (shp, domElement) => {
 
   if ( anyPropChanged(shp, ['center','focal','radius','stops']) ) {
     var {center, focal, radius, stops} = shapeProps;
-    var {x: cx,y: cy} = getShapeProps(center, ['x','y']);
-    var {x: fx,y: fy} = getShapeProps(focal, ['x','y']);
+    var {x : cx, y : cy} = center || {x: 0, y: 0};
+    var {x : fx, y : fy} = focal  || {x: 0, y: 0};
 
-    renderer.elem = renderElement(
+    renderer.elem = renderNode(
       renderer.elem, 'radialGradient',
       {id: shp.id, gradientUnits: 'userSpaceOnUse', cx, cy, fx, fy, r:radius},
       domElement.defs
@@ -31,19 +31,13 @@ var renderRadialGradient = (shp, domElement) => {
 
       svgFN.clear(renderer.elem);
 
-      for (var i = 0; i < stops.length; i++) {
-        var stop = stops[i];
-        if( anyPropChanged(stop, ['offset','color','opacity']) ) {
-          var {offset, color, opacity} = getShapeProps(['offset','color','opacity']);
-          var stopRenderer = getShapeRenderer(stop);
-          stopRenderer.elem = renderElement(
-            stopRenderer.elem, 'stop',
-            {offset: (100 * offset) + '%', 'stop-color': color, 'stop-opacity': opacity}
-          );
-
-          renderer.elem.appendChild(stopRenderer.elem);
-        }
-
+      for (var i = 0, ni = stops.length, stop, stopRenderer, stopNode; i < ni; i++) {
+        stop = stops[i];
+        var {offset, color, opacity} = getShapeProps(stop, ['offset','color','opacity']);
+        stopRenderer = getShapeRenderer(stop);
+        stopNode = createGradientStop(stopRenderer.elem, offset, color, opacity);
+        stopRenderer.elem = stopNode;
+        renderer.elem.appendChild(stopNode);
       }
 
     }
@@ -54,16 +48,6 @@ var renderRadialGradient = (shp, domElement) => {
 
 };
 
-var renderElement = (parentNode, nodeType, attrs, defs) => {
-  // If there is no attached DOM element yet, create it with all necessary attributes.
-  if (!parentNode) {
-    parentNode = createElement(nodeType, attrs);
-    if(defs) { defs.appendChild(parentNode); }
-  // Otherwise apply all pending attributes
-  } else {
-    setAttributes(parentNode, attrs);
-  }
-  return parentNode;
-};
+
 
 export default renderRadialGradient;
