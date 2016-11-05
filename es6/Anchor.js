@@ -3,7 +3,7 @@
 import is  from './util/is';
 import _  from './util/common';
 import Commands  from './constant/CommandTypes';
-import VectorEvent   from './constant/VectorEvent';
+import VectorEventTypes   from './constant/VectorEventTypes';
 import Vector  from './struct/Vector';
 
 var {isNumber, isObject} = is;
@@ -92,7 +92,7 @@ var {isNumber, isObject} = is;
   }
 
    whenChange() {
-      this.dispatcher.emit(VectorEvent.change);
+      this.dispatcher.emit(VectorEventTypes.change);
    }
 
    /**
@@ -102,8 +102,8 @@ var {isNumber, isObject} = is;
     if (!isObject(this.controls)) {
       Anchor.AppendCurveProperties(this);
     }
-    this.controls.left.dispatcher.on(VectorEvent.change, this.whenChange);
-    this.controls.right.dispatcher.on(VectorEvent.change, this.whenChange);
+    this.controls.left.dispatcher.on(VectorEventTypes.change, this.whenChange);
+    this.controls.right.dispatcher.on(VectorEventTypes.change, this.whenChange);
     return this;
   }
 
@@ -111,8 +111,8 @@ var {isNumber, isObject} = is;
   * Convenience method to remove event bubbling to an attached path.
   */
   ignore() {
-    this.controls.left.dispatcher.off(VectorEvent.change, this.whenChange);
-    this.controls.right.dispatcher.off(VectorEvent.change, this.whenChange);
+    this.controls.left.dispatcher.off(VectorEventTypes.change, this.whenChange);
+    this.controls.right.dispatcher.off(VectorEventTypes.change, this.whenChange);
     return this;
   }
 

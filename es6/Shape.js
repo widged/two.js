@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import _  from './util/common';
-import VectorEvent   from './constant/VectorEvent';
+import VectorEventTypes   from './constant/VectorEventTypes';
 import Matrix from './struct/Matrix';
 import Vector from './struct/Vector';
 import UidGenerator from './util/uid-generator';
@@ -47,7 +47,7 @@ class Shape {
     this.state.translation = this.state.translation;
 
     var flagMatrix = () => {  changeTracker.raise(['matrix']);   };
-    this.state.translation.dispatcher.on(VectorEvent.change, flagMatrix);
+    this.state.translation.dispatcher.on(VectorEventTypes.change, flagMatrix);
   }
 
   // --------------------

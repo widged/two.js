@@ -2,7 +2,7 @@
 
 import _  from '../util/common';
 import EventEmitter  from '../util/EventEmitter';
-import VectorEvent    from '../constant/VectorEvent';
+import VectorEventTypes    from '../constant/VectorEventTypes';
 
 /**
  * A Vector captures coordinates. A `Vector` is specific to two.js because its
@@ -18,7 +18,7 @@ import VectorEvent    from '../constant/VectorEvent';
   * y -- The y value of the vector.
   */
   constructor(x, y) {
-    this.dispatcher = new EventEmitter([VectorEvent.change]);
+    this.dispatcher = new EventEmitter([VectorEventTypes.change]);
     this.state = {
       x :  x || 0,
       y : y || 0
@@ -42,7 +42,7 @@ import VectorEvent    from '../constant/VectorEvent';
   }
 
   whenChange(attributeName) {
-    this.dispatcher.emit(VectorEvent.change, attributeName);
+    this.dispatcher.emit(VectorEventTypes.change, attributeName);
   }
 
   /**

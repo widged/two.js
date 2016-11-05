@@ -64,10 +64,10 @@ class Player {
 
 
   whenPlay() {
-    this.dispatcher.emit(PlayerEvent.playing);
+    this.dispatcher.emit(PlayerEventTypes.playing);
   }
   whenPause() {
-    this.dispatcher.emit(PlayerEvent.paused);
+    this.dispatcher.emit(PlayerEventTypes.paused);
   }
 
 }

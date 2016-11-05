@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import CollectionEvent   from '../constant/CollectionEvent';
+import CollectionEventTypes   from '../constant/CollectionEventTypes';
 import _  from '../util/common';
 import is  from '../util/is';
 import Path  from './Path';
@@ -80,9 +80,9 @@ class Group extends Shape {
   whenChildrenChange(oldChildren) {
     if (oldChildren && oldChildren.state) { oldChildren.dispatcher.off(); }
     var children = this.state.children;
-    children.dispatcher.on(CollectionEvent.insert, this.bound.whenChildrenInserted);
-    children.dispatcher.on(CollectionEvent.remove, this.bound.whenChildrenRemoved);
-    children.dispatcher.on(CollectionEvent.order, this.bound.whenChildrenShuffled);
+    children.dispatcher.on(CollectionEventTypes.insert, this.bound.whenChildrenInserted);
+    children.dispatcher.on(CollectionEventTypes.remove, this.bound.whenChildrenRemoved);
+    children.dispatcher.on(CollectionEventTypes.order, this.bound.whenChildrenShuffled);
   }
 
   // --------------------

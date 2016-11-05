@@ -2,7 +2,7 @@
 
 import _  from '../../util/common';
 import is  from '../../util/is';
-import VectorEvent    from '../../constant/VectorEvent';
+import VectorEventTypes    from '../../constant/VectorEventTypes';
 import Vector    from '../../struct/Vector';
 import shapeFN    from '../../shape-fn';
 import Gradient  from '../Gradient';
@@ -49,11 +49,11 @@ class RadialGradient extends Gradient {
 
     changeTracker.drop(['endPoints']);
 
-    center.dispatcher.on(VectorEvent.change, () => {
+    center.dispatcher.on(VectorEventTypes.change, () => {
       this.state.changeTracker.raise(['center']);
     });
 
-    focal.dispatcher.on(VectorEvent.change, () => {
+    focal.dispatcher.on(VectorEventTypes.change, () => {
       this.state.changeTracker.raise(['focal']);
     });
   }

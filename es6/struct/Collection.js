@@ -2,7 +2,7 @@
 
 import _ from '../util/common';
 import EventEmitter    from '../util/EventEmitter';
-import CollectionEvent from '../constant/CollectionEvent';
+import CollectionEventTypes from '../constant/CollectionEventTypes';
 
 /**
  * Array like collection that triggers inserted and removed events
@@ -13,7 +13,7 @@ import CollectionEvent from '../constant/CollectionEvent';
 class Collection  {
 
   constructor() {
-    this.dispatcher = new EventEmitter(Object.keys(CollectionEvent));
+    this.dispatcher = new EventEmitter(Object.keys(CollectionEventTypes));
     this.state = {items: []};
 
     if (arguments.length > 1) {
@@ -24,13 +24,13 @@ class Collection  {
   }
 
   whenItemsRemoved(items) {
-    this.dispatcher.emit(CollectionEvent.remove, items);
+    this.dispatcher.emit(CollectionEventTypes.remove, items);
   }
   whenItemsAdded(items) {
-    this.dispatcher.emit(CollectionEvent.insert, items);
+    this.dispatcher.emit(CollectionEventTypes.insert, items);
   }
   whenItemsReordered(items) {
-    this.dispatcher.emit(CollectionEvent.order);
+    this.dispatcher.emit(CollectionEventTypes.order);
   }
 
   pop() {

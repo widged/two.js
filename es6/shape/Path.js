@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
 import DefaultValues from '../constant/DefaultValues';
-import CollectionEvent   from '../constant/CollectionEvent';
-import VectorEvent   from '../constant/VectorEvent';
+import CollectionEventTypes   from '../constant/CollectionEventTypes';
+import VectorEventTypes   from '../constant/VectorEventTypes';
 import Commands from '../constant/CommandTypes';
 import _  from '../util/common';
 import is  from '../util/is';
@@ -88,20 +88,20 @@ class Path extends Shape {
       // This function is called a lot
       // when importing a large SVG
       var i = items.length;
-      while(i--) { items[i].dispatcher.on(VectorEvent.change, whenVectorChange); }
+      while(i--) { items[i].dispatcher.on(VectorEventTypes.change, whenVectorChange); }
       whenVectorChange();
     }).bind(shp);
 
     var whenVerticesRemoved = ((items) => {
       var i = items.length;
-      while(i--) { items[i].dispatcher.off(VectorEvent.change, whenVectorChange); }
+      while(i--) { items[i].dispatcher.off(VectorEventTypes.change, whenVectorChange); }
       whenVectorChange();
     }).bind(shp);
 
     // Listen for Collection changes and bind / unbind
     if (vertices && typeof vertices.dispatcher === 'function') {
-      vertices.dispatcher.on(CollectionEvent.insert, whenVerticesInserted);
-      vertices.dispatcher.on(CollectionEvent.remove, whenVerticesRemoved);
+      vertices.dispatcher.on(CollectionEventTypes.insert, whenVerticesInserted);
+      vertices.dispatcher.on(CollectionEventTypes.remove, whenVerticesRemoved);
     }
     // Bind Initial Vertices
     whenVerticesInserted(vertices);

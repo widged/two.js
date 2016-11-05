@@ -2,7 +2,7 @@
 
 import _  from '../../util/common';
 import is  from '../../util/is';
-import VectorEvent    from '../../constant/VectorEvent';
+import VectorEventTypes    from '../../constant/VectorEventTypes';
 import Vector    from '../../struct/Vector';
 import Gradient  from '../Gradient';
 import shapeFN    from '../../shape-fn';
@@ -43,8 +43,8 @@ class LinearGradient extends Gradient {
     var flagEndPoints = (function() {
       this.state.changeTracker.raise(['endPoints']);
     }).bind(this);
-    left.dispatcher.on(VectorEvent.change, flagEndPoints);
-    right.dispatcher.on(VectorEvent.change, flagEndPoints);
+    left.dispatcher.on(VectorEventTypes.change, flagEndPoints);
+    right.dispatcher.on(VectorEventTypes.change, flagEndPoints);
 
   }
 

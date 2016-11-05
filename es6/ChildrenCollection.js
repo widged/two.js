@@ -3,7 +3,7 @@
 import Collection  from './struct/Collection';
 import is  from './util/is';
 import _  from './util/common';
-import CollectionEvent   from './constant/CollectionEvent';
+import CollectionEventTypes   from './constant/CollectionEventTypes';
 
 /**
  * A children collection which is accesible both by index and by object id
@@ -22,8 +22,8 @@ class ChildrenCollection extends Collection {
     this.ids = {};
     this.children = this;
 
-    this.dispatcher.on(CollectionEvent.insert, this.attachChildren.bind(this));
-    this.dispatcher.on(CollectionEvent.remove, this.detachChildren.bind(this));
+    this.dispatcher.on(CollectionEventTypes.insert, this.attachChildren.bind(this));
+    this.dispatcher.on(CollectionEventTypes.remove, this.detachChildren.bind(this));
     this.attachChildren();
   }
 

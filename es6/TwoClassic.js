@@ -36,7 +36,7 @@ import EventEmitter  from './util/EventEmitter';
 import makeShape from './shape/factories';
 import Player from './util/Player';
 import DefaultValues from './constant/DefaultValues';
-import TwoEvent from './constant/TwoEvent';
+import TwoEventTypes from './constant/TwoEventTypes';
 import dom from './platform/dom';
 import RendererLoader from './renderer-loader';
 
@@ -56,7 +56,7 @@ class TwoClassic extends TwoScene  {
 
       two.state.RendererDelegate = RendererLoader.load(type, two, classicConfig.domElement);
 
-      two.dispatcher = new EventEmitter(Object.keys(TwoEvent));
+      two.dispatcher = new EventEmitter(Object.keys(TwoEventTypes));
 
       // Defer calling player.activate until all objects
       // have been updated with their newest styles.
@@ -96,14 +96,14 @@ class TwoClassic extends TwoScene  {
    whenUpdated() {
      // That event doesn't get captured internally, only when
      var {frameCount, timeDelta} = this.state.player;
-     this.dispatcher.emit(TwoEvent.update, frameCount, timeDelta);
+     this.dispatcher.emit(TwoEventTypes.update, frameCount, timeDelta);
    }
    whenRendered() {
      var {frameCount} = this.state.player;
-     this.dispatcher.emit(TwoEvent.render, frameCount);
+     this.dispatcher.emit(TwoEventTypes.render, frameCount);
    }
    whenResized(width, height) {
-     this.dispatcher.emit(TwoEvent.resize, this.state.width, this.state.height);
+     this.dispatcher.emit(TwoEventTypes.resize, this.state.width, this.state.height);
    }
 
    makeGroup(...objects) {
