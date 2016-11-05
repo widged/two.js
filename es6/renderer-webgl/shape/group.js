@@ -13,7 +13,7 @@ var {recomputeMatrixAndScaleIfNecessary} = rendererFN;
 var {getShapeProps, getShapeRenderer, anyPropChanged, raiseFlags} = shapeRendering;
 var {MaskMode, remove} = glFN;
 
-var group = function(shp, gl, program) {
+var renderGroup = (shp, gl, program) => {
 
     var renderer       = recomputeMatrixAndScaleIfNecessary(shp);
     var parentRenderer = getShapeRenderer(shp.parent);
@@ -40,4 +40,4 @@ var group = function(shp, gl, program) {
 
 };
 
-export default group;
+export default renderGroup;
