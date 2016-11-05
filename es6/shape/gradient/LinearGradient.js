@@ -32,37 +32,53 @@ class LinearGradient extends Gradient {
 
     super(stops);
     this.setRendererType('linear-gradient');
-
     // this.setProps(PROP_DEFAULTS);
     this.setProps({
       left: {x:x1,y:y1},
       right: {x:x2,y:y2},
     });
 
+    this.getState().changeTracker.drop(['endPoints']);
+
   }
 
   beforePropertySet(key, newV) {
     newV = super.beforePropertySet(key, newV);
     if(key === 'left' || key === 'right') {
-      let {x,y} = newV;
+      let {x,y} = newV || {};
       var oldV = this.getState()[key];
       if(oldV && oldV.dispatcher) { oldV.dispatcher.off(); }
-      newV = new Vector().set(isNumber(x) ? x : undefined, isNumber(y) ? y : undefined);
+      if(isNumber(x) || isNumber(y)) {
+        newV = new Vector().set(isNumber(x) ? x : 0, isNumber(y) ? y : 0);
+      }
     }
     return newV;
   }
-  afterPropertyChange(key, newV) {
-    if(key === 'left' || key === 'right') {
+  afterPropertyChange(key, newV, oldV) {
+    super.afterPropertyChange();
+    if(newV === oldV) { return; }
+    if(['left','right'].includes(key)) {
       let changeTracker = this.getState().changeTracker;
+      var raise = () => { this.getState().changeTracker.raise(['endPoints']); };
       if(newV && newV.dispatcher) {
-        newV.dispatcher.on(
-          VectorEventTypes.change,
-          this.bindOnce('flagEndPoints', () => { changeTracker.raise(['endPoints']); } )
-        );
-        changeTracker.drop(['endPoints']);
+        newV.dispatcher.on( VectorEventTypes.change, this.bindOnce('flagEndPoints', raise ) );
       }
+      raise();
+    }
   }
+  /*
+  afterPropertyChange(key, newV, oldV) {
+    super.afterPropertyChange();
+    if(newV === oldV) { return; }
+    if(['left','right'].includes(key)) {
+      if(newV && newV.dispatcher) {
+        var raise = () => { this.getState().changeTracker.raise(['endPoints']); };
+        newV.dispatcher.on( VectorEventTypes.change, this.bindOnce('flagEndPoints', raise ) );
+        this.getState().changeTracker.drop(['endPoints']);
+      }
+    }
   }
+*/
 
 
   // -----------------
