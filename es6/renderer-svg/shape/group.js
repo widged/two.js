@@ -10,6 +10,8 @@ var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
 var renderGroup = (shp, domElement) => {
 
+  var shapeProps = getShapeProps(shp);
+
   // Shortcut for hidden objects.
   // Doesn't reset the flags, so changes are stored and
   // applied once the object is visible again

@@ -7,26 +7,29 @@ var {isCanvasContext} = base;
 var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 
 var renderRadialGradient = (shp, canvasContext) => {
-    // :TODO: either WebGLRenderingContent or CanvasContext2D... track down why
-    if (!isCanvasContext(canvasContext)) { return; }
 
-    var renderer = getShapeRenderer(shp);
+  var shapeProps = getShapeProps(shp);
 
-    if (!renderer.gradient  || anyPropChanged(shp, ['center','focal','radius','stops']) ) {
+  // :TODO: either WebGLRenderingContent or CanvasContext2D... track down why
+  if (!isCanvasContext(canvasContext)) { return; }
 
-      var {center, focal, radius, stops} = getShapeProps(shp, ['center','focal','radius','stops']);
-      var {x: cx,y: cy} = getShapeProps(center, ['x','y']);
-      var {x: fx,y: fy} = getShapeProps(focal, ['x','y']);
-      renderer.gradient = canvasContext.createRadialGradient( cx, cy, 0, fx, fy, radius );
+  var renderer = getShapeRenderer(shp);
 
-      for (var i = 0, ni = stops.length, di = null; i < ni; i++) {
-        di = stops[i];
-        renderer.gradient.addColorStop(di.offset, di.color);
-      }
+  if (!renderer.gradient  || anyPropChanged(shp, ['center','focal','radius','stops']) ) {
 
+    var {center, focal, radius, stops} = shapeProps;
+    var {x: cx,y: cy} = getShapeProps(center, ['x','y']);
+    var {x: fx,y: fy} = getShapeProps(focal, ['x','y']);
+    renderer.gradient = canvasContext.createRadialGradient( cx, cy, 0, fx, fy, radius );
+
+    for (var i = 0, ni = stops.length, di = null; i < ni; i++) {
+      di = stops[i];
+      renderer.gradient.addColorStop(di.offset, di.color);
     }
 
-    return shp.flagReset();
+  }
+
+  return shp.flagReset();
 
 };
 

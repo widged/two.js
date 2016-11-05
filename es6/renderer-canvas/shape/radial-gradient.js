@@ -6,6 +6,8 @@ var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
 var renderRadialGradient = (shp, canvasContext) => {
 
+  var shapeProps = getShapeProps(shp);
+
   var renderer = getShapeRenderer(shp);
 
   if (!renderer.gradient || anyPropChanged(shp, ['center','focal','radius','stops'])) {

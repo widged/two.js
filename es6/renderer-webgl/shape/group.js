@@ -15,28 +15,30 @@ var {MaskMode, remove} = glFN;
 
 var renderGroup = (shp, gl, program) => {
 
-    var renderer       = recomputeMatrixAndScaleIfNecessary(shp);
-    var parentRenderer = getShapeRenderer(shp.parent);
+  var shapeProps = getShapeProps(shp);
 
-    var { mask, opacity, substractions } = getShapeProps( shp, ["mask","opacity","substractions"] );
-    if(anyPropChanged(shp.parent, ['opacity'])) { raiseFlags(shp, ['opacity']);}
-    renderer.opacity = opacity * (parentRenderer ? parentRenderer.opacity : 1);
+  var renderer       = recomputeMatrixAndScaleIfNecessary(shp);
+  var parentRenderer = getShapeRenderer(shp.parent);
 
-    var maskMode = (mask) ? MaskMode(gl, () => { renderShape(mask, gl, program, shp); }) : undefined;
+  var { mask, opacity, substractions } = shapeProps;
+  if(anyPropChanged(shp.parent, ['opacity'])) { raiseFlags(shp, ['opacity']);}
+  renderer.opacity = opacity * (parentRenderer ? parentRenderer.opacity : 1);
 
-    if(maskMode) { maskMode.on(); }
+  var maskMode = (mask) ? MaskMode(gl, () => { renderShape(mask, gl, program, shp); }) : undefined;
 
-    // :NOTE: substractions array is reset on flag.reset()
-    rendererFN.removeNodes(substractions, gl);
+  if(maskMode) { maskMode.on(); }
 
-    // shp.children is a collection, not a proper array
-    Array.from(shp.children).forEach((child) => {
-      renderShape(child, gl, program);
-    });
+  // :NOTE: substractions array is reset on flag.reset()
+  rendererFN.removeNodes(substractions, gl);
 
-    if(maskMode) { maskMode.off(); }
+  // shp.children is a collection, not a proper array
+  Array.from(shp.children).forEach((child) => {
+    renderShape(child, gl, program);
+  });
 
-    return shp.flagReset();
+  if(maskMode) { maskMode.off(); }
+
+  return shp.flagReset();
 
 };
 

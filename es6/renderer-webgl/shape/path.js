@@ -19,21 +19,22 @@ var {max} = Math;
 
 var renderPath = (shp, gl, program, forcedParent) => {
 
+  var shapeProps = getShapeProps(shp);
 
-    // <<< code that varies between text and path
-    var getBoundingClientRect = (shp) => {
-      var { vertices,  linewidth} = getShapeProps( shp, ["vertices","linewidth"] );
-      return getPathBoundingClientRect(vertices, linewidth);
-    };
+  // <<< code that varies between text and path
+  var getBoundingClientRect = (shp) => {
+    var { vertices,  linewidth} = shapeProps;
+    return getPathBoundingClientRect(vertices, linewidth);
+  };
 
-    var assertShapeChange = (shp) => {
-      return hasGradientChanged(shp) || anyPropChanged(shp.parent, ['cap','join','miter']);
-    };
-    // >>>
+  var assertShapeChange = (shp) => {
+    return hasGradientChanged(shp) || anyPropChanged(shp.parent, ['cap','join','miter']);
+  };
+  // >>>
 
-    var rendered = renderAnyPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
-    if(rendered) { shp.flagReset(); }
-    return shp;
+  var rendered = renderAnyPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
+  if(rendered) { shp.flagReset(); }
+  return shp;
 
 };
 
@@ -50,12 +51,11 @@ var styleCanvasPath = (canvas, {cap,  join,  miter}) => {
 
 var updateShapeCanvas = function(shp) {
 
+  var shapeProps = getShapeProps(shp);
   var renderer = getShapeRenderer(shp);
 
   // styles
-  var { vertices,  stroke,  linewidth,  fill,  opacity,  cap,  join,  miter,  closed} = getShapeProps( shp,
-      ["vertices","stroke","linewidth","fill","opacity","cap","join","miter","closed"]
-  );
+  var { vertices,  stroke,  linewidth,  fill,  opacity,  cap,  join,  miter,  closed} = shapeProps;
   var {scale, opacity: rendererOpacity, rect} = renderer;
   opacity = rendererOpacity || opacity;
   linewidth = linewidth * scale;

@@ -10,6 +10,8 @@ var {createElement, setAttributes} = svgFN;
 
 var renderRadialGradient = (shp, domElement) => {
 
+  var shapeProps = getShapeProps(shp);
+
   var changed = {};
   var renderer = getShapeRenderer(shp);
 

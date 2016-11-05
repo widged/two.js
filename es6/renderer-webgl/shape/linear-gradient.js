@@ -9,26 +9,28 @@ var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 
 var renderLinearGradient = (shp, canvasContext, elem) => {
 
-    // context can be canvas or webgl... webgl when elem is WebGL program
-    if (!isCanvasContext(canvasContext)) { return; }
+  var shapeProps = getShapeProps(shp);
 
-    var renderer = getShapeRenderer(shp);
+  // context can be canvas or webgl... webgl when elem is WebGL program
+  if (!isCanvasContext(canvasContext)) { return; }
 
-    if (!renderer.gradient  || anyPropChanged(shp, ['endPoints','stops']) ) {
+  var renderer = getShapeRenderer(shp);
 
-      var {left, right, stops} = getShapeProps(shp, ['left','right','stops']);
-      var {x: lx,y: ly} = getShapeProps(left, ['x','y']);
-      var {x: rx,y: ry} = getShapeProps(right, ['x','y']);
-      renderer.gradient = canvasContext.createLinearGradient( lx, ly, rx, ry );
+  if (!renderer.gradient  || anyPropChanged(shp, ['endPoints','stops']) ) {
 
-      for (var i = 0, ni = stops.length, di = null; i < ni; i++) {
-        di = stops[i];
-        renderer.gradient.addColorStop(di.offset, di.color);
-      }
+    var {left, right, stops} = shapeProps;
+    var {x: lx,y: ly} = getShapeProps(left, ['x','y']);
+    var {x: rx,y: ry} = getShapeProps(right, ['x','y']);
+    renderer.gradient = canvasContext.createLinearGradient( lx, ly, rx, ry );
 
+    for (var i = 0, ni = stops.length, di = null; i < ni; i++) {
+      di = stops[i];
+      renderer.gradient.addColorStop(di.offset, di.color);
     }
 
-    return shp.flagReset();
+  }
+
+  return shp.flagReset();
 
 };
 

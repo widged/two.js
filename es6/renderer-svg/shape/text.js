@@ -14,9 +14,11 @@ const ALIGNMENTS = {
 
 var renderText = (shp, domElement) => {
 
+  var shapeProps = getShapeProps(shp);
+
   var attrs = {};
 
-  var {matrix} = getShapeProps(shp, ['matrix']);
+  var {matrix} = shapeProps;
   if (matrix.manual || anyPropChanged(shp, ['matrix'])) {
     attrs.transform = 'matrix(' + matrix.toString() + ')';
   }
@@ -24,8 +26,7 @@ var renderText = (shp, domElement) => {
 
   if(anyPropChanged(shp, ['family','size','leading','alignment','baseline','style','weight','decoration'])) {
 
-    var { family,  size,  leading,  alignment,  baseline,  style,  weight,  decoration} = getShapeProps(shp,
-        ['family','size','leading','alignment','baseline','style','weight','decoration']);
+    var { family,  size,  leading,  alignment,  baseline,  style,  weight,  decoration} = shapeProps;
     attrs['font-family'] = family;
     attrs['font-size']   = size;
     attrs['line-height'] = leading;
@@ -37,8 +38,7 @@ var renderText = (shp, domElement) => {
   }
 
   if(anyPropChanged(shp, ['fill','stroke','linewidth','opacity','visibility'])) {
-    var { fill,  stroke,  linewidth,  opacity,  visible} = getShapeProps(shp,
-        ['fill','stroke','linewidth','opacity','visible']);
+    var { fill,  stroke,  linewidth,  opacity,  visible} = shapeProps;
 
     attrs.fill = fill && fill.id ? 'url(#' + fill.id + ')' : fill;
     attrs.stroke = stroke && stroke.id ? 'url(#' + stroke.id + ')' : stroke;
@@ -60,7 +60,7 @@ var renderText = (shp, domElement) => {
   if (anyPropChanged(shp, ['clip'])) {
     var clipElem = getClip(shp);
 
-    var { clip } = getShapeProps(shp, ['clip']);
+    var { clip } = shapeProps;
 
     if (clip) {
       renderer.elem.removeAttribute('id');
@@ -75,7 +75,7 @@ var renderText = (shp, domElement) => {
 
   }
   if (anyPropChanged(shp, ['value'])) {
-    var { value } = getShapeProps(shp, ['value']);
+    var { value } = shapeProps;
     renderer.elem.textContent = value;
   }
 

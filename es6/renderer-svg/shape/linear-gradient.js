@@ -8,6 +8,8 @@ var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
 var renderLinearGradient = (shp, domElement) => {
 
+  var shapeProps = getShapeProps(shp);
+
   var attrs = {};
 
   if (anyPropChanged(shp, ['endPoints'])) {

@@ -6,6 +6,8 @@ var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
 var renderLinearGradient = (shp, ctx) => {
 
+  var shapeProps = getShapeProps(shp);
+
   var renderer = getShapeRenderer(shp);
 
   if (!renderer.gradient || anyPropChanged(shp, ['stops', 'endPoints'])) {

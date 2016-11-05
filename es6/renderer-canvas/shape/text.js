@@ -18,6 +18,8 @@ const ALIGNMENTS = {
 
 var renderText = (shp, ctx, forced, parentClipped) => {
 
+  var shapeProps = getShapeProps(shp);
+
   var renderer = getShapeRenderer(shp);
   var parentRenderer = getShapeRenderer(shp.parent);
 

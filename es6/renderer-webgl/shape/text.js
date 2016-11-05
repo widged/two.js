@@ -18,25 +18,26 @@ var {max} = Math;
 
 var renderText = (shp, gl, program, forcedParent) => {
 
-    // <<< code that varies between text and path
-    var getBoundingClientRect = (shp) => {
-      var { stroke, linewidth} = getShapeProps( shp, ["stroke","linewidth"] );
-      var border = (linewidth && !isHidden.test(stroke)) ? linewidth : 0;
-      var {ctx,  value,  style,  weight,  size,  leading,  family,  baseline,  alignment} = getShapeProps( shp,
-         ["ctx","value","style","weight","size","leading","family","baseline","alignment"] );
+  var shapeProps = getShapeProps(shp);
 
-      var {width, height} = measureTextDimensions(base.canvas, {value,  style,  weight,  size,  leading,  family,  baseline}); // {ctx, style, weight, size, leading, family, baseline}
-      return getTextBoundingClientRect(border, width, height, {alignment, baseline});
-    };
+  // <<< code that varies between text and path
+  var getBoundingClientRect = (shp) => {
+    var { stroke, linewidth} = shapeProps;
+    var border = (linewidth && !isHidden.test(stroke)) ? linewidth : 0;
+    var {ctx,  value,  style,  weight,  size,  leading,  family,  baseline,  alignment} = shapeProps;
 
-    var assertShapeChange = () => {
-      return hasGradientChanged || anyPropChanged(shp, ['value','family','size','leading','alignment','baseline','style','weight','decoration']);
-    };
+    var {width, height} = measureTextDimensions(base.canvas, {value,  style,  weight,  size,  leading,  family,  baseline}); // {ctx, style, weight, size, leading, family, baseline}
+    return getTextBoundingClientRect(border, width, height, {alignment, baseline});
+  };
 
-    // >>>
+  var assertShapeChange = () => {
+    return hasGradientChanged || anyPropChanged(shp, ['value','family','size','leading','alignment','baseline','style','weight','decoration']);
+  };
 
-    var renderer = renderAnyPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
-    return shp.flagReset();
+  // >>>
+
+  var renderer = renderAnyPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
+  return shp.flagReset();
 
 
 };
@@ -63,10 +64,10 @@ var styleCanvasText = (canvas, {style, weight, size, leading, family}) => {
 };
 
 var updateShapeCanvas = function(shp) {
+  var shapeProps = getShapeProps(shp);
   var renderer = getShapeRenderer(shp);
   var {scale, opacity: rendererOpacity, rect} = renderer;
-  var { fill,  stroke,  linewidth,  opacity,  style,  weight,  size,  leading,  family,  value} = getShapeProps(shp,
-      ["fill","stroke","linewidth","opacity","style","weight","size","leading","family","value"]);
+  var { fill,  stroke,  linewidth,  opacity,  style,  weight,  size,  leading,  family,  value} = shapeProps;
   var context = getContext(canvas);
 
   // dimensions

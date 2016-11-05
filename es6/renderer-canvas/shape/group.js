@@ -8,10 +8,12 @@ var {isDefaultMatrix, renderShape} = base;
 
 var renderGroup = (shp, ctx) => {
 
+  var shapeProps = getShapeProps(shp);
+
   var renderer = getShapeRenderer(shp);
   var parentRenderer = getShapeRenderer(shp.parent);
 
-  var { matrix, opacity, mask, clip } = getShapeProps(shp, ['matrix','opacity','mask','clip']);
+  var { matrix, opacity, mask, clip } = shapeProps;
 
   var parent = shp.parent;
   renderer.opacity = opacity * (parent && parentRenderer ? parentRenderer.opacity : 1);
