@@ -37,14 +37,11 @@ class Text extends Shape {
    */
   constructor(message, x, y, styles) {
     // init
-    super();
+    super({x,y});
     this.setState(PROP_DEFAULTS);
     // this shape
-    var {renderer, translation, changeTracker} = this.getState();
+    var {renderer, changeTracker} = this.getState();
     renderer.type = 'text';
-    if (isNumber(x) && isNumber(y)) {
-        translation.set(x,y);
-    }
     this.setState({
       value: message
     });

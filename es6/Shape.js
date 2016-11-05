@@ -1,6 +1,7 @@
 /* jshint esnext: true */
 
 import _  from './util/common';
+import is  from './util/is';
 import VectorEventTypes   from './constant/VectorEventTypes';
 import Matrix from './struct/Matrix';
 import Vector from './struct/Vector';
@@ -13,6 +14,7 @@ import shapeRendering from './renderer-lib/renderer-bridge';
 var uniqueId = UidGenerator();
 var {serializeProperties} = shapeFN;
 var {updateShape} = shapeRendering;
+var {isNumber} = is;
 
 const PROP_DEFAULTS = DefaultValues.Shape;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
@@ -25,7 +27,7 @@ class Shape {
   // Constructor
   // --------------------
 
-  constructor() {
+  constructor(translation) {
      // id - The id of the path. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if path.id = 4 then document.querySelector('#two-' + group.id) will return the corresponding svg node.
     this.id = DefaultValues.ShapeIdentifier + uniqueId();
     var changeTracker = new ChangeTracker(); // clip, mask
@@ -42,8 +44,11 @@ class Shape {
       // Define matrix properties which all inherited objects of Shape have.
       matrix: new Matrix(),
     });
+
+    var {x,y} = translation || {};
+    translation = (isNumber(x) || isNumber(y)) ? new Vector().set(x,y) : new Vector();
     this.setProps({
-      translation: new Vector(),
+      translation,
       rotation: 0,
       scale: 1,
       classList: [],
@@ -55,7 +60,21 @@ class Shape {
     this.getProps().translation.dispatcher.on(VectorEventTypes.change, flagMatrix);
   }
 
-
+  beforePropertySet(key, newValue, oldValue) {
+    return newValue;
+  }
+  afterPropertyChange(key, newValue, oldValue) {
+    if(['rotation','scale'].includes(key) && newValue !== oldValue) {
+      var {changeTracker} = this.getState();
+      changeTracker.raise(['matrix']);
+    }
+    if(newValue !== oldValue) {
+      // :TODO: add a raiseOne function to changeTracker
+      var {changeTracker} = this.getState();
+      changeTracker.raise([key]);
+    }
+    return newValue;
+  }
 
   // --------------------
   // IStated
@@ -94,21 +113,7 @@ class Shape {
     var {changeTracker} = this.getState();
     return changeTracker.listChanges();
   }
-  beforePropertySet(key, newValue, oldValue) {
-    return newValue;
-  }
-  afterPropertyChange(key, newValue, oldValue) {
-    if(['rotation','scale'].includes(key) && newValue !== oldValue) {
-      var {changeTracker} = this.getState();
-      changeTracker.raise(['matrix']);
-    }
-    if(newValue !== oldValue) {
-      // :TODO: add a raiseOne function to changeTracker
-      var {changeTracker} = this.getState();
-      changeTracker.raise([key]);
-    }
-    return newValue;
-  }
+
 
   // --------------------
   // Accessors
