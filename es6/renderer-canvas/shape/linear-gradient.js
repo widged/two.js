@@ -16,9 +16,10 @@ var renderLinearGradient = (shp, ctx) => {
       left.x, left.y, right.x, right.y
     );
 
-    for (var i = 0; i < stops.length; i++) {
-      var stop = stops[i];
-      renderer.gradient.addColorStop(stop.offset, stop.color);
+    for (var i = 0, ni = stops.length, stop = null; i < ni; i++) {
+      stop = stops[i];
+      var {offset, color, opacity} = getShapeProps(stop);
+      renderer.gradient.addColorStop(offset, color);
     }
   }
 
