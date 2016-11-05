@@ -7,7 +7,7 @@ var {isCanvasContext} = base;
 var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 
 
-var linearGradient = function(shp, canvasContext, elem) {
+var renderLinearGradient = (shp, canvasContext, elem) => {
 
     // context can be canvas or webgl... webgl when elem is WebGL program
     if (!isCanvasContext(canvasContext)) { return; }
@@ -32,4 +32,4 @@ var linearGradient = function(shp, canvasContext, elem) {
 
 };
 
-export default linearGradient;
+export default renderLinearGradient;
