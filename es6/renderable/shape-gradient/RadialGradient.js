@@ -4,11 +4,11 @@ import _  from '../../util/common';
 import is  from '../../util/is';
 import VectorEventTypes    from '../../constant/VectorEventTypes';
 import Vector    from '../../struct/Vector';
-import shapeFN    from '../../shape-fn';
-import Gradient  from '../Gradient';
+import exportFN    from '../fn-export';
 import DefaultValues from '../../constant/DefaultValues';
+import Gradient  from './Gradient';
 
-var {cloned, serialized} = shapeFN;
+var {cloned, serialized} = exportFN;
 var {isNumber} = is;
 
 const PROP_DEFAULTS = DefaultValues.RadialGradient;

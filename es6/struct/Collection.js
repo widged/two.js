@@ -1,6 +1,5 @@
 /* jshint esnext: true */
 
-import _ from '../util/common';
 import EventEmitter    from '../util/EventEmitter';
 import CollectionEventTypes from '../constant/CollectionEventTypes';
 

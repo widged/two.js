@@ -1,7 +1,5 @@
 /* jshint esnext: true */
 
-import _  from '../util/common';
-
 /**
  * polygon
  *

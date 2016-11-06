@@ -4,15 +4,15 @@ import is from '../util/is';
 import _ from '../util/common';
 import Resolution from '../constant/Resolution';
 import Commands from '../constant/Commands';
-import Path from '../shape/Anchor';
-import Group from '../shape/Group';
-import Gradient from '../shape/Gradient';
-import RadialGradient from '../shape/gradient/RadialGradient';
-import LinearGradient from '../shape/gradient/RadialGradient';
+import Path from '../renderable/Anchor';
+import Group from '../renderable/Group';
+import Gradient from '../renderable/Gradient';
+import RadialGradient from '../renderable/gradient/RadialGradient';
+import LinearGradient from '../renderable/gradient/RadialGradient';
 import Vector from '../struct/Vector';
 import Matrix from '../struct/Matrix';
-import pathFN  from '../shape/fn-path';
-import Anchor from '../Anchor';
+import pathFN  from '../renderable/fn-path';
+import Anchor from '../renderable/Anchor';
 
 var {isObject, isUndefined, isNotNumber, isArray, isNull} = is;
 var {getReflection, decomposeMatrix} = pathFN;
@@ -702,7 +702,7 @@ var tags = {
 
   },
 
-   // a lot of redundancy with geometry/Ellipse
+   // :REVIEW: a lot of redundancy with import/geom/Ellipse
   circle: function(node) {
 
     var x = parseFloat(node.getAttribute('cx'));
@@ -752,7 +752,7 @@ var tags = {
 
   },
 
-   // a lot of redundancy with geometry/Rectangle
+   // :REVIEW: a lot of redundancy with import/geom/Rectangle
   rect: function(node) {
 
     var x = parseFloat(node.getAttribute('x')) || 0;

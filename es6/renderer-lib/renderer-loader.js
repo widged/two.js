@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
-import RendererTypes from './constant/RendererTypes';
-import dom from './platform/dom';
+import RendererTypes from '../constant/RendererTypes';
+import dom from '../platform/dom';
 
 var FN = {};
 
@@ -23,9 +23,9 @@ FN.load = (type, two, domElement) => {
 
   // Determine what Renderer to use and setup a scene.
   var renderers = {};
-  renderers[RendererTypes.webgl]  = './renderer-webgl/Renderer';
-  renderers[RendererTypes.canvas] = './renderer-canvas/Renderer';
-  renderers[RendererTypes.svg]    = './renderer-svg/Renderer';
+  renderers[RendererTypes.webgl]  = '../renderer-webgl/Renderer';
+  renderers[RendererTypes.canvas] = '../renderer-canvas/Renderer';
+  renderers[RendererTypes.svg]    = '../renderer-svg/Renderer';
   var pth = renderers[type];
   if(!pth) { throw '[renderer-loader.loadModule] expects a valid module path. Specify one of `svg`,`webgl`, or `canvas`.'; }
   return loadModule(pth);

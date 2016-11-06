@@ -1,25 +1,24 @@
 /* jshint esnext: true */
 
-import CollectionEventTypes   from '../constant/CollectionEventTypes';
-import _  from '../util/common';
-import is  from '../util/is';
-import Path  from './Path';
+import IMPORTS    from '../_imports';
 import Shape from '../Shape';
-import shapeFN    from '../shape-fn';
-import groupFN  from './fn-group';
-import Children  from '../ChildrenCollection';
-import DefaultValues from '../constant/DefaultValues';
-import shapeRendering   from '../renderer-lib/renderer-bridge';
+import groupFN from './fn-group';
+import ChildrenCollection from './ChildrenCollection';
 
-var {updateShape} = shapeRendering;
+const {Collection, CollectionEventTypes} = IMPORTS;
+const {DefaultValues} = IMPORTS;
 
-var {isNumber, isArray} = is;
-var {exclude, arrayOrArguments}  = _;
-var {serializeProperties, rectCentroid, rectTopLeft} = shapeFN;
-var {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
-var {translateChildren} = groupFN;
+const {isNumber, isArray} = IMPORTS.is;
+const {exclude, arrayOrArguments}  = IMPORTS.common;
+const {serializeProperties} = IMPORTS.exportFN;
+const {rectCentroid, rectTopLeft} = IMPORTS.rectFN;
+const {updateShape} = IMPORTS.shapeRendering;
 
-const PROP_DEFAULTS = DefaultValues.Group;
+const {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
+const {translateChildren} = groupFN;
+
+
+const PROP_DEFAULTS= DefaultValues.Group;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
@@ -100,7 +99,7 @@ class Group extends Shape {
     if(key === 'children') {
         var oldChildren = this.getState().children;
         if (oldChildren && oldChildren.dispatcher) { oldChildren.dispatcher.off(); }
-        newV = new Children(newV);
+        newV = new ChildrenCollection(newV);
     }
     return newV;
   }
@@ -281,8 +280,6 @@ class Group extends Shape {
 
   }
 }
-
-Group.Children = Children;
 
 
 export default Group;

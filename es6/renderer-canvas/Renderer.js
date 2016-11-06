@@ -2,7 +2,7 @@
 
 import is  from '../util/is';
 import dom  from '../platform/dom';
-import base from './shape/base';
+import base from './renderable/base';
 import Renderer from '../renderer-lib/TwoRenderer';
 
 var {isUndefined} = is;

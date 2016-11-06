@@ -8,7 +8,7 @@
  * pass the resolution for how many points on the arc are desired.
  */
 
-import Commands from '../constant/CommandTypes';
+import Commands from '../../constant/CommandTypes';
 
 var PI = Math.PI, TWO_PI = Math.PI * 2, HALF_PI = Math.PI/2,
   cos = Math.cos, sin = Math.sin, abs = Math.abs;

@@ -1,7 +1,6 @@
 /* jshint esnext: true */
 
-import _  from '../util/common';
-import is  from '../util/is';
+import is  from '../../util/is';
 
 var {isNumber} = is;
 

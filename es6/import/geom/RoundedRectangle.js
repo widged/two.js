@@ -1,8 +1,7 @@
 /* jshint esnext: true */
 
-import _  from '../util/common';
-import is  from '../util/is';
-import Resolution from '../constant/Resolution';
+import is  from '../../util/is';
+import Resolution from '../../constant/Resolution';
 
 var {isNumber} = is;
 

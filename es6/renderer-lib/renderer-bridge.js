@@ -2,7 +2,7 @@
 
 import is  from '../util/is';
 import Commands from '../constant/CommandTypes';
-import pathFN  from '../shape/fn-path';
+import pathFN  from '../renderable/fn-path';
 
 var {isArray} = is;
 

@@ -1,18 +1,17 @@
 /* jshint esnext: true */
 
-import _  from '../util/common';
-import is  from '../util/is';
+import IMPORTS    from '../_imports';
 import Shape from '../Shape';
-import shapeFN    from '../shape-fn';
-import pathFN    from '../shape/fn-path';
-import DefaultValues from '../constant/DefaultValues';
-import shapeRendering   from '../renderer-lib/renderer-bridge';
 
-var {updateShape} = shapeRendering;
-var {isNumber, isObject} = is;
+var {isObject} = IMPORTS.is;
+var {shimBoundingClientRect} = IMPORTS.rectFN;
+var {serializeProperties} = IMPORTS.exportFN;
+var {getComputedMatrix} = IMPORTS.pathFN;
+var {updateShape} = IMPORTS.shapeRendering;
 
-var {shimBoundingClientRect, serializeProperties} = shapeFN;
-var {getComputedMatrix} = pathFN;
+const {ChildrenCollection} = IMPORTS;
+const {Anchor, Vector, VectorEventTypes} = IMPORTS;
+const {DefaultValues} = IMPORTS;
 
 const PROP_DEFAULTS = DefaultValues.Text;
 const PROP_KEYS  = Object.keys(PROP_DEFAULTS);

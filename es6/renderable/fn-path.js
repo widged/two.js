@@ -1,14 +1,14 @@
 /* jshint esnext: true */
 
-import Commands from '../constant/CommandTypes';
-import Resolution from '../constant/Resolution';
-import _ from '../util/common';
-import is from '../util/is';
-import Vector from '../struct/Vector';
-import Matrix from '../struct/Matrix';
-import Anchor from '../Anchor';
+import is  from '../util/is';
+import common  from '../util/common';
+import Commands  from '../constant/CommandTypes';
 
-var {mod} = _;
+import Anchor   from './Anchor';
+import Vector   from '../struct/Vector';
+import Matrix   from '../struct/Matrix';
+
+var {mod, arrayLast} = common;
 var {isObject, isNumber, isNull} = is;
 var {atan2, sqrt, sin, cos, pow, PI, round, min, max} = Math;
 
@@ -222,6 +222,7 @@ FN.getCurveLength = (x1, y1, x2, y2, x3, y3, x4, y4, limit)  => {
  */
 
 FN.getCurveLengthAB = (a, b, limit) => {
+  var {getCurveLength} = FN;
   // TODO: DRYness
   var x1, x2, x3, x4, y1, y2, y3, y4;
 
@@ -247,7 +248,7 @@ FN.getCurveLengthAB = (a, b, limit) => {
     y3 += a.y;
   }
 
-  return _.getCurveLength(x1, y1, x2, y2, x3, y3, x4, y4, limit);
+  return getCurveLength(x1, y1, x2, y2, x3, y3, x4, y4, limit);
 
 };
 
@@ -441,8 +442,6 @@ FN.getSubdivisions = (a, b, limit) => {
 
     if(!Array.isArray(vertices)) { return []; }
 
-    var {arrayLast} = _;
-
     var {getSubdivisions} = FN;
     var b = arrayLast(vertices);
     var lastIndex = (vertices.length - 1);
@@ -517,7 +516,6 @@ FN.updateLength = ({limit, vertices, pathClosed, lastClosed, lengths}) => {
   if(!Array.isArray(vertices)) { return {lengths, sum: 0}; }
 
   var {getCurveLengthAB} = FN;
-  var {arrayLast} = _;
 
   var b = arrayLast(vertices);
   var closed = pathClosed || lastClosed;
@@ -552,17 +550,17 @@ FN.updateLength = ({limit, vertices, pathClosed, lastClosed, lengths}) => {
 
 NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  => {
 
+  var resolution = l;
+
   var matrix = new Matrix()
     .translate(center.x, center.y)
     .rotate(xAxisRotation);
 
-  var l = Resolution;
-
   // console.log(arguments);
 
   var points = [];
-  for (var i = 0; i < l; i++) {
-    var pct = (i + 1) / l;
+  for (var i = 0; i < resolution; i++) {
+    var pct = (i + 1) / resolution;
     if (!!ccw) {
       pct = 1 - pct;
     }
@@ -587,6 +585,7 @@ NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  =>
  * coordinates to that percentage on this Path's curve.
  */
 NotInUse.getPointAt = (t, obj, pth) => {
+  var {getPointOnCubicBezier} = FN;
       var x, x1, x2, x3, x4, y, y1, y2, y3, y4, left, right;
       var target = pth.length * min(max(t, 0), 1);
       var length = pth.vertices.length;
@@ -636,8 +635,8 @@ NotInUse.getPointAt = (t, obj, pth) => {
         y3 += a.y;
       }
 
-      x = _.getPointOnCubicBezier(t, x1, x2, x3, x4);
-      y = _.getPointOnCubicBezier(t, y1, y2, y3, y4);
+      x = getPointOnCubicBezier(t, x1, x2, x3, x4);
+      y = getPointOnCubicBezier(t, y1, y2, y3, y4);
 
       if (is.Object(obj)) {
         obj.x = x;

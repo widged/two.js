@@ -1,16 +1,14 @@
 /* jshint esnext: true */
 
-import is  from '../util/is';
-import _  from '../util/common';
-import Renderable     from '../Renderable';
-import shapeFN    from '../shape-fn';
-import Collection  from '../struct/Collection';
-import DefaultValues from '../constant/DefaultValues';
+import IMPORTS from '../_imports';
+var {Collection}  = IMPORTS;
 
-var {cloned, serializeProperties} = shapeFN;
-var {isString, isNumber} = is;
+import Renderable  from '../Renderable';
 
-const PROP_DEFAULTS  = DefaultValues.Gradient;
+const {cloned, serializeProperties} = IMPORTS.exportFN;
+const {isString, isNumber} = IMPORTS.is;
+const {Gradient: PROP_DEFAULTS}  = IMPORTS.DefaultValues;
+
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 /**

@@ -1,28 +1,22 @@
 /* jshint esnext: true */
 
-import DefaultValues from '../constant/DefaultValues';
-import CollectionEventTypes   from '../constant/CollectionEventTypes';
-import VectorEventTypes   from '../constant/VectorEventTypes';
-import Commands from '../constant/CommandTypes';
-import _  from '../util/common';
-import is  from '../util/is';
-import Collection  from '../struct/Collection';
-
-import Anchor  from '../Anchor';
+import IMPORTS    from '../_imports';
 import Shape from '../Shape';
-import shapeFN from '../shape-fn';
-import pathFN  from './fn-path';
-import shapeRendering   from '../renderer-lib/renderer-bridge';
 
-var {updateShape, copyVertices} = shapeRendering;
+var {isUndefined, isNull} = IMPORTS.is;
+var {arrayLast}           = IMPORTS.common;
+var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, rectTopLeft, rectCentroid} = IMPORTS.pathFN;
+var {getPathBoundingRect} = IMPORTS.rectFN;
+var {serializeProperties} = IMPORTS.exportFN;
+var {updateShape, copyVertices} = IMPORTS.shapeRendering;
 
-var {isUndefined, isNull} = is;
-var {arrayLast} = _;
-var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, rectTopLeft, rectCentroid} = pathFN;
+const {Collection, CollectionEventTypes} = IMPORTS;
+const {Anchor, Vector, VectorEventTypes} = IMPORTS;
+const {DefaultValues} = IMPORTS;
+
 var {min, max, round} = Math;
-var {serializeProperties, getPathBoundingRect} = shapeFN;
 
-const PROP_DEFAULTS = DefaultValues.Path;
+const PROP_DEFAULTS= DefaultValues.Path;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 /**

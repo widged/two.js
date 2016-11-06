@@ -4,12 +4,12 @@ import _  from '../../util/common';
 import is  from '../../util/is';
 import VectorEventTypes    from '../../constant/VectorEventTypes';
 import Vector    from '../../struct/Vector';
-import Gradient  from '../Gradient';
-import shapeFN    from '../../shape-fn';
+import exportFN    from '../fn-export';
 import DefaultValues from '../../constant/DefaultValues';
+import Gradient  from './Gradient';
 
 var {isNumber} = is;
-var {cloned} = shapeFN;
+var {cloned} = exportFN;
 
 const PROP_DEFAULTS = DefaultValues.LinearGradient;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);

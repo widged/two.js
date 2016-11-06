@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
-import base   from './shape/base';
+import base   from './renderable/base';
 import Renderer from '../renderer-lib/TwoRenderer';
-import svgFN    from './shape/fn-svg';
+import svgFN    from './renderable/fn-svg';
 
 var {renderScene} = base;
 var {createElement, setAttributes} = svgFN;

@@ -1,16 +1,16 @@
 /* jshint esnext: true */
 
 import is   from '../util/is';
-import LinearGradient from './gradient/LinearGradient';
-import RadialGradient from './gradient/RadialGradient';
-import Group from './Group';
-import Path from './Path';
-import Text from './Text';
-import Anchor from '../Anchor';
-import shapeFN    from '../shape-fn';
+import LinearGradient from './shape-gradient/LinearGradient';
+import RadialGradient from './shape-gradient/RadialGradient';
+import Group from './container/Group';
+import Path from './shape/Path';
+import Text from './shape/Text';
+import Anchor from './Anchor';
+import rectFN    from './fn-rect';
 
 
-var {rectCentroid} = shapeFN;
+var {rectCentroid} = rectFN;
 var {isNumber, isArray} = is;
 
 var FN = {};

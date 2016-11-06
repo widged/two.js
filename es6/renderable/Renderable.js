@@ -1,20 +1,17 @@
 /* jshint esnext: true */
 
-import _  from './util/common';
-import is  from './util/is';
-import VectorEventTypes   from './constant/VectorEventTypes';
-import Matrix from './struct/Matrix';
-import Vector from './struct/Vector';
-import UidGenerator from './util/uid-generator';
-import shapeFN    from './shape-fn';
-import DefaultValues from './constant/DefaultValues';
-import ChangeTracker from './util/ChangeTracker';
-import shapeRendering from './renderer-lib/renderer-bridge';
+import IMPORTS from './_imports';
+console.log(IMPORTS)
+const {VectorEventTypes, Vector}  = IMPORTS;
+const {Matrix}  = IMPORTS;
+const {ChangeTracker}  = IMPORTS;
 
-var uniqueId = UidGenerator();
-var {serializeProperties} = shapeFN;
-var {updateShape} = shapeRendering;
-var {isNumber} = is;
+const uniqueId = IMPORTS.UidGenerator();
+const {serializeProperties} = IMPORTS.exportFN;
+const {updateShape} = IMPORTS.shapeRendering;
+const {isNumber} = IMPORTS.is;
+
+const {DefaultValues} = IMPORTS;
 
 const PROP_DEFAULTS = DefaultValues.Renderable;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
@@ -91,8 +88,6 @@ class Renderable {
 
   setState(obj) {
     if(typeof obj === 'object') {
-      // this.state = Object.assign(this.state || {}, obj);
-      // :TODO: remove once all ._ have been replaced.
       var keys = Object.keys(obj);
       keys.forEach((k) => {
           var nv = obj[k];

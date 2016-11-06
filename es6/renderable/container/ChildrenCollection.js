@@ -1,9 +1,9 @@
 /* jshint esnext: true */
 
-import Collection  from './struct/Collection';
-import is  from './util/is';
-import _  from './util/common';
-import CollectionEventTypes   from './constant/CollectionEventTypes';
+import IMPORTS from '../_imports';
+
+var {Collection, CollectionEventTypes} = IMPORTS;
+
 
 /**
  * A children collection which is accesible both by index and by object id
