@@ -32,7 +32,8 @@ var renderPath = (shp, domElement) => {
 
   if(anyPropChanged(shp, ['anchorColl'])) {
     var {anchorColl, closed} = shapeProps;
-    attrs.d = toString(anchorColl, closed);
+    var anchors = anchorColl.items;
+    attrs.d = toString(anchors, closed);
   }
 
   if(anyPropChanged(shp, ['fill','stroke','linewidth','opacity','visibility'])) {
