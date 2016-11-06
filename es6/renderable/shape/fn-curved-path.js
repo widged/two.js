@@ -377,15 +377,15 @@ FN.getSubdivisions = (a, b, limit) => {
   FN.subdivideTo = ({limit, anchors, pathClosed, lastClosed, automatic}) => {
     //TODO: DRYness (function below updateLength)
 
-    if(!Array.isArray(anchorColl)) { return []; }
+    if(!Array.isArray(anchors)) { return []; }
 
     var {getSubdivisions} = FN;
-    var b = arrayLast(anchorColl);
-    var lastIndex = (anchorColl.length - 1);
+    var b = arrayLast(anchors);
+    var lastIndex = (anchors.length - 1);
     var closed = pathClosed || lastClosed;
 
     var points = [];
-    anchorColl.forEach((a, i) => {
+    anchors.forEach((a, i) => {
 
       if (i <= 0 && !closed) {
         b = a;
@@ -525,17 +525,17 @@ NotInUse.getPointAt = (t, obj, pth) => {
   var {getPointOnCubicBezier} = FN;
       var x, x1, x2, x3, x4, y, y1, y2, y3, y4, left, right;
       var target = pth.length * min(max(t, 0), 1);
-      var length = pth.getProps().anchorColl.length;
+      var length = pth.getProps().anchors.length;
       var last = length - 1;
 
       var a = null;
       var b = null;
 
-      var {lengths, closed, anchorColl} = pth.getProps();
+      var {lengths, closed, anchors} = pth.getProps();
       for (var i = 0, l = lengths.length, sum = 0; i < l; i++) {
 
         if (sum + lengths[i] > target) {
-          var anchors = anchorColl.items;
+          var anchors = anchors.items;
           a = anchors[closed ? mod(i, length) : i];
           b = anchors[min(max(i - 1, 0), last)];
           target -= sum;

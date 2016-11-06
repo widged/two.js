@@ -7,9 +7,6 @@ var FN = {};
 
 var {atan2, sqrt, sin, cos, pow, PI, round, min, max} = Math;
 
-FN.getMatrixAndParent = (shp) => {
-  return { matrix: shp.getProps().matrix, next: shp.parent};
-};
 
 /**
  * Return the computed matrix of a nested object.

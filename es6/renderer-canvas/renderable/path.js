@@ -5,7 +5,7 @@ import is  from '../../lib/is/is';
 import base from './base';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer} = rendererBridge;
+var {anyPropChanged, getShapeProps, getShapeRenderer, getShapeMatrix} = rendererBridge;
 var {isDefaultMatrix, renderShape, Commands} = base;
 
 var {mod, toFixed} = _;
@@ -22,7 +22,7 @@ var renderPath = (shp, ctx, forced, parentClipped) => {
       ar, bl, br, cl, x, y, defaultMatrix;
 
   var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
-  var { matrix } = shp.getState();
+  var matrix  = getShapeMatrix(shp);
   var { anchorColl:anchors,  closed } = shapeProps;
   var { cap,  join,  miter  } = shapeProps;
 

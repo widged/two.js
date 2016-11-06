@@ -4,7 +4,7 @@ import is  from '../../lib/is/is';
 import base from './base';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer} = rendererBridge;
+var {anyPropChanged, getShapeProps, getShapeRenderer, getShapeMatrix} = rendererBridge;
 var {isDefaultMatrix, renderShape, isHidden} = base;
 
 var {isString, isNumber} = is;
@@ -24,11 +24,11 @@ var renderText = (shp, ctx, forced, parentClipped) => {
   var parentRenderer = getShapeRenderer(shp.parent);
 
   var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
-  var { matrix } = shp.getState();
   var { anchorColl,  closed } = shapeProps;
+  var  matrix  = getShapeMatrix(shp);
 
   opacity = opacity * parentRenderer.opacity;
-  var anchors = anchorColl; // Commands
+  var anchors = anchorColl;
 
   if (!forced && (!visible || clip)) { return shp; }
 

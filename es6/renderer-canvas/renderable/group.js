@@ -3,7 +3,7 @@
 import base from './base';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer} = rendererBridge;
+var {anyPropChanged, getShapeProps, getShapeRenderer, getShapeMatrix} = rendererBridge;
 var {isDefaultMatrix, renderShape} = base;
 
 var renderGroup = (shp, ctx) => {
@@ -15,7 +15,7 @@ var renderGroup = (shp, ctx) => {
 
   var parentRenderer = parent ? getShapeRenderer(shp.parent) : undefined;
 
-  var { matrix } = shp.getState();
+  var matrix  = getShapeMatrix(shp);
   var { opacity, mask, clip } = shapeProps;
 
   renderer.opacity = opacity * (parent && parentRenderer ? parentRenderer.opacity : 1);
