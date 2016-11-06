@@ -11,9 +11,9 @@ const {serializeProperties} = IMPORTS.exportFN;
 const {updateShape} = IMPORTS.shapeRendering;
 const {isNumber} = IMPORTS.is;
 
-const {DefaultValues} = IMPORTS;
+const {RenderableDefaults} = IMPORTS;
 
-const PROP_DEFAULTS = DefaultValues.Renderable;
+const PROP_DEFAULTS = RenderableDefaults.Renderable;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 /**
 *
@@ -26,7 +26,7 @@ class Renderable {
 
   constructor(translation) {
      // id - The id of the path. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if path.id = 4 then document.querySelector('#two-' + group.id) will return the corresponding svg node.
-    this.id = DefaultValues.ShapeIdentifier + uniqueId();
+    this.id = RenderableDefaults.ShapeIdentifier + uniqueId();
     var changeTracker = new ChangeTracker(); // clip, mask
     // set on svg import only
     this.state = {changeTracker};

@@ -5,13 +5,13 @@ import is  from '../../lib/is/is';
 import VectorEventTypes    from '../../lib/struct-vector/VectorEventTypes';
 import Vector    from '../../lib/struct-vector/Vector';
 import exportFN    from '../fn-export';
-import DefaultValues from '../DefaultValues';
+import RenderableDefaults from '../RenderableDefaults';
 import Gradient  from './Gradient';
 
 var {cloned, serialized} = exportFN;
 var {isNumber} = is;
 
-const PROP_DEFAULTS = DefaultValues.RadialGradient;
+const PROP_DEFAULTS = RenderableDefaults.RadialGradient;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 /**

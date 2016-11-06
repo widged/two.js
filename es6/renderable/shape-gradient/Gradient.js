@@ -7,7 +7,7 @@ import Renderable  from '../Renderable';
 
 const {cloned, serializeProperties} = IMPORTS.exportFN;
 const {isString, isNumber} = IMPORTS.is;
-const {Gradient: PROP_DEFAULTS}  = IMPORTS.DefaultValues;
+const {Gradient: PROP_DEFAULTS}  = IMPORTS.RenderableDefaults;
 
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 

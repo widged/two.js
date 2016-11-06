@@ -11,9 +11,9 @@ var {updateShape} = IMPORTS.shapeRendering;
 
 const {ChildrenCollection} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
-const {DefaultValues} = IMPORTS;
+const {RenderableDefaults} = IMPORTS;
 
-const PROP_DEFAULTS = DefaultValues.Text;
+const PROP_DEFAULTS = RenderableDefaults.Text;
 const PROP_KEYS  = Object.keys(PROP_DEFAULTS);
 
 /**
@@ -32,7 +32,7 @@ class Text extends Renderable {
    * A text object takes in a message, the string representation of what will be
    * displayed. It then takes an x and y number where the text object will be
    * placed in the group. Finally, an optional styles object to apply any other
-   * additional styles. Applicable properties can be found in DefaultValues
+   * additional styles. Applicable properties can be found in RenderableDefaults
    */
   constructor(message, x, y, styles) {
     // init

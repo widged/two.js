@@ -9,7 +9,7 @@ import UidGenerator  from '../lib/uid-generator/UidGenerator';
 import ChangeTracker  from '../lib/change-tracker/ChangeTracker';
 
 import Commands  from '../lib/struct-anchor/CommandTypes';
-import DefaultValues from './DefaultValues';
+import RenderableDefaults from './RenderableDefaults';
 
 import Anchor   from '../lib/struct-anchor/Anchor';
 import VectorEventTypes   from '../lib/struct-vector/VectorEventTypes';
@@ -29,7 +29,7 @@ import groupFN  from './fn-group';
 
 export default {
   is, common, UidGenerator, ChangeTracker,
-  Commands, DefaultValues,
+  Commands, RenderableDefaults,
   Anchor, Vector, VectorEventTypes, Matrix,
   Collection, CollectionEventTypes,
   shapeRendering,

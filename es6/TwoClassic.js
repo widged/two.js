@@ -35,7 +35,7 @@ import TwoScene  from './TwoScene';
 import EventEmitter  from './lib/event-emitter/EventEmitter';
 import makeShape from './renderable/factories';
 import Player from './lib/player/Player';
-import DefaultValues from './renderable/DefaultValues';
+import RenderableDefaults from './renderable/RenderableDefaults';
 import TwoEventTypes from './TwoEventTypes';
 import dom from './platform/dom';
 import RendererLoader from './renderer/renderer-loader';
@@ -50,7 +50,7 @@ var beforeRender = (two, classicConfig) => {
 class TwoClassic extends TwoScene  {
 
   constructor(classicConfig) {
-    var {width, height, type, fullscreen, autostart} = Object.assign(DefaultValues.TwoClassic, classicConfig);
+    var {width, height, type, fullscreen, autostart} = Object.assign(RenderableDefaults.TwoClassic, classicConfig);
 
     var beforeRender = (two) => {
 
@@ -67,8 +67,8 @@ class TwoClassic extends TwoScene  {
       if(!!two.state.autostart) { player.play(); }
 
       if (two.state.fullscreen) {
-        document.body.style= Object.assign(document.body.style, DefaultValues.documentBodyStyle);
-        two.state.renderer.domElement.style = Object.assign(two.state.renderer.domElement.style, DefaultValues.sceneNodeBodyStyle);
+        document.body.style= Object.assign(document.body.style, RenderableDefaults.documentBodyStyle);
+        two.state.renderer.domElement.style = Object.assign(two.state.renderer.domElement.style, RenderableDefaults.sceneNodeBodyStyle);
         var fitToWindow = () => {
           var {width, height} = dom.getWindowSize();
           two.state.width = width;

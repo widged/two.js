@@ -582,7 +582,7 @@ NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  =>
 
 /**
  * Given a float `t` from 0 to 1, return a point or assign a passed `obj`'s
- * coordinates to that percentage on this Path's curve.
+ * coordinates to that percentage on a Path's curve.
  */
 NotInUse.getPointAt = (t, obj, pth) => {
   var {getPointOnCubicBezier} = FN;

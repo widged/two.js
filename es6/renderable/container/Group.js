@@ -5,7 +5,7 @@ import Renderable from '../Renderable';
 import ChildrenCollection from './ChildrenCollection';
 
 const {Collection, CollectionEventTypes} = IMPORTS;
-const {DefaultValues} = IMPORTS;
+const {RenderableDefaults} = IMPORTS;
 
 const {isNumber, isArray} = IMPORTS.is;
 const {exclude, arrayOrArguments}  = IMPORTS.common;
@@ -16,7 +16,7 @@ const {translateChildren} = IMPORTS.groupFN;
 const {updateShape} = IMPORTS.shapeRendering;
 
 
-const PROP_DEFAULTS= DefaultValues.Group;
+const PROP_DEFAULTS= RenderableDefaults.Group;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };

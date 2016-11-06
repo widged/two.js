@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import DefaultValues from './renderable/DefaultValues';
+import RenderableDefaults from './renderable/RenderableDefaults';
 import makeShape from './renderable/factories';
 
 /**
@@ -9,7 +9,7 @@ import makeShape from './renderable/factories';
 class TwoScene {
 
   constructor(config) {
-    var {width, height, RendererDelegate, beforeRender} = Object.assign(DefaultValues.TwoScene, config);
+    var {width, height, RendererDelegate, beforeRender} = Object.assign(RenderableDefaults.TwoScene, config);
 
     /**
     renderer- The instantiated rendering class for the instance. For a list of possible rendering types check out RendererTypes.

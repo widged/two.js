@@ -12,11 +12,11 @@ var {updateShape, copyVertices} = IMPORTS.shapeRendering;
 
 const {Collection, CollectionEventTypes} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
-const {DefaultValues} = IMPORTS;
+const {RenderableDefaults} = IMPORTS;
 
 var {min, max, round} = Math;
 
-const PROP_DEFAULTS= DefaultValues.Path;
+const PROP_DEFAULTS= RenderableDefaults.Path;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 /**

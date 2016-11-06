@@ -26,7 +26,7 @@ FN.removeShapesFromChildren = (objects, children) => {
   for (var i = 0, ni = objects.length, obj = null; i < ni; i++) {
     obj = objects[i];
     if (!obj || !(children.ids[obj.id])) continue;
-    // :NOTE: this could be optimised if children was organised as a dictionary with ks and vs.
+    // :REVIEW: Any chance it could be optimised if children was organised as a dictionary with ks and vs?
     var idx = children.indexOf(obj);
     if(idx === -1) { throw "[GroupFN.removeShapesFromChildren] case not covered"; }
     children.splice(children.indexOf(obj), 1);
@@ -51,7 +51,7 @@ FN.dropShapes = (group, shapes) => {
 FN.removeGroupFromParent = (group, parent) => {
   if(!parent) { return parent; }
   if(typeof parent.remove !== 'function') { return parent; }
-  parent.remove(this);
+  parent.remove(group);
   return parent;
 };
 
@@ -135,7 +135,7 @@ FN.getEnclosingRect = ({shallow, children}) => {
     if (/(linear-gradient|radial-gradient|gradient)/.test(child.shapeType)) {
       return;
     }
-    // :NOTE: before refactoring this, consider that child.getBoundingClientRect
+    // :NOTE: before refactoring, consider that child.getBoundingClientRect
     // will call shp.update() before computing the rectangle.
     rect = child.getBoundingClientRect(shallow);
 
@@ -174,7 +174,7 @@ FN.translateChildren = (children, translate) => {
 FN.getItemWithId = (group, id) => {
   var {findFirstMember, nodeChildren} = FN;
   return findFirstMember(
-    this, nodeChildren,
+    group, nodeChildren,
     (node) => { return node.id === id; }
   );
 };
