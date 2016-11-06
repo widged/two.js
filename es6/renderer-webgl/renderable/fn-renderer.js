@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
 import is  from '../../lib/is/is';
-import LinearGradient from '../../renderable/shape-gradient/LinearGradient';
-import RadialGradient from '../../renderable/shape-gradient/RadialGradient';
+import LinearGradient from '../../renderable/path-gradient/LinearGradient';
+import RadialGradient from '../../renderable/path-gradient/RadialGradient';
 import shapeRendering from '../../renderer/renderer-bridge';
 import Matrix   from '../../lib/struct-matrix/Matrix';
 import FloatArray   from '../../lib/struct-float-array/FloatArray';

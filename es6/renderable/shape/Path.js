@@ -3,16 +3,17 @@
 import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
 
-var {isUndefined, isNull} = IMPORTS.is;
-var {arrayLast}           = IMPORTS.common;
-var {subdivideTo, updateLength} = IMPORTS.curveFN;
-var {rectTopLeft, rectCentroid} = IMPORTS.rectFN;
-var {serializeProperties} = IMPORTS.exportFN;
-var {updateShape, copyVertices} = IMPORTS.shapeRendering;
-
+const {is, common, curveFN, rectFN, exportFN, shapeRendering} = IMPORTS;
 const {Collection, CollectionEventTypes} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
+
+var {isUndefined, isNull} = is;
+var {arrayLast}           = common;
+var {subdivideTo, updateLength} = curveFN;
+var {rectTopLeft, rectCentroid} = rectFN;
+var {serializeProperties}       = exportFN;
+var {updateShape, copyVertices} = shapeRendering;
 
 var {min, max, round} = Math;
 
@@ -38,15 +39,15 @@ const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 class Path extends Renderable {
 
 
-  constructor(vertices, closed, curved, manual) {
+  constructor(anchors, closed, curved, manual) {
     super();
     // init
     this.setState(PROP_DEFAULTS);
     var {changeTracker} = this.getState();
 
     // let's clone to be on the safe side
-    var clone = (vertices || []).slice(0);
-    this.setState({
+    var clone = (anchors || []).slice(0);
+    this.setProps({
       cap: 'butt', // Default of Adobe Illustrator
       join: 'miter', // Default of Adobe Illustrator
       // vertices -- A `Collection` of `Anchors` that is two-way databound. Individual vertices may be manipulated.

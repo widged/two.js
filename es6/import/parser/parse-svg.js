@@ -5,8 +5,9 @@ import _ from '../../TwoUtil';
 import Resolution from '../Resolution';
 import Commands from '../../lib/struct-anchor/CommandTypes';
 import Path from '../../lib/struct-anchor/Anchor';
-import Group from '../renderable/Group';
-import Gradient from '../renderable/Gradient';
+import Group from '../renderable/container/Group';
+import groupFN  from '../renderable/container/fn-group';
+import Gradient from '../renderable/path-gradient/Gradient';
 import RadialGradient from '../renderable/gradient/RadialGradient';
 import LinearGradient from '../renderable/gradient/RadialGradient';
 import Vector from '../lib/struct-vector/Vector';
@@ -71,6 +72,8 @@ var applySvgAttributes = function(node, elem) {
   styles.visible = !(isUndefined(styles.display) && styles.display === 'none')
     || (isUndefined(styles.visibility) && styles.visibility === 'hidden');
 
+  let nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
+
   // Now iterate the whole thing
   for (key in styles) {
     value = styles[key];
@@ -130,9 +133,12 @@ var applySvgAttributes = function(node, elem) {
       case 'fill':
       case 'stroke':
         if (/url\(\#.*\)/i.test(value)) {
-          // getById is a function of a group instance
-          elem[key] = this.getById(
-            value.replace(/url\(\#(.*)\)/i, '$1'));
+          // getShapeWithId is a function of a group instance
+          let id = value.replace(/url\(\#(.*)\)/i, '$1');
+          elem[key] = groupFN.findFirstMember(
+            shp, groupFN.nodeChildren,
+            (node) => { return node.id === id; }
+          );
         } else {
           elem[key] = (value === 'none') ? 'transparent' : value;
         }
@@ -149,6 +155,7 @@ var applySvgAttributes = function(node, elem) {
   return elem;
 
 };
+
 
 
 /**

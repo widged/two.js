@@ -11,10 +11,22 @@
 // script.onload = function() {
 // }
 
+import TwoClassic from '../es6/TwoClassic';
+import Types from '../es6/renderer/RendererTypes';
+import Rectangle from '../es6/import/geom/Rectangle';
+import RoundedRectangle from '../es6/import/geom/RoundedRectangle';
+import Circle from '../es6/import/geom/Circle';
+import Ellipse from '../es6/import/geom/Ellipse';
+import Line from '../es6/import/geom/Line';
+import Polygon from '../es6/import/geom/Polygon';
+import Star  from '../es6/import/geom/Star';
+import ArcSegment from '../es6/import/geom/ArcSegment';
+import SineRing from '../es6/import/geom/SineRing';
+import RadialGradient from '../es6/renderable/path-gradient/RadialGradient';
+import LinearGradient from '../es6/renderable/path-gradient/LinearGradient';
+
 function main() {
 
-var TwoClassic = require('../es6/TwoClassic').default;
-var Types = require('../es6/renderer/RendererTypes').default;
 
 var appNode = document.getElementById('app');
 
@@ -58,45 +70,36 @@ function h(str) {
 function renderShapes(two) {
   var gp = two.makeGroup();
 
-  var Rectangle = require('../es6/import/geom/Rectangle').default;
   var rect = two.makeGeometry(Rectangle(115, 90, 150, 100));
   rect.setProps({fill: "orange", opacity: 0.25, stroke: 'transparent'});
   gp.add(rect);
 
-  var Circle = require('../es6/import/geom/Circle').default;
-  var Ellipse = require('../es6/import/geom/Ellipse').default;
   var ell = two.makeGeometry(Ellipse(40, 60, 30,20, 20));
   ell.setProps({fill: "blue", opacity: 0.25, stroke: 'transparent'});
 
-  var ArcSegment = require('../es6/import/geom/ArcSegment').default;
   var arc = two.makeGeometry(ArcSegment(115, 90, 150, 100, 103, 40, 55));
   arc.setProps({fill: "red", stroke: "green", opacity: 0.25});
 
-  var SineRing = require('../es6/import/geom/SineRing').default;
   var sine = two.makeGeometry(SineRing(115, 90, 150, 100, 103, 40, 5));
   sine.setProps({fill: "red", opacity: 0.25});
   
-  var RoundedRectangle = require('../es6/import/geom/RoundedRectangle').default;
   var rrect = two.makeGeometry(RoundedRectangle(390, 300, 150, 100, 9));
   rrect.setProps({fill: "pink", opacity: 0.25, stroke: 'transparent'});
 
-  var Line = require('../es6/import/geom/Line').default;
   var line = two.makeGeometry(Line(10,20,300,300));
   line.setProps({fill: "green", stroke: "green", opacity: 0.25});
 
-  var Polygon = require('../es6/import/geom/Polygon').default;
   var poly = two.makeGeometry(Polygon(10,20,300,3));
   poly.setProps({fill: "brown", stroke: "green", opacity: 0.25});
 
-  var Star = require('../es6/import/geom/Star').default;
   var star = two.makeGeometry(Star(60,60,30,20, 10));
   star.setProps({fill: "purple", stroke: "purple", opacity: 0.25});
 
 
   // ----------- gradients ------
   //
-  var RadialGradient = require('../es6/renderable/shape-gradient/RadialGradient').default;
-  var radius = Math.max(150, 100);
+
+var radius = Math.max(150, 100);
   var radialGradient = two.makeRadialGradient(
     0, 0,
     radius,
@@ -108,7 +111,6 @@ function renderShapes(two) {
   vignette.setProps({fill: radialGradient});
 
 
-  var LinearGradient = require('../es6/renderable/shape-gradient/LinearGradient').default;
   // Two.js colors from main.css
   var colors = [
     'rgb(255, 64, 64)',

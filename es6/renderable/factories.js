@@ -2,8 +2,8 @@
 
 import is   from '../lib/is/is';
 import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
-import LinearGradient from './shape-gradient/LinearGradient';
-import RadialGradient from './shape-gradient/RadialGradient';
+import LinearGradient from './path-gradient/LinearGradient';
+import RadialGradient from './path-gradient/RadialGradient';
 import Group from './container/Group';
 import Path from './shape/Path';
 import Text from './shape/Text';

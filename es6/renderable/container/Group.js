@@ -14,13 +14,12 @@ const {serializeProperties} = exportFN;
 const {rectCentroid, rectTopLeft, includeAnchorInBoundingRect} = rectFN;
 const {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
 const {translateChildren} = groupFN;
-const {updateShape} = shapeRendering;
+const {updateShape}      = shapeRendering;
 
 
 const PROP_DEFAULTS= RenderableDefaults.Group;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
-var nodeChildren = (node) => { return (node instanceof Group) ? node.children : undefined; };
 
 
 /**
@@ -99,16 +98,6 @@ class Group extends Renderable {
     return this;
   }
 
-  /**
-   * Recursively search for id. Returns the first element found.
-   * Returns null if none found.
-   */
-  getById (id) {
-    return groupFN.findFirstMember(
-      this, groupFN.nodeChildren,
-      (node) => { return node.id === id; }
-    );
-  }
 
   /**
    * Add one or many shapes / groups to the instance. Objects can be added as
