@@ -1,12 +1,12 @@
 /* jshint esnext: true */
 
-import _  from '../../TwoUtil';
-import is  from '../../lib/is/is';
-import VectorEventTypes    from '../../lib/struct-vector/VectorEventTypes';
-import Vector    from '../../lib/struct-vector/Vector';
-import exportFN    from '../fn-export';
-import RenderableDefaults from '../RenderableDefaults';
+import IMPORTS from '../_imports';
 import Gradient  from './Gradient';
+
+const {Collection} = IMPORTS;
+const {Vector, VectorEventTypes} = IMPORTS;
+const {RenderableDefaults} = IMPORTS;
+const {is, exportFN} = IMPORTS;
 
 const {cloned, serialized} = exportFN;
 const {isNumber} = is;

@@ -1,8 +1,6 @@
 /* jshint esnext: true */
 
 import IMPORTS from '../_imports';
-
-import Renderable  from '../Renderable';
 import Gradient  from './Gradient';
 
 const {Collection} = IMPORTS;
