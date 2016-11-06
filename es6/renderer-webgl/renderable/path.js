@@ -25,7 +25,8 @@ var renderPath = (shp, gl, program, forcedParent) => {
   // <<< code that varies between text and path
   var getBoundingClientRect = (shp) => {
     var { anchorColl,  linewidth} = shapeProps;
-    return getPathBoundingClientRect(anchorColl, linewidth);
+    var anchors = anchorColl.items;
+    return getPathBoundingClientRect(anchors, linewidth);
   };
 
   var assertShapeChange = (shp) => {
@@ -109,7 +110,8 @@ var updateShapeCanvas = function(shp) {
   var {x, y} = renderer.rect.centroid;
   context.translate(x, y);
 
-  drawPathAnchors(canvas, anchorColl, closed);
+  var anchors = anchorColl.items;
+  drawPathAnchors(canvas, anchors, closed);
 
   if (!isHidden.test(fill))   context.fill();
   if (!isHidden.test(stroke)) context.stroke();
