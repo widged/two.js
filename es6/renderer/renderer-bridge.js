@@ -4,6 +4,7 @@ import is  from '../lib/is/is';
 import Commands  from '../lib/struct-anchor/CommandTypes';
 import matrixFN  from '../lib/struct-matrix/matrix-fn';
 import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
+import Collection  from '../lib/struct-collection/CollectionNonArray';
 
 var {getComputedMatrix} = matrixFN;
 var {isArray, isObject} = is;
@@ -38,11 +39,33 @@ FN.updatePath = (shp) => {
   var {changeTracker} = shp.getState();
   var {anchorColl, beginning, ending, automatic} = shp.getProps();
   if(changeTracker.oneChange('anchors'))  {
-    anchorColl = copyVertices({ anchorColl, beginning, ending });
-    shp.setProps({anchorColl});
+    var anchors = anchorColl.items;
+    anchors = copyVertices({ anchors, beginning, ending });
+    shp.setProps({anchorColl: anchors});
     if (automatic) { plotPath(shp); }
   }
   return shp;
+};
+
+
+
+FN.copyVertices = ({anchors, beginning, ending}) => {
+  var {round} = Math;
+
+  var l = anchors.length;
+  var last = l - 1, v;
+
+  var ia = round((beginning) * last);
+  var ib = round((ending) * last);
+
+  var lst = [];
+  for (var i = ia; i < ib + 1; i++) {
+    v = anchors[i];
+    lst.push(v);
+  }
+
+  return lst;
+
 };
 
 /**
@@ -168,25 +191,6 @@ FN.orientAnchorsTowards = (shp, pointTowards) => {
 };
 
 
-
-FN.copyVertices = ({anchorColl, beginning, ending}) => {
-  var {round} = Math;
-
-  var l = anchorColl.length;
-  var last = l - 1, v;
-
-  var ia = round((beginning) * last);
-  var ib = round((ending) * last);
-
-  var lst = [];
-  for (var i = ia; i < ib + 1; i++) {
-    v = anchorColl[i];
-    lst.push(v);
-  }
-
-  return lst;
-
-};
 
 // --------------------
 // PROPS
