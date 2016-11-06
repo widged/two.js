@@ -1,9 +1,9 @@
 /* jshint esnext: true */
 
 import Cache   from '../../lib/cache/Cache';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {preprocess} = shapeRendering;
+var {preprocess} = rendererBridge;
 
 var FN = {};
 

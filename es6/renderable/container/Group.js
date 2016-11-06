@@ -6,7 +6,7 @@ import ChildrenCollection from './ChildrenCollection';
 
 const {Collection, CollectionEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
-const {is, common, exportFN, rectFN, groupFN, shapeRendering} = IMPORTS;
+const {is, common, exportFN, rectFN, groupFN, rendererBridge} = IMPORTS;
 
 const {isNumber, isArray, isUndefined} = is;
 const {exclude, arrayOrArguments}  = common;
@@ -14,7 +14,7 @@ const {serializeProperties} = exportFN;
 const {rectCentroid, rectTopLeft, includeAnchorInBoundingRect} = rectFN;
 const {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
 const {translateChildren} = groupFN;
-const {updateShape}      = shapeRendering;
+const {updateShape}      = rendererBridge;
 
 const PROP_DEFAULTS= RenderableDefaults.Group;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
@@ -109,7 +109,8 @@ class Group extends Renderable {
    add(...objects) {
     // Create copy of it in case we're getting passed a childrens array directly.
     objects = arrayOrArguments(objects).slice(0);
-    this.state.children = addShapesToChildren(objects, this.state.children);
+    var {children} = this.getProps();
+    this.state.props.children = addShapesToChildren(objects, children);
     return this;
   }
 

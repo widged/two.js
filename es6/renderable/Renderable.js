@@ -8,7 +8,7 @@ const {ChangeTracker}  = IMPORTS;
 
 const uniqueId = IMPORTS.UidGenerator();
 const {serializeProperties} = IMPORTS.exportFN;
-const {updateShape} = IMPORTS.shapeRendering;
+const {updateShape} = IMPORTS.rendererBridge;
 const {isNumber} = IMPORTS.is;
 
 const {RenderableDefaults} = IMPORTS;
@@ -86,24 +86,29 @@ class Renderable {
     return this.state;
   }
 
-  setState(obj) {
+  setState(obj, attr) {
     if(typeof obj === 'object') {
       var keys = Object.keys(obj);
       keys.forEach((k) => {
           var nv = obj[k];
           nv = this.beforePropertySet(k, nv);
           var ov = this.state[k];
-          this.state[k] = nv;
+          if(attr) {
+            if(!this.state[attr]) { this.state[attr] = {}; }
+            this.state[attr][k] = nv;
+          } else {
+            this.state[k] = nv;
+          }
           this.afterPropertyChange(k, nv, ov);
       });
     }
   }
   setProps(obj) {
-    this.setState(obj);
+    this.setState(obj, 'props');
     return this;
   }
   getProps(obj) {
-    return this.getState();
+    return this.getState().props;
   }
 
   // --------------------
@@ -120,7 +125,7 @@ class Renderable {
   // --------------------
 
   setTranslation(x,y) {
-    this.state.translation.set(x,y);
+    this.state.props.translation.set(x,y);
   }
 
 
@@ -179,7 +184,7 @@ class Renderable {
   // :NOTE: Not used internally, only called by the user
   toObject() {
     var shp = this;
-    var {translation, rotation, scale} = shp.getState();
+    var {translation, rotation, scale} = shp.getProps();
     var target = {
       translation: translation.toObject(),
       rotation,

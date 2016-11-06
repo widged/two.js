@@ -1,9 +1,9 @@
 /* jshint esnext: true */
 
 import dom   from '../../platform/dom';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {getShapeRenderer} = shapeRendering;
+var {getShapeRenderer} = rendererBridge;
 
 var FN = {};
 

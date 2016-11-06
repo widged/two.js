@@ -1,9 +1,9 @@
 /* jshint esnext: true */
 
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 import svgFN    from './fn-svg';
 
-var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
+var {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
 var {renderNode, createGradientStop} = svgFN;
 
 

@@ -3,12 +3,12 @@
 import base from './base';
 import svgFN    from './fn-svg';
 import anchorFN from '../../lib/struct-anchor/anchor-fn';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 
 var {renderShape} = base;
 var {createElement, setAttributes, getClip} = svgFN;
 var {toString} = anchorFN;
-var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
+var {getShapeProps, getShapeMatrix, getShapeRenderer, anyPropChanged} = rendererBridge;
 
 var renderPath = (shp, domElement) => {
 
@@ -25,7 +25,7 @@ var renderPath = (shp, domElement) => {
   // Collect any attribute that needs to be attrs here
   var attrs = {};
 
-  var {matrix} = shapeProps;
+  var matrix = getShapeMatrix(shp);
   if (matrix.manual || anyPropChanged(shp, ['matrix'])) {
     attrs.transform = 'matrix(' + matrix.toString() + ')';
   }

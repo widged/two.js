@@ -2,9 +2,9 @@
 
 import is  from '../../lib/is/is';
 import base from './base';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = rendererBridge;
 var {isDefaultMatrix, renderShape, isHidden} = base;
 
 var {isString, isNumber} = is;
@@ -24,7 +24,8 @@ var renderText = (shp, ctx, forced, parentClipped) => {
   var parentRenderer = getShapeRenderer(shp.parent);
 
   var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
-  var { matrix,  vertices,  closed } = shapeProps;
+  var { matrix } = shp.getState();
+  var { vertices,  closed } = shapeProps;
 
   opacity = opacity * parentRenderer.opacity;
   var anchors = vertices; // Commands

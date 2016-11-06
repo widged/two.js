@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = rendererBridge;
 
 var renderRadialGradient = (shp, canvasContext) => {
 

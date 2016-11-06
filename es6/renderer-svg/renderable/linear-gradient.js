@@ -2,11 +2,11 @@
 
 import svgFN    from './fn-svg';
 import is    from '../../lib/is/is';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 
 var {isNumber} = is;
 var {createElement, setAttributes} = svgFN;
-var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = rendererBridge;
 
 var renderLinearGradient = (shp, domElement) => {
 

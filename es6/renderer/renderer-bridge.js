@@ -35,7 +35,8 @@ FN.updateShape = (shp, isDeep) => {
 FN.updatePath = (shp) => {
   var {plotPath} = FN;
   var {copyVertices} = FN;
-  var {changeTracker,vertices, beginning, ending, automatic} = shp.getState();
+  var {changeTracker} = shp.getState();
+  var {vertices, beginning, ending, automatic} = shp.getProps();
   if(changeTracker.oneChange('vertices'))  {
     vertices = copyVertices({ vertices, beginning, ending });
     shp.setProps({vertices});
@@ -51,7 +52,7 @@ FN.updatePath = (shp) => {
  * If not, then goes through the vertices and calculates the lines.
  */
 FN.plotPath = (shp) => {
-  var {vertices, closed, curved} = shp.getState();
+  var {vertices, closed, curved} = shp.getProps();
   if (curved) {
     matrixFN.getCurveFromPoints(vertices, closed);
     return shp;
@@ -68,8 +69,10 @@ FN.plotPath = (shp) => {
  * to be as up-to-date as possible for the render. Called once a frame.
  */
 FN.updateAnyShape = (shp, deep) => {
-  var {matrix, changeTracker} = shp.getState();
-  var {translation, scale, rotation} = shp.getState();
+  var {getShapeMatrix} = FN;
+  var matrix = getShapeMatrix(shp);
+  var {changeTracker} = shp.getState();
+  var {translation, scale, rotation} = shp.getProps();
   if (matrix && !matrix.manual && changeTracker.oneChange('matrix')) {
     matrix
       .identity()
@@ -92,7 +95,7 @@ FN.updateAnyShape = (shp, deep) => {
 
 FN.preprocess = (shp) => {
   var {updateShape, orientAnchorsTowards} = FN;
-  var {pointTowards} = shp.getState();
+  var {pointTowards} = shp.getProps();
   // TODO: Update to not __always__ update. Just when it needs to.
   updateShape(shp);
   if(pointTowards) {
@@ -107,8 +110,10 @@ FN.preprocess = (shp) => {
  * positioning, i.e in the space directly affecting the object and not where it is nested.
  */
 FN.getBoundingClientRect = (shp, shallow) => {
-   var {linewidth, vertices: anchors, matrix} = shp.getState();
-   let getMatrixAndParent = (shp) => { return { matrix: shp.getState().matrix, next: shp.parent}; };
+   var {getShapeMatrix} = FN;
+   var matrix = getShapeMatrix(shp);
+   var {linewidth, vertices: anchors} = shp.getProps();
+   let getMatrixAndParent = (shp) => { return { matrix: getShapeMatrix(shp), next: shp.parent}; };
    if(!shallow) { matrix = getComputedMatrix(shp, getMatrixAndParent); }
    // :TODO: save matrix to avoid unnecessary recomputation?
    var rect = null;
@@ -121,7 +126,7 @@ FN.getBoundingClientRect = (shp, shallow) => {
        rect = removeRectBorder(rect, linewidth / 2);
      }
   } else if(shp.shapeType === 'group') {
-    var rect = null;
+    rect = null;
     var {children} = shp.getState();
     for(var i = 0, ni = children.length, child = null; i < ni; i++ ) {
       child = children[i];
@@ -147,7 +152,7 @@ FN.orientAnchorsTowards = (shp, pointTowards) => {
   // :TODO: defaults to rectCentroid
   // :REVIEW: this causes unwanted behaviors... optional rather than default behavior?
   var {getBoundingClientRect} = FN;
-  var {vertices:anchors} = shp.getState();
+  var {vertices:anchors} = shp.getProps();
   var pt;
   if(typeof pointTowards === "function") {
     pt = pointTowards(getBoundingClientRect(shp, true));
@@ -187,9 +192,14 @@ FN.copyVertices = ({vertices, beginning, ending}) => {
 // PROPS
 // --------------------
 
+FN.getShapeMatrix = (shp) => {
+  return (shp && shp.getState) ? shp.getState().matrix : undefined;
+};
+
+
 FN.getShapeProps = (shp, ks) => {
-  if(typeof shp.getState === 'function') {
-    return shp.getState();
+  if(typeof shp.getProps === 'function') {
+    return shp.getProps();
   }  else {
     var acc = {};
     ks.forEach((k) => {

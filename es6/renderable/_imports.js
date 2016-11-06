@@ -22,7 +22,7 @@ import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
 import CollectionEventTypes   from '../lib/struct-collection/CollectionEventTypes';
 import Collection  from '../lib/struct-collection/Collection';
 
-import shapeRendering   from '../renderer/renderer-bridge';
+import rendererBridge   from '../renderer/renderer-bridge';
 
 import exportFN  from './fn-export';
 import curveFN  from './shape/fn-curved-path';
@@ -36,6 +36,6 @@ export default {
   Vector, VectorEventTypes,
   Matrix, matrixFN,
   Collection, CollectionEventTypes,
-  shapeRendering,
+  rendererBridge,
   exportFN, rectFN, curveFN, groupFN
 };

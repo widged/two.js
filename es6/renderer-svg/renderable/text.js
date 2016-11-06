@@ -1,10 +1,10 @@
 /* jshint esnext: true */
 
 import svgFN    from './fn-svg';
-import shapeRendering from '../../renderer/renderer-bridge';
+import rendererBridge from '../../renderer/renderer-bridge';
 
 var {createElement, setAttributes, getClip} = svgFN;
-var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeMatrix, getShapeRenderer} = rendererBridge;
 
 const ALIGNMENTS = {
   left: 'start',
@@ -18,7 +18,7 @@ var renderText = (shp, domElement) => {
 
   var attrs = {};
 
-  var {matrix} = shapeProps;
+  var matrix = getShapeMatrix(shp);
   if (matrix.manual || anyPropChanged(shp, ['matrix'])) {
     attrs.transform = 'matrix(' + matrix.toString() + ')';
   }

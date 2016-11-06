@@ -6,13 +6,13 @@ import Renderable from '../Renderable';
 const {ChildrenCollection} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
-const {is, rectFN, exportFN, matrixFN, shapeRendering} = IMPORTS;
+const {is, rectFN, exportFN, matrixFN, rendererBridge} = IMPORTS;
 
 const {isObject, isUndefined, isNumber} = is;
 const {shimBoundingClientRect} = rectFN;
 const {serializeProperties} = exportFN;
 const {getComputedMatrix}   = matrixFN;
-const {updateShape}         = shapeRendering;
+const {updateShape}         = rendererBridge;
 
 const PROP_DEFAULTS = RenderableDefaults.Text;
 const PROP_KEYS  = Object.keys(PROP_DEFAULTS);
@@ -87,7 +87,7 @@ class Text extends Renderable {
   // :NOTE: Not used internally, only called by the user
   clone() {
     var shp = this;
-    var {value} = shp.getState();
+    var {value} = shp.getProps();
     var clone = new Text(value);
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
       k = PROP_KEYS[i];

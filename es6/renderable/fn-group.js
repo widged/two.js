@@ -78,14 +78,15 @@ FN.replaceParent = (that, child, newParent) => {
     return;
   }
 
-  if (parent && parent.children.ids[child.id]) {
+  var {children:parentChildren} = that.getProps();
+  if (parent && parentChildren.ids[child.id]) {
 
     var {additions: parentAdditions, substractions: parentSubstrations} = parent.getState();
     var {changeTracker: parentTracker} = parent.getState();
 
 
-    index = (Array.from(parent.children) || []).indexOf(child);
-    parent.children.splice(index, 1);
+    index = (Array.from(parentChildren) || []).indexOf(child);
+    parentChildren.splice(index, 1);
 
     // If we're passing from one parent to another...
     index = parentAdditions.indexOf(child);

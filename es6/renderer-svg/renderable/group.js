@@ -2,11 +2,11 @@
 
 import base from './base';
 import svgFN    from './fn-svg';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 
 var {createElement, setAttributes} = svgFN;
 var {renderShape} = base;
-var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeMatrix, getShapeRenderer} = rendererBridge;
 
 var renderGroup = (shp, domElement) => {
 
@@ -28,7 +28,7 @@ var renderGroup = (shp, domElement) => {
   }
 
   // _Update styles for the <g>
-  var {matrix} = shapeProps;
+  var matrix = getShapeMatrix(shp);
   var context = {
     domElement: domElement,
     elem: renderer.elem
@@ -38,8 +38,9 @@ var renderGroup = (shp, domElement) => {
     renderer.elem.setAttribute('transform', 'matrix(' + matrix.toString() + ')');
   }
 
-  for (var i = 0; i < shp.children.length; i++) {
-    var child = shp.children[i];
+  var {children} = shapeProps;
+  for (var i = 0, ni = children.length; i < ni; i++) {
+    var child = children[i];
     renderShape(child, domElement);
   }
 
@@ -49,12 +50,12 @@ var renderGroup = (shp, domElement) => {
 
 
   if(anyPropChanged(shp, ['additions'])) {
-    var {additions} = shapeProps;
+    var {additions} = shp.getState();
     additions.forEach((obj) => { appendChild(renderer.elem, obj); });
   }
 
   if(anyPropChanged(shp, ['substractions'])) {
-    var {substractions} = shapeProps;
+    var {substractions} = shp.getState();
     substractions.forEach((obj) => { removeChild(renderer.elem, obj); });
   }
 

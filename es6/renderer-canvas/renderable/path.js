@@ -3,9 +3,9 @@
 import _   from '../../TwoUtil';
 import is  from '../../lib/is/is';
 import base from './base';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = rendererBridge;
 var {isDefaultMatrix, renderShape, Commands} = base;
 
 var {mod, toFixed} = _;
@@ -18,15 +18,15 @@ var renderPath = (shp, ctx, forced, parentClipped) => {
   var renderer = getShapeRenderer(shp);
   var parentRenderer = getShapeRenderer(shp.parent);
 
-  var matrixElem, anchors, length, last, next, prev, a, b, c, d, ux, uy, vx, vy,
+  var matrixElem, length, last, next, prev, a, b, c, d, ux, uy, vx, vy,
       ar, bl, br, cl, x, y, defaultMatrix;
 
   var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
-  var { matrix,  vertices,  closed } = shapeProps;
+  var { matrix } = shp.getState();
+  var { vertices:anchors,  closed } = shapeProps;
   var { cap,  join,  miter  } = shapeProps;
 
   opacity = opacity * parentRenderer.opacity;
-  anchors = vertices; // Commands
 
   length = anchors.length;
   last = length - 1;

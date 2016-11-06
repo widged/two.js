@@ -2,7 +2,7 @@
 
 import Matrix   from '../../lib/struct-matrix/Matrix';
 import FloatArray   from '../../lib/struct-float-array/FloatArray';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 import rendererFN from './fn-renderer';
 import glFN       from './fn-gl';
 import base from './base';
@@ -10,7 +10,7 @@ import base from './base';
 var {renderShape} = base;
 var {Multiply: multiplyMatrix} = Matrix;
 var {recomputeMatrixAndScaleIfNecessary} = rendererFN;
-var {getShapeProps, getShapeRenderer, anyPropChanged, raiseFlags} = shapeRendering;
+var {getShapeProps, getShapeRenderer, anyPropChanged, raiseFlags} = rendererBridge;
 var {MaskMode, remove} = glFN;
 
 var renderGroup = (shp, gl, program) => {
@@ -21,7 +21,8 @@ var renderGroup = (shp, gl, program) => {
   var {parent}   = shapeProps;
   var parentRenderer = getShapeRenderer(shp.parent);
 
-  var { mask, opacity, substractions } = shapeProps;
+  var { mask, opacity } = shapeProps;
+  var {  substractions } = shp.getState();
   if(anyPropChanged(shp.parent, ['opacity'])) { raiseFlags(shp, ['opacity']);}
   renderer.opacity = opacity * (parentRenderer ? parentRenderer.opacity : 1);
 

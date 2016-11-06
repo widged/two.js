@@ -6,11 +6,11 @@ import FloatArray   from '../lib/struct-float-array/FloatArray';
 import dom  from '../platform/dom';
 import Renderer from '../renderer/TwoRenderer';
 import base from './renderable/base';
-import shapeRendering   from '../renderer/renderer-bridge';
+import rendererBridge   from '../renderer/renderer-bridge';
 import glFN   from './renderable/fn-gl';
 
 var {isUndefined} = is;
-var {raiseFlags, dropFlags} = shapeRendering;
+var {raiseFlags, dropFlags, getShapeMatrix} = rendererBridge;
 
 /**
  * Constants
@@ -81,7 +81,8 @@ class WebglRenderer extends Renderer {
   whenSizeChange() {
 
     // udate dom  node size
-    var {domElement, width, height, scale, ctx, program, matrix} = this.getState();
+    var {domElement, width, height, scale, ctx, program} = this.getState();
+    var matrix = getShapeMatrix(this);
     dom.updateDomNodeSize(domElement, width, height, scale);
 
     // udate gl resolution

@@ -1,9 +1,9 @@
 /* jshint esnext: true */
 
 import base from './base';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
+var {anyPropChanged, getShapeProps, getShapeRenderer} = rendererBridge;
 var {isDefaultMatrix, renderShape} = base;
 
 var renderGroup = (shp, ctx) => {
@@ -12,10 +12,11 @@ var renderGroup = (shp, ctx) => {
   var renderer   = getShapeRenderer(shp);
 
   var parent = shp.parent;
-  
+
   var parentRenderer = parent ? getShapeRenderer(shp.parent) : undefined;
 
-  var { matrix, opacity, mask, clip } = shapeProps;
+  var { matrix } = shp.getState();
+  var { opacity, mask, clip } = shapeProps;
 
   renderer.opacity = opacity * (parent && parentRenderer ? parentRenderer.opacity : 1);
 
@@ -34,8 +35,9 @@ var renderGroup = (shp, ctx) => {
     renderShape(mask, ctx, true);
   }
 
-  for (var i = 0; i < shp.children.length; i++) {
-    var child = shp.children[i];
+  var {children} = shp.getProps();
+  for (var i = 0; i < children.length; i++) {
+    var child = children[i];
     renderShape(child, ctx);
   }
 

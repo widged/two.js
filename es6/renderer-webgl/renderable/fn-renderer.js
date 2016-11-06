@@ -3,13 +3,13 @@
 import is  from '../../lib/is/is';
 import LinearGradient from '../../renderable/path-gradient/LinearGradient';
 import RadialGradient from '../../renderable/path-gradient/RadialGradient';
-import shapeRendering from '../../renderer/renderer-bridge';
+import rendererBridge from '../../renderer/renderer-bridge';
 import Matrix   from '../../lib/struct-matrix/Matrix';
 import FloatArray   from '../../lib/struct-float-array/FloatArray';
 import base from './base';
 import glFN   from './fn-gl';
 
-var {getShapeProps, updateShape, anyPropChanged, getShapeRenderer, raiseFlags} = shapeRendering;
+var {getShapeProps, getShapeMatrix, updateShape, anyPropChanged, getShapeRenderer, raiseFlags} = rendererBridge;
 var {Multiply: multiplyMatrix} = Matrix;
 var {updateBuffer, updateTexture, drawTextureAndRect} = glFN;
 var {getContext, renderShape} = base;
@@ -44,7 +44,7 @@ var removeChild = function(child, gl) {
 
 
 FN.removeNodes = (nodes, gl) => {
-  for (var i = 0; i < nodes.length; i++) {
+  for (var i = 0; i < (nodes || []).length; i++) {
     removeChild(nodes[i], gl);
   }
 
@@ -190,8 +190,10 @@ FN.recomputeTrianglesAndRectIfNecessary = (shp, assertShapeChange, getBoundingCl
 FN.recomputeMatrixAndScaleIfNecessary = (shp) => {
 
   var parent = shp.parent;
-  var { matrix, scale} = getShapeProps( shp, ["matrix","scale"] );
-  var { matrix: parentMatrix} = getShapeProps( parent,   ["matrix"] );
+  var shapeProps = getShapeProps(shp);
+  var { scale} = shapeProps;
+  var  matrix  = getShapeMatrix(shp);
+  var parentMatrix = getShapeMatrix(parent);
 
   var renderer        = getShapeRenderer(shp);
   var parentRenderer  = getShapeRenderer(parent);

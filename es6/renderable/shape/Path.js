@@ -6,14 +6,14 @@ import Renderable from '../Renderable';
 const {Collection, CollectionEventTypes} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
-const {is, common, curveFN, rectFN, exportFN, shapeRendering} = IMPORTS;
+const {is, common, curveFN, rectFN, exportFN, rendererBridge} = IMPORTS;
 
 const {isUndefined, isNull} = is;
 const {arrayLast}           = common;
 const {subdivideTo, updateLength} = curveFN;
 const {rectTopLeft, rectCentroid} = rectFN;
 const {serializeProperties}       = exportFN;
-const {updateShape, copyVertices} = shapeRendering;
+const {updateShape, copyVertices} = rendererBridge;
 
 const {min, max, round} = Math;
 
@@ -144,7 +144,7 @@ class Path extends Renderable {
     whenLengthChange(limit) {
       var shp = this;
       updateShape(shp);
-      var {vertices, closed, lengths: lns} = shp.getState();
+      var {vertices, closed, lengths: lns} = shp.getProps();
       var {lengths, sum} = updateLength({
         limit,
         vertices: vertices,
@@ -216,7 +216,7 @@ class Path extends Renderable {
     updateShape(shp);
     var automatic = false;
     var curved = false;
-    var {closed, vertices} = shp.getState();
+    var {closed, vertices} = shp.getProps();
     var newVertices = subdivideTo({
       limit,
       vertices   : vertices,
@@ -259,7 +259,7 @@ class Path extends Renderable {
    // :NOTE: Not used internally, only called by the user
   clone() {
     var shp = this;
-    var  {closed, curved, automatic, vertices} = shp.getState();
+    var  {closed, curved, automatic, vertices} = shp.getProps();
     var anchors = vertices.map((d) => { return d.clone(); });
     var clone = new Path(anchors, closed, curved, !automatic);
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
@@ -276,7 +276,7 @@ class Path extends Renderable {
 
     var obj = serializeProperties(shp, {}, []);
 
-    var  {closed, curved, automatic, vertices} = shp.getState();
+    var  {closed, curved, automatic, vertices} = shp.getProps();
     obj.vertices = vertices.map((d) => { return d.toObject(); });
     return obj;
   }

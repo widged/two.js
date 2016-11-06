@@ -2,9 +2,9 @@
 
 import Cache   from '../../lib/cache/Cache';
 import Commands from '../../lib/struct-anchor/CommandTypes';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {preprocess} = shapeRendering;
+var {preprocess} = rendererBridge;
 
 var FN = {};
 

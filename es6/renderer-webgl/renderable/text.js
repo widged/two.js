@@ -1,12 +1,12 @@
 /* jshint esnext: true */
 
 import is  from '../../lib/is/is';
-import shapeRendering   from '../../renderer/renderer-bridge';
+import rendererBridge   from '../../renderer/renderer-bridge';
 import rendererFN from './fn-renderer';
 import base from './base';
 
 var {isNumber, isString} = is;
-var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
+var {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
 var {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
 var {drawFill, drawStroke} = rendererFN;
 var {canvas, getContext, renderShape, drawGradientShape} = base;

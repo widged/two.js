@@ -8,11 +8,11 @@ import Group from './container/Group';
 import Path from './shape/Path';
 import Text from './shape/Text';
 import Anchor from '../lib/struct-anchor/Anchor';
-import shapeRendering   from '../renderer/renderer-bridge';
+import rendererBridge   from '../renderer/renderer-bridge';
 
 var {rectCentroid} = rectFN;
 var {isNumber, isArray} = is;
-var {updateShape} = shapeRendering;
+var {updateShape} = rendererBridge;
 
 var FN = {};
 
