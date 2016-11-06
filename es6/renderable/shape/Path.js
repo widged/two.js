@@ -27,7 +27,7 @@ const PROP_KEYS = Object.keys(PROP_DEFAULTS);
  * A path takes an array of `Anchors`. This is essential for the two-way databinding.
  * It then takes two booleans, closed and curved which delineate whether the shape
  * should be closed (lacking endpoints) and whether the shape should calculate
- * curves or straight lines between the anchorColl. Finally, manual is an optional
+ * curves or straight lines between the `anchors`. Finally, manual is an optional
  * argument if you'd like to override the default behavior of two.js and handle anchor
  * positions yourself. Generally speaking, this isn't something you need to deal
  * with, although some great usecases arise from this customability, e.g: advanced curve manipulation.
@@ -179,11 +179,8 @@ class Path extends Renderable {
     return this;
   }
 
-  // -----------------
-  // :TODO: recode as anchorAt, delaying any rendering action
-  // -----------------
   /**
-   * Orient the anchorColl of the shape to the upper lefthand
+   * Orient the `anchors` of the shape to the upper lefthand
    * corner of the path.
    */
   corner() {
@@ -192,7 +189,7 @@ class Path extends Renderable {
   }
 
   /**
-   * Orient the anchorColl of the shape to the center of the
+   * Orient the `anchors` of the shape to the center of the
    * path.
    */
   center() {
@@ -206,7 +203,7 @@ class Path extends Renderable {
 
 
   /**
-   * Creates a new set of anchorColl that are lineTo anchors. For previously
+   * Creates a new set of `anchors` that are lineTo anchors. For previously
    * straight lines the anchors remain the same. For curved lines, however,
    * `subdivide` is used to generate a new set of straight lines that are p
    * erceived as a curve.
