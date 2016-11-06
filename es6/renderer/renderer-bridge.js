@@ -3,9 +3,11 @@
 import is  from '../lib/is/is';
 import Commands  from '../lib/struct-anchor/CommandTypes';
 import matrixFN  from '../lib/struct-matrix/matrix-fn';
+import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
 
-
+var {getComputedMatrix} = matrixFN;
 var {isArray, isObject} = is;
+var {removeRectBorder, includeAnchorInBoundingRect, shimBoundingClientRect} = rectFN;
 
 var FN = {}, NotInUse = {};
 
@@ -91,17 +93,64 @@ FN.updateAnyShape = (shp, deep) => {
 FN.preprocess = (shp) => {
   var {updateShape, orientAnchorsTowards} = FN;
   var {pointTowards} = shp.getState();
+  // TODO: Update to not __always__ update. Just when it needs to.
   updateShape(shp);
   if(pointTowards) {
     orientAnchorsTowards(shp, pointTowards);
   }
 };
 
+
+/**
+ * Return an object with top, left, right, bottom, width, and height
+ * parameters of the path. Pass true if you're interested in the shallow
+ * positioning, i.e in the space directly affecting the object and not where it is nested.
+ */
+FN.getBoundingClientRect = (shp, shallow) => {
+   var {linewidth, vertices: anchors, matrix} = shp.getState();
+   let getMatrixAndParent = (shp) => { return { matrix: shp.getState().matrix, next: shp.parent}; };
+   if(!shallow) { matrix = getComputedMatrix(shp, getMatrixAndParent); }
+   // :TODO: save matrix to avoid unnecessary recomputation?
+   var rect = null;
+   if(shp.shapeType === 'path') {
+     for (var i = 0, ni = anchors.length, v = null; i < ni; i++) {
+       v = anchors[i];
+       // :REVIEW: WHY multiply?
+       // v = matrix.multiply(v.x, v.y, 1);
+       rect = includeAnchorInBoundingRect(rect, {x:v.x, y:v.y});
+       rect = removeRectBorder(rect, linewidth / 2);
+     }
+  } else if(shp.shapeType === 'group') {
+    var rect = null;
+    var {children} = shp.getState();
+    for(var i = 0, ni = children.length, child = null; i < ni; i++ ) {
+      child = children[i];
+      if (!/(linear-gradient|radial-gradient|gradient)/.test(child.shapeType)) {
+        // TODO: Update only when it needs to.
+        // updateShape(child, true);
+        rect = FN.getBoundingClientRect(child, shallow);
+        rect = includeAnchorInBoundingRect(rect, {x: rect.left, y: rect.top });
+        rect = includeAnchorInBoundingRect(rect, {x: rect.right, y: rect.bottom });
+      }
+    }
+    rect = removeRectBorder(rect, 0); // will add width and height
+  }
+   if(!rect) {
+     let {x,y} = matrix.multiply(0, 0, 1);
+     rect = shimBoundingClientRect();
+   }
+   return rect;
+ };
+
+
 FN.orientAnchorsTowards = (shp, pointTowards) => {
+  // :TODO: defaults to rectCentroid
+  // :REVIEW: this causes unwanted behaviors... optional rather than default behavior?
+  var {getBoundingClientRect} = FN;
   var {vertices:anchors} = shp.getState();
   var pt;
   if(typeof pointTowards === "function") {
-    pt = pointTowards(shp.getBoundingClientRect(true));
+    pt = pointTowards(getBoundingClientRect(shp, true));
   } else if (isObject(pointTowards) && pointTowards.x && pointTowards.y) {
     pt = pointTowards;
   }

@@ -70,8 +70,6 @@ class Group extends Renderable {
 
   }
 
-
-
   // --------------------
   // Accessors
   // --------------------
@@ -109,7 +107,6 @@ class Group extends Renderable {
       children.dispatcher.on(CollectionEventTypes.order, this.bound.whenChildrenShuffled);
 
     }
-
   }
 
   // --------------------
@@ -119,13 +116,8 @@ class Group extends Renderable {
   /**
    * Anchor all children to the top left corner of the group.
    */
-   // :TODO: leave any rendering action (translate) to the renderers
   corner() {
-    var shp = this;
-    updateShape(shp, true);
-    var {children} = this.getState();
-    children = translateChildren( children, rectTopLeft);
-    this.setState({children});
+    this.setState({pointTowards: rectTopLeft });
     return this;
   }
 
@@ -133,14 +125,8 @@ class Group extends Renderable {
    * Anchors all children around the centroid of the group,
    * effectively placing the shape around the unit circle.
    */
-   // :REVIEW: this causes unwanted behaviors... optional rather than default behavior?
-   // :TODO: leave any rendering action (translate) to the renderers
   center() {
-    var shp = this;
-    updateShape(shp, true);
-    var {children} = this.getState();
-    children = translateChildren( children, rectCentroid);
-    this.setState({children});
+    this.setState({pointTowards: rectCentroid });
     return this;
   }
 
@@ -195,37 +181,6 @@ class Group extends Renderable {
   noFill()           { return this.trickleDown((d) => { d.noFill(); }); }
   noStroke()         { return this.trickleDown((d) => { d.noStroke(); }); }
   subdivide(...args) { return this.trickleDown((d) => { d.subdivide.apply(d, args); }); }
-
-  // -----------------
-  // IBounded
-  // -----------------
-
-  /**
-   * Returns an object with top, left, right, bottom, width, and height parameters
-   * representing the bounding box of the path. Pass true if you're interested in
-   * the shallow positioning, i.e in the space directly affecting the object and
-   * not where it is nested.
-   */
-  getBoundingClientRect(shallow) {
-    var shp = this;
-    // TODO: Update this to not __always__ update. Just when it needs to.
-    updateShape(shp, true);
-    var {children} = shp.getState();
-    var rect = null;
-    for(var i = 0, ni = children.length, child = null; i < ni; i++ ) {
-      child = children[i];
-      if (!/(linear-gradient|radial-gradient|gradient)/.test(child.shapeType)) {
-        // TODO: Update only when it needs to.
-        updateShape(child, true);
-        rect = child.getBoundingClientRect(shallow);
-        rect = includeAnchorInBoundingRect(rect, {x: rect.left, y: rect.top });
-        rect = includeAnchorInBoundingRect(rect, {x: rect.right, y: rect.bottom });
-      }
-    }
-    rect.width = rect.right - rect.left;
-    rect.height = rect.bottom - rect.top;
-    return rect;
-  }
 
   // -----------------
   // IRenderable

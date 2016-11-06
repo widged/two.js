@@ -70,33 +70,6 @@ class Text extends Renderable {
      return this;
    }
 
-
-  // -----------------
-  // IBounded
-  // -----------------
-
-  /**
-   * A shim for compatibility with matrix math in the various renderers.
-   * :TODO: Implement a way to calculate proper bounding boxes of `Text`.
-   */
-  getBoundingClientRect(shallow) {
-    console.log('NOT CALLED');
-    // TODO: Update this to not __always__ update. Just when it needs to.
-    var shp = this;
-    // TODO: Update this to not __always__ update. Just when it needs to.
-    updateShape(shp, true);
-    var {matrix} = shp.getState();
-    let getMatrixAndParent = (shp) => { return { matrix: shp.getState().matrix, next: shp.parent}; };
-    if(!shallow) { matrix = getComputedMatrix(shp, getMatrixAndParent); }
-    // :TODO: save matrix to avoid unnecessary recomputation?
-    // A shim for compatibility with matrix math in the various renderers.
-    // Use for the shapes for which you have no way to calculate proper
-    // bounding boxes
-
-    let {x,y} = matrix.multiply(0, 0, 1);
-    return shimBoundingClientRect({x,y});
-  }
-
   // -----------------
   // IRenderable
   // -----------------

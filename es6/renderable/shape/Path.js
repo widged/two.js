@@ -5,9 +5,8 @@ import Renderable from '../Renderable';
 
 var {isUndefined, isNull} = IMPORTS.is;
 var {arrayLast}           = IMPORTS.common;
-var {getComputedMatrix} = IMPORTS.matrixFN;
-var {getCurveLengthAB, subdivideTo, updateLength} = IMPORTS.curveFN;
-var {rectTopLeft, rectCentroid, removeRectBorder, includeAnchorInBoundingRect, shimBoundingClientRect, removeRectBorder} = IMPORTS.rectFN;
+var {subdivideTo, updateLength} = IMPORTS.curveFN;
+var {rectTopLeft, rectCentroid} = IMPORTS.rectFN;
 var {serializeProperties} = IMPORTS.exportFN;
 var {updateShape, copyVertices} = IMPORTS.shapeRendering;
 
@@ -236,36 +235,6 @@ class Path extends Renderable {
   }
 
 
-  // -----------------
-  // IBounded
-  // -----------------
-
-  /**
-   * Return an object with top, left, right, bottom, width, and height
-   * parameters of the path. Pass true if you're interested in the shallow
-   * positioning, i.e in the space directly affecting the object and not where it is nested.
-   */
-   // :Note: called only when shp.center() or shp.corner() are called. Should be moved rendering.
-   getBoundingClientRect(shallow) {
-     var shp = this;
-     var {linewidth, vertices: anchors, matrix} = shp.getState();
-     let getMatrixAndParent = (shp) => { return { matrix: shp.getState().matrix, next: shp.parent}; };
-     if(!shallow) { matrix = getComputedMatrix(shp, getMatrixAndParent); }
-     // :TODO: save matrix to avoid unnecessary recomputation?
-     var rect = null;
-     for (var i = 0, ni = anchors.length, v = null; i < ni; i++) {
-       v = anchors[i];
-       // :REVIEW: WHY multiply?
-       // v = matrix.multiply(v.x, v.y, 1);
-       rect = includeAnchorInBoundingRect(rect, {x:v.x, y:v.y});
-       rect = removeRectBorder(rect, linewidth / 2);
-     }
-     if(!rect) {
-       let {x,y} = matrix.multiply(0, 0, 1);
-       rect = shimBoundingClientRect();
-     }
-     return rect;
-   }
 
    // -----------------
    // IRenderable
