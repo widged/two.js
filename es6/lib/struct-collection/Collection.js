@@ -21,6 +21,14 @@ class Collection  {
     }
   }
 
+  get items() {
+    return this.state.items || [];
+  }
+  set items(_) {
+    if(!Array.isArray(_)) { _ = []; }
+    this.state.items = _;
+  }
+
   whenItemsRemoved(items) {
     this.dispatcher.emit(CollectionEventTypes.remove, items);
   }

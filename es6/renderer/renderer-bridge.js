@@ -46,10 +46,10 @@ FN.updatePath = (shp) => {
 };
 
 /**
- * Based on closed / curved and sorting of anchorColl plot where all points
+ * Based on closed / curved and sorting of `anchors` plot where all points
  * should be and where the respective handles should be too.
- * If curved goes through the anchorColl and calculates the curve.
- * If not, then goes through the anchorColl and calculates the lines.
+ * If curved goes through the `anchors` and calculates the curve.
+ * If not, then goes through the `anchors` and calculates the lines.
  */
 FN.plotPath = (shp) => {
   var {anchorColl, closed, curved} = shp.getProps();

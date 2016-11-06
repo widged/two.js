@@ -102,7 +102,7 @@ FN.Group = {
 
 /*
 stroke - A string representing the color for the stroke of the path. All valid css representations of color are accepted.
-fill - A string representing the color for the area of the anchorColl. All valid css representations of color are accepted.
+fill - A string representing the color for the area of the anchors. All valid css representations of color are accepted.
 linewidth - A number representing the thickness the path's strokes. Must be a positive number.
 opacity - A number representing the opacity of the path. Use strictly for setting. Must be a number 0-1.
 cap - A string representing the type of stroke cap to render. All applicable values can be found on the w3c spec. Defaults to "round".
@@ -111,8 +111,8 @@ miter - A number representing the miter limit for the stroke. Defaults to 1.
 closed - Boolean that describes whether the path is closed or not.
 curved - Boolean that describes whether the path is curved or not.
 automatic - Boolean that describes whether the path should automatically dictate how Two.Anchors behave. This defaults to true.
-beginning - A number, 0-1, that is mapped to the layout and order of anchorColl. It represents which of the anchorColl from beginning to end should start the shape. Exceedingly helpful for animating strokes. Defaults to 0.
-ending - A number, 0-1, that is mapped to the layout and order of anchorColl. It represents which of the anchorColl from beginning to end should end the shape. Exceedingly helpful for animating strokes. Defaults to 1.
+beginning - A number, 0-1, that is mapped to the layout and order of anchors. It represents which of the anchors from beginning to end should start the shape. Exceedingly helpful for animating strokes. Defaults to 0.
+ending - A number, 0-1, that is mapped to the layout and order of anchors. It represents which of the anchors from beginning to end should end the shape. Exceedingly helpful for animating strokes. Defaults to 1.
 */
 
 FN.Path = {

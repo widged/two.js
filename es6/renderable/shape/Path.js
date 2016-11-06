@@ -46,7 +46,7 @@ class Path extends Renderable {
     props.join = 'miter'; // Default of Adobe Illustrator
     props.beginning = 0;
     props.ending    = 1;
-    // anchorColl -- A `Collection` of `Anchors` that is two-way databound. Individual anchorColl may be manipulated.
+    // anchorColl -- A `Collection` of `Anchors` that is two-way databound. Individual `anchors` may be manipulated.
     // let's clone to be on the safe side
     if(!isUndefined(anchors)) { props.anchorColl = (anchors || []).slice(0); }
     // automatic --  whether two.js curves, lines, and commands should be computed
@@ -63,7 +63,7 @@ class Path extends Renderable {
   beforePropertySet(k, v) {
     v = super.beforePropertySet(k, v);
     if(k === 'anchorColl') {
-      // remove any even listener from the current anchorColl
+      // remove any even listener from the current `anchors`
       this.disactivateAnchors(this.getState().anchorColl);
       v = new Collection(v);
     } else if(['closed','curved','automatic'].includes(k)) {
