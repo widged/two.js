@@ -134,16 +134,16 @@ FN.updateRendererIfNecesary   =  (shp, gl, program, assertShapeChange, getBoundi
   return renderer;
 };
 
-var getTriangles = function(rect, triangles) {
+// :NOTE: the old `triangles` is passed as an argument for the only
+// purpose of avoiding to unnecessarily re-create obects.
+// it will be completely ovewritten
+var updateRectangleTriangles = function(rect, triangles) {
 
-  var top = rect.top,
-      left = rect.left,
-      right = rect.right,
-      bottom = rect.bottom;
-
-  // First Triangle
+  var {top, left, right, bottom} = rect;
 
   if(!triangles) { triangles = new FloatArray(12); }
+
+  // First Triangle
 
   triangles[0] = left;
   triangles[1] = top;
@@ -181,7 +181,7 @@ FN.recomputeTrianglesAndRectIfNecessary = (shp, assertShapeChange, getBoundingCl
  ) {
     tracker.change = true;
     var rect = renderer.rect = getBoundingClientRect(shp);
-    renderer.triangles = getTriangles(rect, renderer.triangles);
+    renderer.triangles = updateRectangleTriangles(rect, renderer.triangles);
   }
   return renderer;
 };
@@ -223,7 +223,6 @@ FN.updateAndClearCanvasRect = (canvas, width, height, scale) => {
   context.clearRect(0, 0, width, height);
   return {width, height};
 };
-
 
 
 export default FN;

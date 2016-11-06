@@ -1,8 +1,10 @@
 /* jshint esnext: true */
 
 import is  from '../lib/is/is';
+import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
 
 var {isNumber} = is;
+var {getEnclosingRect} = rectFN;
 
 var FN = {};
 var NotInUse = {};
@@ -118,52 +120,9 @@ FN.replaceParent = (that, child, newParent) => {
 };
 
 
-/**
- * Return an object with top, left, right, bottom, width, and height
- * parameters of the group.
- */
-FN.getEnclosingRect = ({shallow, children}) => {
-  var rect;
-  var min = Math.min, max = Math.max;
 
-  // Variables need to be defined here, because of nested nature of groups.
-  var left = Infinity, right = -Infinity,
-      top = Infinity, bottom = -Infinity;
-
-  for(var i = 0, ni = children.length, child = {}; i < ni; i++ ) {
-    child = children[i];
-    if (/(linear-gradient|radial-gradient|gradient)/.test(child.shapeType)) {
-      return;
-    }
-    // :NOTE: before refactoring, consider that child.getBoundingClientRect
-    // will call shp.update() before computing the rectangle.
-    rect = child.getBoundingClientRect(shallow);
-
-    if (!isNumber(rect.top)   || !isNumber(rect.left)   ||
-        !isNumber(rect.right) || !isNumber(rect.bottom)) {
-      return;
-    }
-
-    top = min(rect.top, top);
-    left = min(rect.left, left);
-    right = max(rect.right, right);
-    bottom = max(rect.bottom, bottom);
-
-  }
-
-  return {
-    top: top,
-    left: left,
-    right: right,
-    bottom: bottom,
-    width: right - left,
-    height: bottom - top
-  };
-
-};
 
 FN.translateChildren = (children, translate) => {
-  var {getEnclosingRect} = FN;
   var rect = getEnclosingRect({shallow: true, children});
   children.forEach(function(child) {
     child.translation.subSelf(translate(rect));

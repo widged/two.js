@@ -10,6 +10,7 @@ var renderLinearGradient = (shp, ctx) => {
   var renderer   = getShapeRenderer(shp);
 
   if (!renderer.gradient || anyPropChanged(shp, ['stops', 'endPoints'])) {
+
     var { stops, left, right } = shapeProps;
     var {x: x1, y: y1} = left  || {x: 0, y: 0};
     var {x: x2, y: y2} = right || {x: 0, y: 0};
@@ -19,6 +20,7 @@ var renderLinearGradient = (shp, ctx) => {
       var {offset, color} = getShapeProps(stops[i], ['offset','color']);
       renderer.gradient.addColorStop(offset, color);
     }
+
   }
 
   return shp.flagReset();

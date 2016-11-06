@@ -12,9 +12,12 @@ import Commands  from '../lib/struct-anchor/CommandTypes';
 import RenderableDefaults from './RenderableDefaults';
 
 import Anchor   from '../lib/struct-anchor/Anchor';
+import anchorFN   from '../lib/struct-anchor/anchor-fn';
 import VectorEventTypes   from '../lib/struct-vector/VectorEventTypes';
 import Vector   from '../lib/struct-vector/Vector';
 import Matrix   from '../lib/struct-matrix/Matrix';
+import matrixFN  from '../lib/struct-matrix/matrix-fn';
+import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
 
 import CollectionEventTypes   from '../lib/struct-collection/CollectionEventTypes';
 import Collection  from '../lib/struct-collection/Collection';
@@ -22,16 +25,17 @@ import Collection  from '../lib/struct-collection/Collection';
 import shapeRendering   from '../renderer/renderer-bridge';
 
 import exportFN  from './fn-export';
-import rectFN  from './fn-rect';
-import pathFN  from './fn-path';
+import curveFN  from './shape/fn-curved-path';
 import groupFN  from './fn-group';
 
 
 export default {
   is, common, UidGenerator, ChangeTracker,
   Commands, RenderableDefaults,
-  Anchor, Vector, VectorEventTypes, Matrix,
+  Anchor, anchorFN,
+  Vector, VectorEventTypes,
+  Matrix, matrixFN,
   Collection, CollectionEventTypes,
   shapeRendering,
-  exportFN, rectFN, pathFN, groupFN
+  exportFN, rectFN, curveFN, groupFN
 };

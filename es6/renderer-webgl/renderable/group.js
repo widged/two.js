@@ -17,8 +17,8 @@ var renderGroup = (shp, gl, program) => {
 
   var shapeProps = getShapeProps(shp);
 
-  var renderer       = recomputeMatrixAndScaleIfNecessary(shp);
-  var {parent} = shapeProps;
+  var renderer   = recomputeMatrixAndScaleIfNecessary(shp);
+  var {parent}   = shapeProps;
   var parentRenderer = getShapeRenderer(shp.parent);
 
   var { mask, opacity, substractions } = shapeProps;

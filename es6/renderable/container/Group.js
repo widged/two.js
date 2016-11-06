@@ -10,7 +10,7 @@ const {RenderableDefaults} = IMPORTS;
 const {isNumber, isArray} = IMPORTS.is;
 const {exclude, arrayOrArguments}  = IMPORTS.common;
 const {serializeProperties} = IMPORTS.exportFN;
-const {rectCentroid, rectTopLeft} = IMPORTS.rectFN;
+const {rectCentroid, rectTopLeft, includeAnchorInBoundingRect} = IMPORTS.rectFN;
 const {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = IMPORTS.groupFN;
 const {translateChildren} = IMPORTS.groupFN;
 const {updateShape} = IMPORTS.shapeRendering;
@@ -211,7 +211,20 @@ class Group extends Renderable {
     // TODO: Update this to not __always__ update. Just when it needs to.
     updateShape(shp, true);
     var {children} = shp.getState();
-    return groupFN.getEnclosingRect({shallow, children: children});
+    var rect = null;
+    for(var i = 0, ni = children.length, child = null; i < ni; i++ ) {
+      child = children[i];
+      if (!/(linear-gradient|radial-gradient|gradient)/.test(child.shapeType)) {
+        // TODO: Update only when it needs to.
+        updateShape(child, true);
+        rect = child.getBoundingClientRect(shallow);
+        rect = includeAnchorInBoundingRect(rect, {x: rect.left, y: rect.top });
+        rect = includeAnchorInBoundingRect(rect, {x: rect.right, y: rect.bottom });
+      }
+    }
+    rect.width = rect.right - rect.left;
+    rect.height = rect.bottom - rect.top;
+    return rect;
   }
 
   // -----------------

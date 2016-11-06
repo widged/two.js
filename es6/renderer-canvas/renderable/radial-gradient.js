@@ -11,6 +11,7 @@ var renderRadialGradient = (shp, canvasContext) => {
   var renderer = getShapeRenderer(shp);
 
   if (!renderer.gradient || anyPropChanged(shp, ['center','focal','radius','stops'])) {
+
     var {center, focal, radius, stops} = shapeProps;
     var {x : cx, y : cy} = center || {x: 0, y: 0};
     var {x : fx, y : fy} = focal || {x: 0, y: 0};

@@ -20,7 +20,7 @@ var renderGroup = (shp, domElement) => {
     return shp;
   }
 
-  var renderer = getShapeRenderer(shp)
+  var renderer = getShapeRenderer(shp);
 
   if (!renderer.elem) {
     renderer.elem = createElement('g', { id: shp.id });

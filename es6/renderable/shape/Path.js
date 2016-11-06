@@ -5,8 +5,9 @@ import Renderable from '../Renderable';
 
 var {isUndefined, isNull} = IMPORTS.is;
 var {arrayLast}           = IMPORTS.common;
-var {getComputedMatrix, getCurveLengthAB, subdivideTo, updateLength, rectTopLeft, rectCentroid} = IMPORTS.pathFN;
-var {getPathBoundingRect} = IMPORTS.rectFN;
+var {getComputedMatrix} = IMPORTS.matrixFN;
+var {getCurveLengthAB, subdivideTo, updateLength} = IMPORTS.curveFN;
+var {rectTopLeft, rectCentroid, removeRectBorder, includeAnchorInBoundingRect, shimBoundingClientRect, removeRectBorder} = IMPORTS.rectFN;
 var {serializeProperties} = IMPORTS.exportFN;
 var {updateShape, copyVertices} = IMPORTS.shapeRendering;
 
@@ -23,14 +24,13 @@ const PROP_KEYS = Object.keys(PROP_DEFAULTS);
  * A `Path` is the base class for creating all drawable shapes in two.js. By default,
  * methods return their instance of Path for the purpose of chaining.
  *
- * A path takes an array of vertices which are made up of Two.Anchors. This is
- * essential for the two-way databinding. It then takes two booleans, closed and
- * curved which delineate whether the shape should be closed (lacking endpoints)
- * and whether the shape should calculate curves or straight lines between the
- * vertices. Finally, manual is an optional argument if you'd like to override
- * the default behavior of two.js and handle anchor positions yourself. Generally
- * speaking, this isn't something you need to deal with, although some great
- * usecases arise from this customability, e.g: advanced curve manipulation.
+ * A path takes an array of `Anchors`. This is essential for the two-way databinding.
+ * It then takes two booleans, closed and curved which delineate whether the shape
+ * should be closed (lacking endpoints) and whether the shape should calculate
+ * curves or straight lines between the vertices. Finally, manual is an optional
+ * argument if you'd like to override the default behavior of two.js and handle anchor
+ * positions yourself. Generally speaking, this isn't something you need to deal
+ * with, although some great usecases arise from this customability, e.g: advanced curve manipulation.
  *
  * NB. If you are constructing groups this way instead of two.makePath(), then
  * don't forget to add the group to the instance's scene, two.add(group).
@@ -189,21 +189,13 @@ class Path extends Renderable {
   // -----------------
   // :TODO: recode as anchorAt, delaying any rendering action
   // -----------------
-
   /**
    * Orient the vertices of the shape to the upper lefthand
    * corner of the path.
    */
   corner() {
-    var shp = this;
-    var {vertices} = shp.getState();
-    // :NOTE: getBoundingClientRect will call update shape first
-    var {x,y} = rectTopLeft(shp.getBoundingClientRect(true));
-    for (var i = 0, ni = (vertices || []).length , v = null; i < ni; i++) {
-      v = vertices[i];
-      v.subSelf(x,y);
-    }
-    return shp;
+    this.setState({pointTowards: rectTopLeft });
+    return this;
   }
 
   /**
@@ -211,15 +203,8 @@ class Path extends Renderable {
    * path.
    */
   center() {
-    var shp = this;
-    var {vertices} = shp.getState();
-    // :NOTE: getBoundingClientRect will call update shape first
-    var {x,y} = rectCentroid(shp.getBoundingClientRect(true));
-    for (var i = 0, ni = (vertices || []).length , v = null; i < ni; i++) {
-      v = vertices[i];
-      v.subSelf(x,y);
-    }
-    return shp;
+    this.setState({pointTowards: rectCentroid });
+    return this;
   }
 
   // -----------------
@@ -260,15 +245,26 @@ class Path extends Renderable {
    * parameters of the path. Pass true if you're interested in the shallow
    * positioning, i.e in the space directly affecting the object and not where it is nested.
    */
+   // :Note: called only when shp.center() or shp.corner() are called. Should be moved rendering.
    getBoundingClientRect(shallow) {
      var shp = this;
-     // TODO: Update only when it needs to.
-     updateShape(shp, true);
-     var {linewidth, vertices, matrix} = shp.getState();
-     if(!shallow) { matrix = getComputedMatrix(shp); }
-     var border = linewidth / 2;
-     var length = vertices.length;
-     return getPathBoundingRect(matrix, border, length, vertices);
+     var {linewidth, vertices: anchors, matrix} = shp.getState();
+     let getMatrixAndParent = (shp) => { return { matrix: shp.getState().matrix, next: shp.parent}; };
+     if(!shallow) { matrix = getComputedMatrix(shp, getMatrixAndParent); }
+     // :TODO: save matrix to avoid unnecessary recomputation?
+     var rect = null;
+     for (var i = 0, ni = anchors.length, v = null; i < ni; i++) {
+       v = anchors[i];
+       // :REVIEW: WHY multiply?
+       // v = matrix.multiply(v.x, v.y, 1);
+       rect = includeAnchorInBoundingRect(rect, {x:v.x, y:v.y});
+       rect = removeRectBorder(rect, linewidth / 2);
+     }
+     if(!rect) {
+       let {x,y} = matrix.multiply(0, 0, 1);
+       rect = shimBoundingClientRect();
+     }
+     return rect;
    }
 
    // -----------------

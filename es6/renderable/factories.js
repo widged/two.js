@@ -1,16 +1,18 @@
 /* jshint esnext: true */
 
 import is   from '../lib/is/is';
-import rectFN  from './fn-rect';
+import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
 import LinearGradient from './shape-gradient/LinearGradient';
 import RadialGradient from './shape-gradient/RadialGradient';
 import Group from './container/Group';
 import Path from './shape/Path';
 import Text from './shape/Text';
 import Anchor from '../lib/struct-anchor/Anchor';
+import shapeRendering   from '../renderer/renderer-bridge';
 
 var {rectCentroid} = rectFN;
 var {isNumber, isArray} = is;
+var {updateShape} = shapeRendering;
 
 var FN = {};
 
@@ -77,7 +79,9 @@ FN.curve = (p) => {
 
 FN.geometry = (points) => {
   points = points.map((d) => {  return new Anchor(...d); });
-  return new Path(points, true);
+  var pth = new Path(points, true);
+  // pth.corner(); // default is pth.center();
+  return pth;
 };
 
 /**
@@ -90,6 +94,8 @@ FN.group = () => {
 };
 
 FN.centerPath = (pth) => {
+  // TODO: Update only when it needs to.
+  updateShape(pth, true);
   var rect = pth.getBoundingClientRect();
   var {x,y} = rectCentroid;
   pth.center().translation.set(x,y);

@@ -4,7 +4,7 @@ import Cache   from '../../lib/cache/Cache';
 import Commands from '../../lib/struct-anchor/CommandTypes';
 import shapeRendering   from '../../renderer/renderer-bridge';
 
-var {updateShape} = shapeRendering;
+var {preprocess} = shapeRendering;
 
 var FN = {};
 
@@ -23,7 +23,7 @@ FN.renderShape = (shp, ctx, condi, clip) => {
   var renderFn = shapeCache.get(shp.shapeType);
   if(!renderFn) { console.log('[canvas.renderShape] Renderer not found', shp.shapeType); }
   // TODO: Add a check here to only invoke update if need be.
-  updateShape(shp);
+  preprocess(shp);
   // call the render function for that shape type
   shapeCache.get(shp.shapeType)(shp, ctx, condi, clip);
 };

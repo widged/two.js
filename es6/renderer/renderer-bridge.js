@@ -2,9 +2,10 @@
 
 import is  from '../lib/is/is';
 import Commands  from '../lib/struct-anchor/CommandTypes';
-import pathFN  from '../renderable/fn-path';
+import matrixFN  from '../lib/struct-matrix/matrix-fn';
 
-var {isArray} = is;
+
+var {isArray, isObject} = is;
 
 var FN = {}, NotInUse = {};
 
@@ -50,7 +51,7 @@ FN.updatePath = (shp) => {
 FN.plotPath = (shp) => {
   var {vertices, closed, curved} = shp.getState();
   if (curved) {
-    pathFN.getCurveFromPoints(vertices, closed);
+    matrixFN.getCurveFromPoints(vertices, closed);
     return shp;
   }
   for (var i = 0; i < vertices.length; i++) {
@@ -84,6 +85,31 @@ FN.updateAnyShape = (shp, deep) => {
   }
 
   return shp;
+
+};
+
+FN.preprocess = (shp) => {
+  var {updateShape, orientAnchorsTowards} = FN;
+  var {pointTowards} = shp.getState();
+  updateShape(shp);
+  if(pointTowards) {
+    orientAnchorsTowards(shp, pointTowards);
+  }
+};
+
+FN.orientAnchorsTowards = (shp, pointTowards) => {
+  var {vertices:anchors} = shp.getState();
+  var pt;
+  if(typeof pointTowards === "function") {
+    pt = pointTowards(shp.getBoundingClientRect(true));
+  } else if (isObject(pointTowards) && pointTowards.x && pointTowards.y) {
+    pt = pointTowards;
+  }
+  if(pt) {
+    for (var i = 0, ni = (anchors || []).length , v = null; i < ni; i++) {
+      anchors[i].subSelf({x: pt.x,y: pt.y});
+    }
+  }
 
 };
 

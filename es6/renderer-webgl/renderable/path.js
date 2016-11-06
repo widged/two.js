@@ -2,7 +2,7 @@
 
 import is  from '../../lib/is/is';
 import shapeRendering   from '../../renderer/renderer-bridge';
-import anchorFN from '../../lib/struct-anchor/anchor-fn';
+import rectFN from '../../lib/struct-bounding-rect/bounding-rect-fn';
 import rendererFN from './fn-renderer';
 import canvasFN   from './fn-canvas';
 import base from './base';
@@ -12,7 +12,7 @@ var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
 var {drawPathAnchors} = canvasFN;
 var {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
 var {drawFill, drawStroke, drawGradientShape} = rendererFN;
-var {includeAnchorInBoundingRect} = anchorFN;
+var {includeAnchorInBoundingRect} = rectFN;
 var {canvas, getContext, renderShape} = base;
 var {max} = Math;
 
@@ -45,10 +45,13 @@ var renderPath = (shp, gl, program, forcedParent) => {
  */
 var getPathBoundingClientRect = function(anchors, border) { // border is shape linewidth
 
-  var {top,left,right,bottom} = anchors.reduce(anchorFN.includeAnchorInBoundingRect, null);
-  var width, height, centroid;
+  var rect = null;
+  for (var i = 0, ni = anchors.length, d = null; i < ni; i++) {
+    rect = includeAnchorInBoundingRect(rect, anchors[i]);
+  }
 
   // Expand borders
+  var {top, left, right, bottom} = rect;
   if (isNumber(border)) {
     top    = top - border;
     left   = left - border;

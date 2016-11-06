@@ -10,12 +10,12 @@ import Gradient from '../renderable/Gradient';
 import RadialGradient from '../renderable/gradient/RadialGradient';
 import LinearGradient from '../renderable/gradient/RadialGradient';
 import Vector from '../lib/struct-vector/Vector';
-import Matrix from '../lib/struct-matrix/Matrix';
-import pathFN  from '../renderable/fn-path';
+import Matrix from '../../lib/struct-matrix/Matrix';
+import matrixFN  from '../renderable/fn-matrix';
 import Anchor from '../renderable/Anchor';
 
 var {isObject, isUndefined, isNotNumber, isArray, isNull} = is;
-var {getReflection, decomposeMatrix} = pathFN;
+var {getReflection, decomposeMatrix} = matrixFN;
 var {mod} = _;
 var {pow, cos, sin} = Math;
 var TWO_PI = Math.PI * 2;

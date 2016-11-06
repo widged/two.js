@@ -1,14 +1,14 @@
 /* jshint esnext: true */
 
-import is  from '../lib/is/is';
-import common  from '../TwoUtil';
-import Commands  from '../lib/struct-anchor/CommandTypes';
+import is  from '../../lib/is/is';
+import util  from '../../TwoUtil';
+import Commands  from '../../lib/struct-anchor/CommandTypes';
 
-import Anchor   from '../lib/struct-anchor/Anchor';
-import Vector   from '../lib/struct-vector/Vector';
-import Matrix   from '../lib/struct-matrix/Matrix';
+import Anchor   from '../../lib/struct-anchor/Anchor';
+import Vector   from '../../lib/struct-vector/Vector';
+import Matrix   from '../../lib/struct-matrix/Matrix';
 
-var {mod, arrayLast} = common;
+var {mod, arrayLast} = util;
 var {isObject, isNumber, isNull} = is;
 var {atan2, sqrt, sin, cos, pow, PI, round, min, max} = Math;
 
@@ -75,69 +75,6 @@ var Curve = {
 
 var FN = {};
 var NotInUse = {};
-
-/**
- * Return the computed matrix of a nested object.
- * TODO: Optimize traversal.
- */
-FN.getComputedMatrix = (object, matrix) => {
-
-  matrix = (matrix && matrix.identity()) || new Matrix();
-  var parent = object, matrices = [];
-
-  var {matrix: parentMatrix} = parent.getState();
-  while (parent && parentMatrix) {
-    matrices.push(parentMatrix);
-    parent = parent.parent;
-  }
-
-  matrices.reverse();
-
-  matrices.forEach(function(m) {
-    var e = m.elements;
-    matrix.multiply(
-      e[0], e[1], e[2], e[3], e[4], e[5], e[6], e[7], e[8], e[9]);
-  });
-
-  return matrix;
-
-};
-
-FN.deltaTransformPoint = (matrix, x, y) => {
-
-  var dx = x * matrix.a + y * matrix.c + 0;
-  var dy = x * matrix.b + y * matrix.d + 0;
-
-  return new Vector(dx, dy);
-
-};
-
-/**
- * Decomposing a 2D transformation matrix to find the skew
- * https://gist.github.com/2052247
- */
-FN.decomposeMatrix = (matrix) => {
-  var {deltaTransformPoint} = FN;
-
-  // calculate delta transform point
-  var px = deltaTransformPoint(matrix, 0, 1);
-  var py = deltaTransformPoint(matrix, 1, 0);
-
-  // calculate skew
-  var skewX = ((180 / PI) * atan2(px.y, px.x) - 90);
-  var skewY = ((180 / PI) * atan2(py.y, py.x));
-
-  return {
-      translateX: matrix.e,
-      translateY: matrix.f,
-      scaleX: sqrt(matrix.a * matrix.a + matrix.b * matrix.b),
-      scaleY: sqrt(matrix.c * matrix.c + matrix.d * matrix.d),
-      skewX: skewX,
-      skewY: skewY,
-      rotation: skewX // rotation is the same as skew x
-  };
-
-};
 
 
 /**
@@ -550,7 +487,7 @@ FN.updateLength = ({limit, vertices, pathClosed, lastClosed, lengths}) => {
 
 NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  => {
 
-  var resolution = l;
+  var resolution = 8;
 
   var matrix = new Matrix()
     .translate(center.x, center.y)

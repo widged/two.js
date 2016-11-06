@@ -33,40 +33,6 @@ FN.curveSegment = (a, b) => {
   return [vx, vy, ux, uy];
 };
 
-/**
- * Updates a Rect to include an additional anchor. Typically takes anchors that are
- * "centered" around 0 and returns them to be anchored upper-left.
- */
-FN.includeAnchorInBoundingRect = (acc, {x,y,controls,_relative:relative}) => {
-  var a, b, c, d;
-  var {left, right, top, bottom} = acc || {left : Infinity, right : -Infinity, top : Infinity, bottom : -Infinity};
-
-  if (controls) {
-    var cl = controls.left,
-        cr = controls.right;
-
-    if (cl && cr) {
-      a = relative ? cl.x + x : cl.x;
-      b = relative ? cl.y + y : cl.y;
-      c = relative ? cr.x + x : cr.x;
-      d = relative ? cr.y + y : cr.y;
-    }
-  }
-
-  if (a && b && c && d) {
-    top    = min(b, d, top);
-    left   = min(a, c, left);
-    right  = max(a, c, right);
-    bottom = max(b, d, bottom);
-  } else {
-    top    = min(y, top);
-    left   = min(x, left);
-    right  = max(x, right);
-    bottom = max(y, bottom);
-  }
-
-  return {left, right, top, bottom};
-};
 
 /**
  * Turn a set of vertices into a string for the d property of a path
