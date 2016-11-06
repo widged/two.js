@@ -1,12 +1,12 @@
 /* jshint esnext: true */
 
-import is  from '../util/is';
-import common  from '../util/common';
-import Commands  from '../constant/CommandTypes';
+import is  from '../lib/is/is';
+import common  from '../lib-common/common';
+import Commands  from '../lib/struct-anchor/CommandTypes';
 
-import Anchor   from './Anchor';
-import Vector   from '../struct/Vector';
-import Matrix   from '../struct/Matrix';
+import Anchor   from '../lib/struct-anchor/Anchor';
+import Vector   from '../lib/struct-vector/Vector';
+import Matrix   from '../lib/struct-matrix/Matrix';
 
 var {mod, arrayLast} = common;
 var {isObject, isNumber, isNull} = is;
@@ -254,7 +254,7 @@ FN.getCurveLengthAB = (a, b, limit) => {
 
 /**
  * Integration for `getCurveLength` calculations. Referenced from
- * Paper.js: https://github.com/paperjs/paper.js/blob/master/src/util/Numerical.js#L101
+ * Paper.js: https://github.com/paperjs/paper.js/blob/master/src/lib/Numerical.js#L101
  */
 FN.integrate = (f, a, b, n)  => {
   var x = Curve.abscissas[n - 2],

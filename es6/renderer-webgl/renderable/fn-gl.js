@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
-import is  from '../../util/is';
+import is  from '../../lib/is/is';
 import TwoError from '../../TwoError';
-import Array2   from '../../struct/Array';
+import Array2   from '../../lib/struct-array/Array';
 
 var {isObject} = is;
 

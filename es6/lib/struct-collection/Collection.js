@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
-import EventEmitter    from '../util/EventEmitter';
-import CollectionEventTypes from '../constant/CollectionEventTypes';
+import EventEmitter    from '../event-emitter/EventEmitter';
+import CollectionEventTypes from './CollectionEventTypes';
 
 /**
  * Array like collection that triggers inserted and removed events

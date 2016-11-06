@@ -1,12 +1,12 @@
 /* jshint esnext: true */
 
-import _  from '../util/common';
-import is  from '../util/is';
-import Array2   from '../struct/Array';
+import _  from '../lib-common/common';
+import is  from '../lib/is/is';
+import Array2   from '../lib/struct-array/Array';
 import dom  from '../platform/dom';
-import Renderer from '../renderer-lib/TwoRenderer';
+import Renderer from '../renderer/TwoRenderer';
 import base from './renderable/base';
-import shapeRendering   from '../renderer-lib/renderer-bridge';
+import shapeRendering   from '../renderer/renderer-bridge';
 import glFN   from './renderable/fn-gl';
 
 var {isUndefined} = is;

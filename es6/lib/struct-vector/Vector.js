@@ -1,8 +1,7 @@
 /* jshint esnext: true */
 
-import _  from '../util/common';
-import EventEmitter  from '../util/EventEmitter';
-import VectorEventTypes    from '../constant/VectorEventTypes';
+import EventEmitter  from '../event-emitter/EventEmitter';
+import VectorEventTypes    from './VectorEventTypes';
 
 /**
  * A Vector captures coordinates. A `Vector` is specific to two.js because its

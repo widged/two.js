@@ -1,9 +1,9 @@
 /* jshint esnext: true */
 
-import is  from '../util/is';
+import is  from '../lib/is/is';
 import dom  from '../platform/dom';
 import base from './renderable/base';
-import Renderer from '../renderer-lib/TwoRenderer';
+import Renderer from '../renderer/TwoRenderer';
 
 var {isUndefined} = is;
 var {getRatio} = dom;

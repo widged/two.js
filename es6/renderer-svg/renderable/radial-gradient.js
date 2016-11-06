@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import shapeRendering   from '../../renderer-lib/renderer-bridge';
+import shapeRendering   from '../../renderer/renderer-bridge';
 import svgFN    from './fn-svg';
 
 var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;

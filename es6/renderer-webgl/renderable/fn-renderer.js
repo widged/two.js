@@ -1,11 +1,11 @@
 /* jshint esnext: true */
 
-import is  from '../../util/is';
+import is  from '../../lib/is/is';
 import LinearGradient from '../../renderable/shape-gradient/LinearGradient';
 import RadialGradient from '../../renderable/shape-gradient/RadialGradient';
-import shapeRendering from '../../renderer-lib/renderer-bridge';
-import Matrix   from '../../struct/Matrix';
-import Array2   from '../../struct/Array';
+import shapeRendering from '../../renderer/renderer-bridge';
+import Matrix   from '../../lib/struct-matrix/Matrix';
+import Array2   from '../../lib/struct-array/Array';
 import base from './base';
 import glFN   from './fn-gl';
 

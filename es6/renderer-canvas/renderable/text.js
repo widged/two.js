@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
-import is  from '../../util/is';
+import is  from '../../lib/is/is';
 import base from './base';
-import shapeRendering   from '../../renderer-lib/renderer-bridge';
+import shapeRendering   from '../../renderer/renderer-bridge';
 
 var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 var {isDefaultMatrix, renderShape, isHidden} = base;

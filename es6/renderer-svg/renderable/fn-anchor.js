@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
-import _  from '../../util/common';
-import Commands from '../../constant/CommandTypes';
+import _  from '../../lib-common/common';
+import Commands from '../../lib/struct-anchor/CommandTypes';
 
 var {mod, toFixed} = _;
 

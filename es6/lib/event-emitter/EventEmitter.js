@@ -1,7 +1,5 @@
 /* jshint esnext: true */
 
-import _ from './common';
-
 class EventEmitter {
 	constructor(eventTypes) {
 		this.state = {};

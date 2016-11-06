@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
-import is  from '../util/is';
-import Commands from '../constant/CommandTypes';
+import is  from '../lib/is/is';
+import Commands  from '../lib/struct-anchor/CommandTypes';
 import pathFN  from '../renderable/fn-path';
 
 var {isArray} = is;

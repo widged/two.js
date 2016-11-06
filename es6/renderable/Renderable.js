@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import IMPORTS from './_imports';
-console.log(IMPORTS)
+
 const {VectorEventTypes, Vector}  = IMPORTS;
 const {Matrix}  = IMPORTS;
 const {ChangeTracker}  = IMPORTS;

@@ -1,14 +1,13 @@
 /* jshint esnext: true */
 
-import is   from '../util/is';
+import is   from '../lib/is/is';
+import rectFN  from './fn-rect';
 import LinearGradient from './shape-gradient/LinearGradient';
 import RadialGradient from './shape-gradient/RadialGradient';
 import Group from './container/Group';
 import Path from './shape/Path';
 import Text from './shape/Text';
-import Anchor from './Anchor';
-import rectFN    from './fn-rect';
-
+import Anchor from '../lib/struct-anchor/Anchor';
 
 var {rectCentroid} = rectFN;
 var {isNumber, isArray} = is;

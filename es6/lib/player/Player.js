@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
-import EventEmitter  from './EventEmitter';
-import dom from '../platform/dom';
-import perf from '../platform/Performance';
+import EventEmitter  from '../event-emitter/EventEmitter';
+import dom from '../../platform/dom';
+import perf from '../../platform/Performance';
 
 /*
   playing two.playing

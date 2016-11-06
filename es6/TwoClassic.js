@@ -32,13 +32,13 @@
 
 // classic interface for two.js
 import TwoScene  from './TwoScene';
-import EventEmitter  from './util/EventEmitter';
+import EventEmitter  from './lib/event-emitter/EventEmitter';
 import makeShape from './renderable/factories';
-import Player from './util/Player';
-import DefaultValues from './constant/DefaultValues';
-import TwoEventTypes from './constant/TwoEventTypes';
+import Player from './lib/player/Player';
+import DefaultValues from './renderable/DefaultValues';
+import TwoEventTypes from './TwoEventTypes';
 import dom from './platform/dom';
-import RendererLoader from './renderer-lib/renderer-loader';
+import RendererLoader from './renderer/renderer-loader';
 
 var beforeRender = (two, classicConfig) => {
 

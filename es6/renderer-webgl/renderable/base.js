@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
-import Cache   from '../../util/Cache';
-import shapeRendering   from '../../renderer-lib/renderer-bridge';
+import Cache   from '../../lib/cache/Cache';
+import shapeRendering   from '../../renderer/renderer-bridge';
 
 var {updateShape} = shapeRendering;
 

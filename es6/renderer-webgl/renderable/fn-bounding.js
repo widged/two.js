@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import is  from '../../util/is';
+import is  from '../../lib/is/is';
 
 var {isNumber} = is;
 var {min, max} = Math;

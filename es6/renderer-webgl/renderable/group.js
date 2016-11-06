@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
-import Matrix   from '../../struct/Matrix';
-import Array2   from '../../struct/Array';
-import shapeRendering   from '../../renderer-lib/renderer-bridge';
+import Matrix   from '../../lib/struct-matrix/Matrix';
+import Array2   from '../../lib/struct-array/Array';
+import shapeRendering   from '../../renderer/renderer-bridge';
 import rendererFN from './fn-renderer';
 import glFN       from './fn-gl';
 import base from './base';

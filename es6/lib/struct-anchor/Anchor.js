@@ -1,9 +1,9 @@
 /* jshint esnext: true */
 
-import is  from '../util/is';
-import Commands  from '../constant/CommandTypes';
-import VectorEventTypes   from '../constant/VectorEventTypes';
-import Vector  from '../struct/Vector';
+import is  from '../is/is';
+import Commands  from './CommandTypes';
+import VectorEventTypes   from '../struct-vector/VectorEventTypes';
+import Vector  from '../struct-vector/Vector';
 
 var {isNumber, isObject} = is;
 

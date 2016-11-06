@@ -1,11 +1,11 @@
 /* jshint esnext: true */
 
-import _  from '../../util/common';
-import is  from '../../util/is';
-import VectorEventTypes    from '../../constant/VectorEventTypes';
-import Vector    from '../../struct/Vector';
+import _  from '../../lib-common/common';
+import is  from '../../lib/is/is';
+import VectorEventTypes    from '../../lib/struct-vector/VectorEventTypes';
+import Vector    from '../../lib/struct-vector/Vector';
 import exportFN    from '../fn-export';
-import DefaultValues from '../../constant/DefaultValues';
+import DefaultValues from '../DefaultValues';
 import Gradient  from './Gradient';
 
 var {cloned, serialized} = exportFN;

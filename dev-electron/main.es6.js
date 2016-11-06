@@ -14,7 +14,7 @@
 function main() {
 
 var TwoClassic = require('../es6/TwoClassic').default;
-var Types = require('../es6/constant/RendererTypes').default;
+var Types = require('../es6/renderer/RendererTypes').default;
 
 var appNode = document.getElementById('app');
 

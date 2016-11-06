@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
-import Cache   from '../../util/Cache';
-import Commands from '../../constant/CommandTypes';
-import shapeRendering   from '../../renderer-lib/renderer-bridge';
+import Cache   from '../../lib/cache/Cache';
+import Commands from '../../lib/struct-anchor/CommandTypes';
+import shapeRendering   from '../../renderer/renderer-bridge';
 
 var {updateShape} = shapeRendering;
 

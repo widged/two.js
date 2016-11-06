@@ -1,9 +1,9 @@
 /* jshint esnext: true */
 
-import _   from '../../util/common';
-import is  from '../../util/is';
+import _   from '../../lib-common/common';
+import is  from '../../lib/is/is';
 import base from './base';
-import shapeRendering   from '../../renderer-lib/renderer-bridge';
+import shapeRendering   from '../../renderer/renderer-bridge';
 
 var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 var {isDefaultMatrix, renderShape, Commands} = base;

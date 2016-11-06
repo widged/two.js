@@ -1,16 +1,16 @@
 /* jshint esnext: true */
 
-import is from '../util/is';
-import _ from '../util/common';
-import Resolution from '../constant/Resolution';
-import Commands from '../constant/Commands';
-import Path from '../renderable/Anchor';
+import is from '../../lib/is/is';
+import _ from '../../lib-common/common';
+import Resolution from '../Resolution';
+import Commands from '../../lib/struct-anchor/CommandTypes';
+import Path from '../../lib/struct-anchor/Anchor';
 import Group from '../renderable/Group';
 import Gradient from '../renderable/Gradient';
 import RadialGradient from '../renderable/gradient/RadialGradient';
 import LinearGradient from '../renderable/gradient/RadialGradient';
-import Vector from '../struct/Vector';
-import Matrix from '../struct/Matrix';
+import Vector from '../lib/struct-vector/Vector';
+import Matrix from '../lib/struct-matrix/Matrix';
 import pathFN  from '../renderable/fn-path';
 import Anchor from '../renderable/Anchor';
 

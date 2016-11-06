@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
-import _  from '../util/common';
-import is  from '../util/is';
-import Array2   from './Array';
+import _  from '../../lib-common/common';
+import is  from '../is/is';
+import Array2   from '../struct-array/Array';
 
 var {isArray} = is;
 /**

@@ -3,23 +3,23 @@
 // :NOTE: temporary, to make it less cumbersome to move files around
 // :NOTE: import cannot be imported in any of these files. Otherwise, it causes circular dependencies.
 
-import is  from '../util/is';
-import common  from '../util/common';
-import UidGenerator  from '../util/uid-generator';
-import ChangeTracker  from '../util/ChangeTracker';
+import is  from '../lib/is/is';
+import common  from '../lib-common/common';
+import UidGenerator  from '../lib/uid-generator/UidGenerator';
+import ChangeTracker  from '../lib/change-tracker/ChangeTracker';
 
-import Commands  from '../constant/CommandTypes';
-import DefaultValues from '../constant/DefaultValues';
+import Commands  from '../lib/struct-anchor/CommandTypes';
+import DefaultValues from './DefaultValues';
 
-import Anchor   from './Anchor';
-import VectorEventTypes   from '../constant/VectorEventTypes';
-import Vector   from '../struct/Vector';
-import Matrix   from '../struct/Matrix';
+import Anchor   from '../lib/struct-anchor/Anchor';
+import VectorEventTypes   from '../lib/struct-vector/VectorEventTypes';
+import Vector   from '../lib/struct-vector/Vector';
+import Matrix   from '../lib/struct-matrix/Matrix';
 
-import CollectionEventTypes   from '../constant/CollectionEventTypes';
-import Collection  from '../struct/Collection';
+import CollectionEventTypes   from '../lib/struct-collection/CollectionEventTypes';
+import Collection  from '../lib/struct-collection/Collection';
 
-import shapeRendering   from '../renderer-lib/renderer-bridge';
+import shapeRendering   from '../renderer/renderer-bridge';
 
 import exportFN  from './fn-export';
 import rectFN  from './fn-rect';

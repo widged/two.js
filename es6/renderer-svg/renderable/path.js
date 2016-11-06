@@ -3,7 +3,7 @@
 import base from './base';
 import svgFN    from './fn-svg';
 import anchorFN from './fn-anchor';
-import shapeRendering   from '../../renderer-lib/renderer-bridge';
+import shapeRendering   from '../../renderer/renderer-bridge';
 
 var {renderShape} = base;
 var {createElement, setAttributes, getClip} = svgFN;

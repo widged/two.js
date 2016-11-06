@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import DefaultValues from './constant/DefaultValues';
+import DefaultValues from './renderable/DefaultValues';
 import makeShape from './renderable/factories';
 
 /**

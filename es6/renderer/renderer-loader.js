@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import RendererTypes from '../constant/RendererTypes';
+import RendererTypes from '../renderer/RendererTypes';
 import dom from '../platform/dom';
 
 var FN = {};

@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
-import is  from '../../util/is';
-import shapeRendering   from '../../renderer-lib/renderer-bridge';
+import is  from '../../lib/is/is';
+import shapeRendering   from '../../renderer/renderer-bridge';
 import boundingFN from './fn-bounding';
 import rendererFN from './fn-renderer';
 import anchorFN   from './fn-anchors';
