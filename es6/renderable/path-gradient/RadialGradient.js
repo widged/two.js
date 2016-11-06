@@ -30,41 +30,24 @@ class RadialGradient extends Gradient {
    */
   constructor(cx, cy, r, stops, fx, fy) {
     super(stops);
-
-    var {changeTracker} = this.getState();
-
-    var center = new Vector();
-    center.x = isNumber(cx) ? cx : undefined;
-    center.y = isNumber(cy) ? cy : undefined;
-    var focal = new Vector();
-    focal.x = isNumber(fx) ? fx : center.x;
-    focal.y = isNumber(fy) ? fy : center.y;
-
-    this.setProps(PROP_DEFAULTS);
-    this.setProps({
-      center,
-      radius : isNumber(r) ? r : 20,
-      focal
-    });
-
-    changeTracker.drop(['endPoints']);
-
-    center.dispatcher.on(VectorEventTypes.change, () => {
-      changeTracker.raise(['center']);
-    });
-
-    focal.dispatcher.on(VectorEventTypes.change, () => {
-      changeTracker.raise(['focal']);
-    });
+    var props = PROP_DEFAULTS;
+    if(isNumber(cx) || isNumber(cy)) { props.center = {x: cx || 0, y: cy || 0}; }
+    if(isNumber(fx) || isNumber(fy)) { props.focal  = {x: fx || 0, y: fy || 0}; }
+    if(isNumber(r)) { props.radius = r; }
+    this.setProps(props);
   }
 
   // -----------------
   // IStated
   // -----------------
 
-  beforePropertySet(key, newV) {
-    newV = super.beforePropertySet(key, newV);
-    return newV;
+  beforePropertySet(k, v) {
+    v = super.beforePropertySet(k, v);
+    return v;
+  }
+  afterPropertyChange(k,v,oldV) {
+    super.afterPropertyChange(k,v,oldV);
+    if(['center','focal','radius']) { this.getState().changeTracker.raise(['endPoints']); }
   }
 
   // -----------------
