@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import IMPORTS    from '../_imports';
-import Shape from '../Shape';
+import Renderable from '../Renderable';
 
 var {isUndefined, isNull} = IMPORTS.is;
 var {arrayLast}           = IMPORTS.common;
@@ -36,7 +36,7 @@ const PROP_KEYS = Object.keys(PROP_DEFAULTS);
  * don't forget to add the group to the instance's scene, two.add(group).
  */
 
-class Path extends Shape {
+class Path extends Renderable {
 
 
   constructor(vertices, closed, curved, manual) {

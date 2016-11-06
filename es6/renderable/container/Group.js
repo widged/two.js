@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import IMPORTS    from '../_imports';
-import Shape from '../Shape';
+import Renderable from '../Renderable';
 import ChildrenCollection from './ChildrenCollection';
 
 const {Collection, CollectionEventTypes} = IMPORTS;
@@ -29,7 +29,7 @@ var nodeChildren = (node) => { return (node instanceof Group) ? node.children : 
  * of two, but it's not necessary. Unless specified methods return their instance
  * of Group for the purpose of chaining.
  */
-class Group extends Shape {
+class Group extends Renderable {
 
   /**
    * If you are constructing groups this way instead of two.makeGroup(), then don't

@@ -1,6 +1,7 @@
 /* jshint esnext: true */
 
 // :NOTE: temporary, to make it less cumbersome to move files around
+// :NOTE: import cannot be imported in any of these files. Otherwise, it causes circular dependencies.
 
 import is  from '../util/is';
 import common  from '../util/common';

@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import IMPORTS    from '../_imports';
-import Shape from '../Shape';
+import Renderable from '../Renderable';
 
 var {isObject} = IMPORTS.is;
 var {shimBoundingClientRect} = IMPORTS.rectFN;
@@ -22,7 +22,7 @@ const PROP_KEYS  = Object.keys(PROP_DEFAULTS);
  * However, you do not have control over the glyphs themselves. If you'd like
  * to manipulate that specifically it is recommended to use a SVG Interpreter.
  */
-class Text extends Shape {
+class Text extends Renderable {
 
   // --------------------
   // Constructor
