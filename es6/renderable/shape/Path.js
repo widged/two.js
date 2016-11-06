@@ -3,10 +3,10 @@
 import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
 
-const {is, common, curveFN, rectFN, exportFN, shapeRendering} = IMPORTS;
 const {Collection, CollectionEventTypes} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
+const {is, common, curveFN, rectFN, exportFN, shapeRendering} = IMPORTS;
 
 var {isUndefined, isNull} = is;
 var {arrayLast}           = common;
@@ -37,7 +37,6 @@ const PROP_KEYS = Object.keys(PROP_DEFAULTS);
  */
 
 class Path extends Renderable {
-
 
   constructor(anchors, closed, curved, manual) {
     super();

@@ -3,15 +3,16 @@
 import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
 
-var {isObject} = IMPORTS.is;
-var {shimBoundingClientRect} = IMPORTS.rectFN;
-var {serializeProperties} = IMPORTS.exportFN;
-var {getComputedMatrix} = IMPORTS.matrixFN;
-var {updateShape} = IMPORTS.shapeRendering;
-
 const {ChildrenCollection} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
+var {is, rectFN, exportFN, matrixFN, shapeRendering} = IMPORTS;
+
+var {isObject, isUndefined, isNumber} = is;
+var {shimBoundingClientRect} = rectFN;
+var {serializeProperties} = exportFN;
+var {getComputedMatrix}   = matrixFN;
+var {updateShape}         = shapeRendering;
 
 const PROP_DEFAULTS = RenderableDefaults.Text;
 const PROP_KEYS  = Object.keys(PROP_DEFAULTS);
@@ -36,18 +37,12 @@ class Text extends Renderable {
    */
   constructor(message, x, y, styles) {
     // init
-    super({x,y});
-    this.setState(PROP_DEFAULTS);
-    // this shape
-    var {renderer, changeTracker} = this.getState();
-    this.setState({
-      value: message
-    });
-    if (isObject(styles)) {
-      this.setState(styles);
-      changeTracker.raise(['family','size','leading','alignment','baseline','style','weight','decoration']);
-    }
-    this.state.changeTracker.raise(['clip']);
+    super();
+    var props = PROP_DEFAULTS;
+    if (isObject(styles))     { props = Object.assign(props, styles); }
+    if(!isUndefined(message)) { props.value = message; }
+    if (isNumber(x) || isNumber(y)) { props.translation = {x: x || 0,y: y || 0}; }
+    this.setProps(props);
   }
 
   // -----------------
