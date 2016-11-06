@@ -110,7 +110,8 @@ class Path extends Renderable {
     }
   }
 
-  activateAnchors(anchors)  {
+  activateAnchors(anchorColl)  {
+    var anchors = anchorColl.items;
     var i = (anchors || []).length, anchor = null;
     while(i--) {
       anchor = anchors[i];
@@ -120,7 +121,8 @@ class Path extends Renderable {
     }
   }
 
-  disactivateAnchors(anchors)  {
+  disactivateAnchors(anchorColl)  {
+    var anchors = (anchorColl || {}.items);
     var i = (anchors || []).length, anchor = null;
     while(i--) {
       anchor = anchors[i];
@@ -214,11 +216,12 @@ class Path extends Renderable {
     var automatic = false;
     var curved = false;
     var {closed, anchorColl} = shp.getProps();
-    var newVertices = subdivideTo({
+    var anchors = ((anchorColl || {}).items) || [];
+    var newAnchors = subdivideTo({
       limit,
-      anchorColl   : anchorColl,
+      anchors,
       pathClosed : closed,
-      lastClosed : (arrayLast(anchorColl).command === Commands.CLOSE) ? true : false,
+      lastClosed : (arrayLast(anchors).command === Commands.CLOSE) ? true : false,
       automatic: automatic
     });
     shp.setState({automatic, curved, anchorColl: newVertices});

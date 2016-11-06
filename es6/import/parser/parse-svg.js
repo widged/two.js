@@ -376,7 +376,7 @@ var tags = {
 
     });
 
-    // Create the anchorColl for our Path
+    // Create the `anchors` for our Path
 
     var points = [];
     commands.forEach(function(command, i) {

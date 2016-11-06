@@ -374,7 +374,7 @@ FN.getSubdivisions = (a, b, limit) => {
     });
 
   };
-  FN.subdivideTo = ({limit, anchorColl, pathClosed, lastClosed, automatic}) => {
+  FN.subdivideTo = ({limit, anchors, pathClosed, lastClosed, automatic}) => {
     //TODO: DRYness (function below updateLength)
 
     if(!Array.isArray(anchorColl)) { return []; }
@@ -446,20 +446,20 @@ FN.getSubdivisions = (a, b, limit) => {
     return points;
   };
 
-FN.updateLength = ({limit, anchorColl, pathClosed, lastClosed, lengths}) => {
+FN.updateLength = ({limit, anchors, pathClosed, lastClosed, lengths}) => {
   //TODO: DRYness (function above 'subdivideTo')
 
   if (!Array.isArray(lengths)) { lengths = []; }
-  if(!Array.isArray(anchorColl)) { return {lengths, sum: 0}; }
+  if(!Array.isArray(anchors)) { return {lengths, sum: 0}; }
 
   var {getCurveLengthAB} = FN;
 
-  var b = arrayLast(anchorColl);
+  var b = arrayLast(anchors);
   var closed = pathClosed || lastClosed;
-  var lastIndex = (anchorColl.length - 1);
+  var lastIndex = (anchors.length - 1);
   var sum = 0;
 
-  anchorColl.forEach((a, i) => {
+  anchors.forEach((a, i) => {
 
     if ((i <= 0 && !closed) || a.command === Commands.MOVE) {
       b = a;
@@ -525,18 +525,19 @@ NotInUse.getPointAt = (t, obj, pth) => {
   var {getPointOnCubicBezier} = FN;
       var x, x1, x2, x3, x4, y, y1, y2, y3, y4, left, right;
       var target = pth.length * min(max(t, 0), 1);
-      var length = pth.anchorColl.length;
+      var length = pth.getProps().anchorColl.length;
       var last = length - 1;
 
       var a = null;
       var b = null;
 
-      var {lengths, closed, anchorColl} = pth.getState();
+      var {lengths, closed, anchorColl} = pth.getProps();
       for (var i = 0, l = lengths.length, sum = 0; i < l; i++) {
 
         if (sum + lengths[i] > target) {
-          a = anchorColl[closed ? mod(i, length) : i];
-          b = anchorColl[min(max(i - 1, 0), last)];
+          var anchors = anchorColl.items;
+          a = anchors[closed ? mod(i, length) : i];
+          b = anchors[min(max(i - 1, 0), last)];
           target -= sum;
           t = target / lengths[i];
           break;

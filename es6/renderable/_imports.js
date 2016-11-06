@@ -20,7 +20,8 @@ import matrixFN  from '../lib/struct-matrix/matrix-fn';
 import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
 
 import CollectionEventTypes   from '../lib/struct-collection/CollectionEventTypes';
-import Collection  from '../lib/struct-collection/Collection';
+// import Collection  from '../lib/struct-collection/Collection';
+import Collection  from '../lib/struct-collection/CollectionNonArray';
 
 import rendererBridge   from '../renderer/renderer-bridge';
 
