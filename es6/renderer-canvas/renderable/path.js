@@ -28,7 +28,7 @@ var renderPath = (shp, ctx, forced, parentClipped) => {
 
   opacity = opacity * parentRenderer.opacity;
 
-  var anchors = anchorColl.items;
+  var anchors = (anchorColl || {}).items;
   length = anchors.length;
   last = length - 1;
 

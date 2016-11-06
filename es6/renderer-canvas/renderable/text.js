@@ -28,7 +28,7 @@ var renderText = (shp, ctx, forced, parentClipped) => {
   var  matrix  = getShapeMatrix(shp);
 
   opacity = opacity * parentRenderer.opacity;
-  var anchors = anchorColl;
+  var anchors = (anchorColl || {}).items;
 
   if (!forced && (!visible || clip)) { return shp; }
 
