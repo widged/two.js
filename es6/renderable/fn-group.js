@@ -14,12 +14,12 @@ FN.isShape = (object) => {
   return (object && object.id) ? true : false;
 };
 
-FN.addShapesToChildren = (objects, children) => {
+FN.addShapesToChildren = (shapes, children) => {
   var {isShape} = FN;
   if(children.constructor.name !== 'ChildrenCollection') { throw "[GroupFN.addShapesTochidren] case not covered"; }
-  for (var i = 0, ni = objects.length, obj = null; i < ni; i++) {
-    obj = objects[i];
-    if (isShape(obj)) { children.push(obj); }
+  for (var i = 0, ni = shapes.length, shp = null; i < ni; i++) {
+    shp = shapes[i];
+    if (isShape(shp)) { children.push(shp); }
   }
   return children;
 };
