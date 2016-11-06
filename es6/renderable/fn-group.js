@@ -15,6 +15,7 @@ FN.isShape = (object) => {
 };
 
 FN.addShapesToChildren = (objects, children) => {
+  console.log(children)
   var {isShape} = FN;
   if(children.constructor.name !== 'ChildrenCollection') { throw "[GroupFN.addShapesTochidren] case not covered"; }
   for (var i = 0, ni = objects.length, obj = null; i < ni; i++) {

@@ -3,7 +3,8 @@
 import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
 
-const {Collection, CollectionEventTypes} = IMPORTS;
+const Collection = IMPORTS.CollectionNonArray;
+const {CollectionEventTypes} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, common, curveFN, rectFN, exportFN, rendererBridge} = IMPORTS;

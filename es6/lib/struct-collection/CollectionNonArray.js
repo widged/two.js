@@ -9,7 +9,7 @@ import CollectionEventTypes from './CollectionEventTypes';
  * inserted : push / unshift / splice (with > 2 arguments)
  * e.g: used for `anchors` attribute of a Path.
  */
-class Collection  {
+class CollectionNonArray  {
 
   constructor(arr) {
     this.dispatcher = new EventEmitter(Object.keys(CollectionEventTypes));
@@ -68,27 +68,28 @@ class Collection  {
 */
 
 
-  push() {
-    var pushed = Array.prototype.push.apply(this, arguments);
-    this.whenItemsAdded(arguments)
-    return pushed;
+  push(d) {
+    var items = this.items;
+    var added = items.push(d);
+    this.item = items;
+    this.whenItemsAdded([added]);
+    return added;
   }
 
-
-  splice() {
-    var spliced = Array.prototype.splice.apply(this, arguments);
-    var inserted;
-
+  splice(...args) {
+    var items = this.items;
+    var spliced = items.splice(...args);
+    this.item = items;
     this.whenItemsRemoved(spliced)
 
-    if (arguments.length > 2) {
-      inserted = this.slice(arguments[0], arguments[0] + arguments.length - 2);
+    var inserted;
+    if (args.length > 2) {
+      inserted = this.slice(args[0], args[0] + args.length - 2);
       this.whenItemsAdded(inserted);
       this.whenItemsReordered();
     }
     return spliced;
   }
-
 
 
   sort(...args) {
@@ -107,30 +108,9 @@ class Collection  {
     return this;
   }
 
-  splice(...args) {
-    var items = this.items;
-    var spliced = items.splice(...args);
-    this.item = items;
-    this.whenItemsRemoved(spliced)
-
-    var inserted;
-    if (args.length > 2) {
-      inserted = this.slice(args[0], args[0] + args.length - 2);
-      this.whenItemsAdded(inserted);
-      this.whenItemsReordered();
-    }
-    return spliced;
-  }
 
   /*
 
-  push(d) {
-    var items = this.items;
-    var added = items.push(d);
-    this.item = items;
-    this.whenItemsAdded([added])
-    return added;
-  }
 
 
 
@@ -140,4 +120,4 @@ class Collection  {
 
 
 
-export default Collection;
+export default CollectionNonArray;
