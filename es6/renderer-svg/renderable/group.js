@@ -38,9 +38,9 @@ var renderGroup = (shp, domElement) => {
     renderer.elem.setAttribute('transform', 'matrix(' + matrix.toString() + ')');
   }
 
-  var {children} = shapeProps;
-  for (var i = 0, ni = children.length; i < ni; i++) {
-    var child = children[i];
+  var {childrenColl} = shapeProps;
+  for (var i = 0, ni = childrenColl.length; i < ni; i++) {
+    var child = childrenColl[i];
     renderShape(child, domElement);
   }
 
@@ -60,7 +60,7 @@ var renderGroup = (shp, domElement) => {
   }
 
   if (anyPropChanged(shp, ['order'])) {
-    shp.children.forEach((child) => {
+    shp.childrenColl.forEach((child) => {
       var childR = getShapeRenderer(child);
       renderer.elem.appendChild(childR.elem);
     });

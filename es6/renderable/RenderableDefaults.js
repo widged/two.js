@@ -78,7 +78,7 @@ cap - A string representing the type of stroke cap to render for all child shape
 join - A string representing the type of stroke join to render for all child shapes. Use strictly for setting. All applicable values can be found on the w3c spec. Defaults to "round".
 miter - A number representing the miter limit for the stroke of all child objects. Use strictly for setting. Defaults to 1.
 */
-// Path properties can be set at Group level, that will be trickled down to all children
+// Path properties can be set at `Group` level, that will be trickled down to all `children`
 // :REVIEW: why are text properties not included?
 FN.Group = {
    fill: '#fff',

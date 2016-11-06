@@ -33,9 +33,9 @@ var renderGroup = (shp, gl, program) => {
   // :NOTE: substractions array is reset on flag.reset()
   rendererFN.removeNodes(substractions, gl);
 
-  var {children} = shapeProps;
-  // shp.children is a collection, not a proper array
-  Array.from(children).forEach((child) => {
+  var {childrenColl} = shapeProps;
+  // `shp.children` is a collection, not a proper array
+  Array.from(childrenColl).forEach((child) => {
     renderShape(child, gl, program);
   });
 

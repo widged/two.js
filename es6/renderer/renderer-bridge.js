@@ -150,9 +150,9 @@ FN.getBoundingClientRect = (shp, shallow) => {
      }
   } else if(shp.shapeType === 'group') {
     rect = null;
-    var {children} = shp.getState();
-    for(var i = 0, ni = children.length, child = null; i < ni; i++ ) {
-      child = children[i];
+    var {childrenColl} = shp.getState();
+    for(var i = 0, ni = childrenColl.length, child = null; i < ni; i++ ) {
+      child = childrenColl[i];
       if (!/(linear-gradient|radial-gradient|gradient)/.test(child.shapeType)) {
         // TODO: Update only when it needs to.
         // updateShape(child, true);

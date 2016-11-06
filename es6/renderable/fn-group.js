@@ -14,24 +14,24 @@ FN.isShape = (object) => {
   return (object && object.id) ? true : false;
 };
 
-FN.addShapesToChildren = (shapes, children) => {
+FN.addShapesToChildren = (shapes, childrenColl) => {
   var {isShape} = FN;
-  if(children.constructor.name !== 'ChildrenCollection') { throw "[GroupFN.addShapesTochidren] case not covered"; }
+  if(childrenColl.constructor.name !== 'ChildrenCollection') { throw "[GroupFN.addShapesTochidren] case not covered"; }
   for (var i = 0, ni = shapes.length, shp = null; i < ni; i++) {
     shp = shapes[i];
-    if (isShape(shp)) { children.push(shp); }
+    if (isShape(shp)) { childrenColl.push(shp); }
   }
-  return children;
+  return childrenColl;
 };
 
-FN.removeShapesFromChildren = (objects, children) => {
+FN.removeShapesFromChildren = (objects, childrenColl) => {
   for (var i = 0, ni = objects.length, obj = null; i < ni; i++) {
     obj = objects[i];
-    if (!obj || !(children.ids[obj.id])) continue;
-    // :REVIEW: Any chance it could be optimised if children was organised as a dictionary with ks and vs?
-    var idx = children.indexOf(obj);
+    if (!obj || !(childrenColl.ids[obj.id])) continue;
+    // :REVIEW: Any chance it could be optimised if childrenColl was organised as a dictionary with ks and vs?
+    var idx = childrenColl.indexOf(obj);
     if(idx === -1) { throw "[GroupFN.removeShapesFromChildren] case not covered"; }
-    children.splice(children.indexOf(obj), 1);
+    childrenColl.splice(childrenColl.indexOf(obj), 1);
   }
 };
 
@@ -78,7 +78,7 @@ FN.replaceParent = (that, child, newParent) => {
     return;
   }
 
-  var {children:parentChildren} = that.getProps();
+  var {childrenColl:parentChildren} = that.getProps();
   if (parent && parentChildren.ids[child.id]) {
 
     var {additions: parentAdditions, substractions: parentSubstrations} = parent.getState();
@@ -123,12 +123,12 @@ FN.replaceParent = (that, child, newParent) => {
 
 
 
-FN.translateChildren = (children, translate) => {
-  var rect = getEnclosingRect({shallow: true, children});
-  children.forEach(function(child) {
+FN.translateChildren = (childrenColl, translate) => {
+  var rect = getEnclosingRect({shallow: true, childrenColl});
+  childrenColl.forEach(function(child) {
     child.translation.subSelf(translate(rect));
   });
-  return children;
+  return childrenColl;
 };
 
 FN.getItemWithId = (group, id) => {
@@ -152,7 +152,7 @@ NotInUse.listItemsWithClassName = (group, cl) => {
 };
 
 /**
- * Recursively search for children of a specific type,
+ * Recursively search for `children` of a specific type,
  * e.g. Two.Polygon. Pass a reference to this type as the param.
  * Returns an empty array if none found.
  */

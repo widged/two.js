@@ -100,7 +100,7 @@ class TwoScene {
    * Removes all objects from the instance's scene. If you intend to have the browser garbage collect this, don't forget to delete the references in your application as well.
    */
   clear() {
-    this.state.scene.remove(Array.from(this.state.scene.children));
+    this.state.scene.remove(Array.from(this.state.scene.childrenColl));
     return this;
   }
 

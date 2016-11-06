@@ -6,7 +6,7 @@ var {Collection, CollectionEventTypes} = IMPORTS;
 
 
 /**
- * A children collection which is accesible both by index and by object id
+ * A `ChildrenCollection` which is accesible both by index and by object id
  * @constructor
  */
 class ChildrenCollection extends Collection {
@@ -15,9 +15,9 @@ class ChildrenCollection extends Collection {
   // Constructor
   // --------------------
 
-  constructor(children) {
+  constructor(arr) {
 
-    super(children);
+    super(arr);
 
     this.ids = {};
     this.children = this;

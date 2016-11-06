@@ -39,8 +39,8 @@ class Group extends Renderable {
       substractions : []
     });
     var props = PROP_DEFAULTS;
-    // children - A Collection of all the children of the group.
-    if(!isUndefined(shapes)) { props.children = shapes; }
+    // childrenColl - A Collection of all the children of the group.
+    if(!isUndefined(shapes)) { props.childrenColl = shapes; }
     this.setProps(props);
 
     // var excluded = 'closed,curved,automatic,beginning,ending,mask'.split(',')
@@ -53,19 +53,19 @@ class Group extends Renderable {
 
   beforePropertySet(k, v) {
     v = super.beforePropertySet(k, v);
-    if(k === 'children') {
-        var oldChildren = this.getState().children;
+    if(k === 'childrenColl') {
+        var oldChildren = this.getState().childrenColl;
         if (oldChildren && oldChildren.dispatcher) { oldChildren.dispatcher.off(); }
         v = new ChildrenCollection(v);
     }
     return v;
   }
   afterPropertyChange(k, v, oldV) {
-    if(k === 'children') {
-      var children = v;
-      children.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('whenChildrenInserted', (children) => { adoptShapes(this, children); } ));
-      children.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('whenChildrenRemoved', (children) => { dropShapes(this, children); } ));
-      children.dispatcher.on(CollectionEventTypes.order, this.bindOnce('whenChildrenShuffled', () => { this.getState().changeTracker.raise(['order']); } ));
+    if(k === 'childrenColl') {
+      var childrenColl = v;
+      childrenColl.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('whenChildrenInserted', (childrenColl) => { adoptShapes(this, childrenColl); } ));
+      childrenColl.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('whenChildrenRemoved', (childrenColl) => { dropShapes(this, childrenColl); } ));
+      childrenColl.dispatcher.on(CollectionEventTypes.order, this.bindOnce('whenChildrenShuffled', () => { this.getState().changeTracker.raise(['order']); } ));
     } else if(k === 'mask') {
       this.getState().changeTracker.raise(['mask']);
       if (v && !v.clip) { v.clip = true; }
@@ -77,7 +77,7 @@ class Group extends Renderable {
   // Accessors
   // --------------------
 
-  get children() { return this.state.children; }
+  get childrenColl() { return this.state.childrenColl; }
 
 
   // --------------------
@@ -85,7 +85,7 @@ class Group extends Renderable {
   // --------------------
 
   /**
-   * Anchor all children to the top left corner of the group.
+   * Anchor all childrenColl to the top left corner of the group.
    */
   corner() {
     this.setState({pointTowards: rectTopLeft });
@@ -93,7 +93,7 @@ class Group extends Renderable {
   }
 
   /**
-   * Anchors all children around the centroid of the group,
+   * Anchors all childrenColl around the centroid of the group,
    * effectively placing the shape around the unit circle.
    */
   center() {
@@ -107,10 +107,10 @@ class Group extends Renderable {
    * arguments, two.add(o1, o2, oN), or as an Array.
    */
    add(...objects) {
-    // Create copy of it in case we're getting passed a childrens array directly.
+    // Create copy of it in case we're getting passed a childrenColls array directly.
     objects = arrayOrArguments(objects).slice(0);
-    var {children} = this.getProps();
-    this.state.props.children = addShapesToChildren(objects, children);
+    var {childrenColl} = this.getProps();
+    this.state.props.childrenColl = addShapesToChildren(objects, childrenColl);
     return this;
   }
 
@@ -119,11 +119,11 @@ class Group extends Renderable {
    * arguments, two.remove(o1, o2, oN), or as an array.
    */
   remove(...objects) {
-    // Create copy of it in case we're getting passed a childrens array directly.
+    // Create copy of it in case we're getting passed a childrenColls array directly.
     objects = arrayOrArguments(objects).slice(0);
     // If no objects are specified, remove the group from the parent group.
     if (!objects) { this.parent = removeGroupFromParent(this, this.parent); }
-    this.state.children = removeShapesFromChildren(objects, this.state.children);
+    this.state.childrenColl = removeShapesFromChildren(objects, this.state.childrenColl);
 
     return this;
 
@@ -134,10 +134,10 @@ class Group extends Renderable {
   // -----------------
 
   /**
-   * Trickle down to all children in the group
+   * Trickle down to all childrenColl in the group
    */
   trickleDown(fn) {
-    this.state.children.forEach(fn);
+    this.state.childrenColl.forEach(fn);
     return this;
   }
   noFill()           { return this.trickleDown((d) => { d.noFill(); }); }
@@ -166,7 +166,7 @@ class Group extends Renderable {
 
   /**
    * Returns a new instance of a Two.Group with the same settings.
-   * This will copy the children as well, which can be computationally expensive.
+   * This will copy the childrenColl as well, which can be computationally expensive.
    */
    /*
     :TODO: Group has a gotcha in that it's at the moment required to be bound to
@@ -181,8 +181,8 @@ class Group extends Renderable {
       k = PROP_KEYS[i];
       clone[k] = shp[k];
     }
-    // now clone all children recursively and add them to this group
-    var children = (shp.state.children || []).map((child) => {
+    // now clone all childrenColl recursively and add them to this group
+    var childrenColl = (shp.state.childrenColl || []).map((child) => {
       var childClone = child.clone(clone);
       clone.add(childClone);
       return childClone;
@@ -192,7 +192,7 @@ class Group extends Renderable {
 
   /**
    * Export the data from the instance of Group into a plain JavaScript
-   * object. This also makes all children plain JavaScript objects. Great
+   * object. This also makes all childrenColl plain JavaScript objects. Great
    * for turning into JSON and storing in a database.
    */
    // :NOTE: Not used internally, only called by the user
@@ -200,8 +200,8 @@ class Group extends Renderable {
     var shp = this;
     var obj = super.toObject();
     obj = serializeProperties(shp, obj);
-    // now copy all children recursively
-    obj.children =  (shp.state.children || []).map((child) => {
+    // now copy all childrenColl recursively
+    obj.childrenColl =  (shp.state.childrenColl || []).map((child) => {
       return shp.toObject();
     });
     return obj;

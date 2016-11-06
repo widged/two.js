@@ -30,10 +30,10 @@ FN.hasGradientChanged = (shp) => {
 };
 
 
-var removeChild = function(child, gl) {
+var removeChildNode = function(child, gl) {
   if (child.children) {
     for (var i = 0; i < child.children.length; i++) {
-      removeChild(child.children[i], gl);
+      removeChildNode(child.children[i], gl);
     }
     return;
   }
@@ -45,7 +45,7 @@ var removeChild = function(child, gl) {
 
 FN.removeNodes = (nodes, gl) => {
   for (var i = 0; i < (nodes || []).length; i++) {
-    removeChild(nodes[i], gl);
+    removeChildNode(nodes[i], gl);
   }
 
 };
@@ -206,7 +206,7 @@ FN.recomputeMatrixAndScaleIfNecessary = (shp) => {
     matrix.toArray(true, transformation); // Reduce amount of object / array creation / deletion
     renderer.matrix = multiplyMatrix(transformation, parentRenderer.matrix, renderer.matrix );
     renderer.scale = scale * parentRenderer.scale;
-    // In group  but not in `path` or `text`. Used to trickle down any matrix change to the children
+    // In group  but not in `path` or `text`. Used to trickle down any matrix change to the `children`
     // of the group (who will check for a parentMatrixChanged).
     if (parentMatrixChanged) { raiseFlags(shp, ['matrix']); }
   }
