@@ -47,7 +47,7 @@ var beforeRender = (two, classicConfig) => {
 /**
  * @class
  */
-class TwoClassic extends TwoScene  {
+class TwoClassic   {
 
   constructor(classicConfig) {
     var {width, height, type, fullscreen, autostart} = Object.assign(RenderableDefaults.TwoClassic, classicConfig);
@@ -84,7 +84,8 @@ class TwoClassic extends TwoScene  {
 
     };
 
-    super({width, height, beforeRender});
+    this.state = {};
+    this.state.scene = new TwoScene({width, height, beforeRender});
   }
 
 
@@ -95,51 +96,82 @@ class TwoClassic extends TwoScene  {
   */
    whenUpdated() {
      // That event doesn't get captured internally, only when
-     var {frameCount, timeDelta} = this.state.player;
-     this.dispatcher.emit(TwoEventTypes.update, frameCount, timeDelta);
+     if(this.state.player) {
+       var {frameCount, timeDelta} = this.state.player;
+       this.dispatcher.emit(TwoEventTypes.update, frameCount, timeDelta);
+     }
    }
    whenRendered() {
-     var {frameCount} = this.state.player;
-     this.dispatcher.emit(TwoEventTypes.render, frameCount);
+     if(this.state.player) {
+       var {frameCount} = this.state.player;
+       this.dispatcher.emit(TwoEventTypes.render, frameCount);
+    }
    }
    whenResized(width, height) {
-     this.dispatcher.emit(TwoEventTypes.resize, this.state.width, this.state.height);
+     if(this.dispatcher) {
+       this.dispatcher.emit(TwoEventTypes.resize, this.state.width, this.state.height);
+     }
    }
 
+
+   appendTo(domNode) {
+     var {scene} = this.state;
+     scene.appendTo(domNode);
+     return this;
+   }
+
+
+   update() {
+     var {scene} = this.state;
+     scene.update(
+       () => { this.whenUpdated();  },
+       () => { this.whenResized(); }
+     );
+     return this;
+   }
+
+
    makeGroup(...objects) {
-     return this.addGroup(...objects);
+     var {scene} = this.state;
+     return scene.addGroup(...objects);
    }
 
    makeGeometry(...objects) {
-     return this.addGeometry(...objects);
+     var {scene} = this.state;
+     return scene.addGeometry(...objects);
    }
 
   /**
    * Convenience methods to add to the scene various shape types
    */
  makeCurve(p) {
+   var {scene} = this.state;
    var pth = makeShape.curve(p);
-   this.addShape(pth, true);
+   scene.addShape(pth, true);
    return pth;
  }
  makePath(p) {
+   var {scene} = this.state;
    var pth = makeShape.path(p);
-   this.addShape(pth, true);
+   scene.addShape(pth, true);
    return pth;
  }
  makeText(...args) {
+   var {scene} = this.state;
    var txt = makeShape.text(...args);
-   this.addShape(txt);
+   scene.addShape(txt);
    return txt;
  }
  makeLinearGradient(x1, y1, x2, y2, ...stops) {
+   var {scene} = this.state;
    var gradient = makeShape.linearGradient(x1, y1, x2, y2, stops);
-   this.addShape(gradient);
+   scene.addShape(gradient);
    return gradient;
  }
  makeRadialGradient(x1, y1, r, ...stops) {
+   var {scene} = this.state;
    var gradient = makeShape.radialGradient(x1,y1,r,stops);
-   this.addShape(gradient);
+   scene.addShape(gradient);
    return gradient;
  }
 

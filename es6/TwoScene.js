@@ -47,9 +47,9 @@ class TwoScene {
    * active renderer draw all visible shapes on the scene
    */
 
-  update() {
+  update(whenUpdated, whenRendered) {
 
-    this.whenUpdated();
+    whenUpdated();
 
     var {width, height, renderer} = this.state;
     if (width !== renderer.width || height !== renderer.height) {
@@ -57,7 +57,7 @@ class TwoScene {
     }
 
     var render = this.state.renderer.render();
-    this.whenRendered();
+    whenRendered();
     return render;
   }
 
