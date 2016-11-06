@@ -1,11 +1,72 @@
 /* jshint esnext: true */
 
-import _  from '../../TwoUtil';
-import Commands from '../../lib/struct-anchor/CommandTypes';
+import util from '../../TwoUtil';
 
-var {mod, toFixed} = _;
+import Commands from './CommandTypes';
+
+var {CLOSE, CURVE, MOVE, LINE} = Commands;
+var {mod, toFixed} = util;
+var {min, max} = Math;
 
 var FN = {};
+
+FN.curveSegment = (a, b) => {
+  var ar, bl, vx, vy, ux, uy;
+  ar = (a.controls && a.controls.right) || a;
+  bl = (b.controls && b.controls.left) || b;
+
+  if (a.relative) {
+    vx = toFixed((ar.x + a.x));
+    vy = toFixed((ar.y + a.y));
+  } else {
+    vx = toFixed(ar.x);
+    vy = toFixed(ar.y);
+  }
+
+  if (b.relative) {
+    ux = toFixed((bl.x + b.x));
+    uy = toFixed((bl.y + b.y));
+  } else {
+    ux = toFixed(bl.x);
+    uy = toFixed(bl.y);
+  }
+  return [vx, vy, ux, uy];
+};
+
+/**
+ * Updates a Rect to include an additional anchor. Typically takes anchors that are
+ * "centered" around 0 and returns them to be anchored upper-left.
+ */
+FN.includeAnchorInBoundingRect = (acc, {x,y,controls,_relative:relative}) => {
+  var a, b, c, d;
+  var {left, right, top, bottom} = acc || {left : Infinity, right : -Infinity, top : Infinity, bottom : -Infinity};
+
+  if (controls) {
+    var cl = controls.left,
+        cr = controls.right;
+
+    if (cl && cr) {
+      a = relative ? cl.x + x : cl.x;
+      b = relative ? cl.y + y : cl.y;
+      c = relative ? cr.x + x : cr.x;
+      d = relative ? cr.y + y : cr.y;
+    }
+  }
+
+  if (a && b && c && d) {
+    top    = min(b, d, top);
+    left   = min(a, c, left);
+    right  = max(a, c, right);
+    bottom = max(b, d, bottom);
+  } else {
+    top    = min(y, top);
+    left   = min(x, left);
+    right  = max(x, right);
+    bottom = max(y, bottom);
+  }
+
+  return {left, right, top, bottom};
+};
 
 /**
  * Turn a set of vertices into a string for the d property of a path
@@ -38,11 +99,11 @@ FN.toString = function(anchors, closed) {
 
    switch (b.command) {
 
-     case Commands.CLOSE:
-       command = Commands.CLOSE;
+     case CLOSE:
+       command = CLOSE;
        break;
 
-     case Commands.CURVE:
+     case CURVE:
 
        ar = (a.controls && a.controls.right) || a;
        bl = (b.controls && b.controls.left) || b;
@@ -63,13 +124,13 @@ FN.toString = function(anchors, closed) {
          uy = toFixed(bl.y);
        }
 
-       command = ((i === 0) ? Commands.MOVE : Commands.CURVE) +
+       command = ((i === 0) ? MOVE : CURVE) +
          ' ' + vx + ' ' + vy + ' ' + ux + ' ' + uy + ' ' + x + ' ' + y;
        break;
 
-     case Commands.MOVE:
+     case MOVE:
        d = b;
-       command = Commands.MOVE + ' ' + x + ' ' + y;
+       command = MOVE + ' ' + x + ' ' + y;
        break;
 
      default:
@@ -81,9 +142,9 @@ FN.toString = function(anchors, closed) {
 
    if (i >= last && closed) {
 
-     if (b.command === Commands.CURVE) {
+     if (b.command === CURVE) {
 
-       // Make sure we close to the most previous Commands.MOVE
+       // Make sure we close to the most previous MOVE
        c = d;
 
        br = (b.controls && b.controls.right) || b;
@@ -123,5 +184,6 @@ FN.toString = function(anchors, closed) {
   return ret;
 
 };
+
 
 export default FN;

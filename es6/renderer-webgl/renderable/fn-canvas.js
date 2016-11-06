@@ -1,53 +1,17 @@
 /* jshint esnext: true */
 
+import anchorFN from '../../lib/struct-anchor/anchor-fn';
 import Commands from '../../lib/struct-anchor/CommandTypes';
 import _    from '../../TwoUtil';
 import base from './base';
 
 var {toFixed} = _;
 var {getContext} = base;
+var {curveSegment} = anchorFN;
 
 var FN = {};
 
-var relativePoint = (p, pr) => {
-
-};
-
-var curveSegment = (a, b) => {
-  var ar, bl, vx, vy, ux, uy;
-  ar = (a.controls && a.controls.right) || a;
-  bl = (b.controls && b.controls.left) || b;
-
-  if (a.relative) {
-    vx = toFixed((ar.x + a.x));
-    vy = toFixed((ar.y + a.y));
-  } else {
-    vx = toFixed(ar.x);
-    vy = toFixed(ar.y);
-  }
-
-  if (b.relative) {
-    ux = toFixed((bl.x + b.x));
-    uy = toFixed((bl.y + b.y));
-  } else {
-    ux = toFixed(bl.x);
-    uy = toFixed(bl.y);
-  }
-  return [vx, vy, ux, uy];
-};
-
-var drawCurve = (canvasContext, a, b) => {
-  var [vx, vy,  ux, uy] = curveSegment(a,b);
-  canvasContext.bezierCurveTo(
-    vx, vy, ux, uy,
-    toFixed(b.x),
-    toFixed(b.y)
-  );
-
-};
-
 FN.drawPathAnchors = (canvas, anchors, closed) => {
-
   var canvasContext = getContext(canvas);
 
   var iprv, prv, moveEndpoint;
@@ -71,9 +35,12 @@ FN.drawPathAnchors = (canvas, anchors, closed) => {
         iprv = (closed && i === 0) ? last : Math.max(i - 1, 0);
         prv = anchors[iprv];
 
-        drawCurve(canvasContext, prv, anchor);
+        let [vx, vy,  ux, uy] = curveSegment(prv,anchor);
+        canvasContext.bezierCurveTo( vx, vy, ux, uy, toFixed(anchor.x), toFixed(anchor.y) );
+
         if (i === last && closed) {
-          drawCurve(canvasContext, anchor, moveEndpoint);
+          let [vx, vy,  ux, uy] = curveSegment(anchor,moveEndpoint);
+          canvasContext.bezierCurveTo( vx, vy, ux, uy, toFixed(moveEndpoint.x), toFixed(moveEndpoint.y) );
         }
         break;
 

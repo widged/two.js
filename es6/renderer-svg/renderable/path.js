@@ -2,7 +2,7 @@
 
 import base from './base';
 import svgFN    from './fn-svg';
-import anchorFN from './fn-anchor';
+import anchorFN from '../../lib/struct-anchor/anchor-fn';
 import shapeRendering   from '../../renderer/renderer-bridge';
 
 var {renderShape} = base;

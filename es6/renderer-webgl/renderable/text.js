@@ -2,14 +2,11 @@
 
 import is  from '../../lib/is/is';
 import shapeRendering   from '../../renderer/renderer-bridge';
-import boundingFN from './fn-bounding';
 import rendererFN from './fn-renderer';
-import anchorFN   from './fn-anchors';
 import base from './base';
 
 var {isNumber, isString} = is;
 var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
-var {getTextBoundingClientRect} = boundingFN;
 var {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
 var {drawFill, drawStroke} = rendererFN;
 var {canvas, getContext, renderShape, drawGradientShape} = base;
@@ -42,7 +39,41 @@ var renderText = (shp, gl, program, forcedParent) => {
 
 };
 
-var measureTextDimensions = (canvas, {value, style, weight, size, leading, family, baseline}) => {
+
+const TEXT_ALIGNMENTS = {
+  left: 'start',
+  middle: 'center',
+  right: 'end'
+};
+
+const TEXT_V = {
+  bottom: (height, cy) => { return [ -height,      0]; },
+  top:    (height, cy) => { return [ 0      , height]; },
+  middle: (height, cy) => { return [ -cy    ,     cy]; }
+};
+
+const TEXT_H = {
+  start:   (width, cx) => { return [ 0     , width]; },
+  end:     (width, cx) => { return [ -width,     0]; },
+  center:  (width, cx) => { return [ -cx   ,    cx]; }
+};
+
+const getTextBoundingClientRect = function(border, width, height, {alignment, baseline}) {
+  // width += border; // REVIEW: Not sure if the `measure` calcs
+  height += border;
+
+  // REVIEW: centroid x & y
+  var centroid = {x: width / 2, y: height / 2};
+  var halign = TEXT_ALIGNMENTS[alignment] || alignment;
+  var [left, right] = (TEXT_H[halign]   || TEXT_V.center)(width,  centroid.x);
+  var [top, bottom] = (TEXT_V[baseline] || TEXT_V.middle)(height, centroid.y);
+
+  // TODO: Gradients aren't inherited...
+  return {top, bottom, left, right, width, height, centroid};
+};
+
+
+const measureTextDimensions = (canvas, {value, style, weight, size, leading, family, baseline}) => {
   var width, height;
   var context = getContext(canvas);
   context.font = [style, weight, size + 'px/' + leading + 'px', family].join(' ');
@@ -56,14 +87,14 @@ var measureTextDimensions = (canvas, {value, style, weight, size, leading, famil
 };
 
 
-var styleCanvasText = (canvas, {style, weight, size, leading, family}) => {
+const styleCanvasText = (canvas, {style, weight, size, leading, family}) => {
   var context = getContext(canvas);
   context.font = [style, weight, size + 'px/' + leading + 'px', family].join(' ');
   context.textAlign    = 'center';
   context.textBaseline = 'middle';
 };
 
-var updateShapeCanvas = function(shp) {
+const updateShapeCanvas = function(shp) {
   var shapeProps = getShapeProps(shp);
   var renderer = getShapeRenderer(shp);
   var {scale, opacity: rendererOpacity, rect} = renderer;

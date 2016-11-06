@@ -2,19 +2,20 @@
 
 import is  from '../../lib/is/is';
 import shapeRendering   from '../../renderer/renderer-bridge';
-import boundingFN from './fn-bounding';
+import anchorFN from '../../lib/struct-anchor/anchor-fn';
 import rendererFN from './fn-renderer';
-import anchorFN   from './fn-anchors';
+import canvasFN   from './fn-canvas';
 import base from './base';
 
 var {isNumber, isString} = is;
 var {getShapeProps, getShapeRenderer, anyPropChanged} = shapeRendering;
-var {drawPathAnchors} = anchorFN;
-var {getPathBoundingClientRect} = boundingFN;
+var {drawPathAnchors} = canvasFN;
 var {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
 var {drawFill, drawStroke, drawGradientShape} = rendererFN;
+var {includeAnchorInBoundingRect} = anchorFN;
 var {canvas, getContext, renderShape} = base;
 var {max} = Math;
+
 
 
 var renderPath = (shp, gl, program, forcedParent) => {
@@ -38,6 +39,30 @@ var renderPath = (shp, gl, program, forcedParent) => {
 
 };
 
+/**
+ * Returns the rect of a set of anchors. Typically takes anchors that are
+ * "centered" around 0 and returns them to be anchored upper-left.
+ */
+var getPathBoundingClientRect = function(anchors, border) { // border is shape linewidth
+
+  var {top,left,right,bottom} = anchors.reduce(anchorFN.includeAnchorInBoundingRect, null);
+  var width, height, centroid;
+
+  // Expand borders
+  if (isNumber(border)) {
+    top    = top - border;
+    left   = left - border;
+    right  = right + border;
+    bottom = bottom + border;
+  }
+
+  return {
+    top, left, right, bottom,
+    width: right - left, height: bottom - top,
+    centroid: {x: - left, y: - top}
+  };
+
+};
 
 var styleCanvasPath = (canvas, {cap,  join,  miter}) => {
   var context = getContext(canvas);
