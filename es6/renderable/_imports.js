@@ -4,7 +4,7 @@
 // :NOTE: import cannot be imported in any of these files. Otherwise, it causes circular dependencies.
 
 import is  from '../lib/is/is';
-import common  from '../lib-common/common';
+import common  from '../TwoUtil';
 import UidGenerator  from '../lib/uid-generator/UidGenerator';
 import ChangeTracker  from '../lib/change-tracker/ChangeTracker';
 

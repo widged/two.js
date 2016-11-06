@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import is  from '../lib/is/is';
-import common  from '../lib-common/common';
+import common  from '../TwoUtil';
 import Commands  from '../lib/struct-anchor/CommandTypes';
 
 import Anchor   from '../lib/struct-anchor/Anchor';

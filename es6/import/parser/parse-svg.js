@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import is from '../../lib/is/is';
-import _ from '../../lib-common/common';
+import _ from '../../TwoUtil';
 import Resolution from '../Resolution';
 import Commands from '../../lib/struct-anchor/CommandTypes';
 import Path from '../../lib/struct-anchor/Anchor';

@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import is from '../lib/is/is';
+import is from './lib/is/is';
 
 var {isArray, isArrayLike, isObject} = is;
 

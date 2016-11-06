@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import _  from '../../lib-common/common';
+import _  from '../../TwoUtil';
 import is  from '../is/is';
 import Array2   from '../struct-array/Array';
 

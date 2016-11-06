@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-import _  from '../../lib-common/common';
+import _  from '../../TwoUtil';
 import is  from '../../lib/is/is';
 import VectorEventTypes    from '../../lib/struct-vector/VectorEventTypes';
 import Vector    from '../../lib/struct-vector/Vector';
