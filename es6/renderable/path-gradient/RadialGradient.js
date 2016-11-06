@@ -9,7 +9,7 @@ const {RenderableDefaults} = IMPORTS;
 const {is, exportFN} = IMPORTS;
 
 const {cloned, serialized} = exportFN;
-const {isNumber} = is;
+const {isNumber, isUndefined} = is;
 
 const PROP_DEFAULTS = RenderableDefaults.RadialGradient;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
@@ -43,6 +43,9 @@ class RadialGradient extends Gradient {
 
   beforePropertySet(k, v) {
     v = super.beforePropertySet(k, v);
+    if(k === 'radius' && !isUndefined(v)) {
+      if(!isNumber(v)) { v = 0; }
+    }
     return v;
   }
   afterPropertyChange(k,v,oldV) {
