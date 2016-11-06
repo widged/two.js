@@ -107,6 +107,21 @@ class Collection  {
     return this;
   }
 
+  splice(...args) {
+    var items = this.items;
+    var spliced = items.splice(...args);
+    this.item = items;
+    this.whenItemsRemoved(spliced)
+
+    var inserted;
+    if (args.length > 2) {
+      inserted = this.slice(args[0], args[0] + args.length - 2);
+      this.whenItemsAdded(inserted);
+      this.whenItemsReordered();
+    }
+    return spliced;
+  }
+
   /*
 
   push(d) {
@@ -118,36 +133,7 @@ class Collection  {
   }
 
 
-    splice(...args) {
-      var items = this.items;
-      var spliced = items.splice(...args);
-      this.item = items;
-      this.whenItemsRemoved(spliced)
 
-      var inserted;
-      if (args.length > 2) {
-        inserted = this.slice(args[0], args[0] + args.length - 2);
-        this.whenItemsAdded(inserted);
-        this.whenItemsReordered();
-      }
-      return spliced;
-    }
-
-    sort(...args) {
-      var items = this.items;
-      items.sort(...args);
-      this.items = items;
-      this.whenItemsReordered();
-      return this;
-    }
-
-    reverse() {
-      var items = this.items;
-      items.reverse();
-      this.items = items;
-      this.whenItemsReordered();
-      return this;
-    }
     */
 
 }
