@@ -4,7 +4,7 @@ import IMPORTS from '../_imports';
 
 import Renderable  from '../Renderable';
 
-const {Collection}  = IMPORTS;
+const {CollectionArray}  = IMPORTS;
 const {RenderableDefaults}  = IMPORTS;
 const {is, exportFN} = IMPORTS;
 
@@ -52,7 +52,7 @@ class Gradient extends Renderable {
         color   = isString(color) ? color : isOdd ? '#fff' : '#000';
         return {offset, opacity, color};
       });
-      v = new Collection(v);
+      v = new CollectionArray(v);
     }
     return v;
   }

@@ -4,7 +4,7 @@ import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
 import ChildrenCollection from './ChildrenCollection';
 
-const {Collection, CollectionEventTypes} = IMPORTS;
+const {CollectionArray, CollectionEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, common, exportFN, rectFN, groupFN, rendererBridge} = IMPORTS;
 
@@ -39,7 +39,7 @@ class Group extends Renderable {
       substractions : []
     });
     var props = PROP_DEFAULTS;
-    // childrenColl - A Collection of all the children of the group.
+    // childrenColl - A CollectionArray of all the children of the group.
     if(!isUndefined(shapes)) { props.childrenColl = shapes; }
     this.setProps(props);
 

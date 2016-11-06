@@ -2,14 +2,14 @@
 
 import IMPORTS from '../_imports';
 
-var {Collection, CollectionEventTypes} = IMPORTS;
+var {CollectionArray, CollectionEventTypes} = IMPORTS;
 
 
 /**
  * A `ChildrenCollection` which is accesible both by index and by object id
  * @constructor
  */
-class ChildrenCollection extends Collection {
+class ChildrenCollection extends CollectionArray {
 
   // --------------------
   // Constructor

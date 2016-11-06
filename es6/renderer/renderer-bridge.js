@@ -4,7 +4,7 @@ import is  from '../lib/is/is';
 import Commands  from '../lib/struct-anchor/CommandTypes';
 import matrixFN  from '../lib/struct-matrix/matrix-fn';
 import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
-import Collection  from '../lib/struct-collection/CollectionNonArray';
+import CollectionArray  from '../lib/struct-collection/Collection';
 
 var {getComputedMatrix} = matrixFN;
 var {isArray, isObject} = is;
@@ -80,8 +80,9 @@ FN.plotPath = (shp) => {
     matrixFN.getCurveFromPoints(anchorColl, closed);
     return shp;
   }
-  for (var i = 0; i < anchorColl.length; i++) {
-    anchorColl[i].command = i === 0 ? Commands.MOVE : Commands.LINE;
+  var anchors = anchorColl.items;
+  for (var i = 0; i < anchors.length; i++) {
+    anchors[i].command = i === 0 ? Commands.MOVE : Commands.LINE;
   }
   return shp;
 };

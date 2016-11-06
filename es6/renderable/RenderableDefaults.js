@@ -184,7 +184,7 @@ center -- A `Vector` that represents the position of the x, y coordinates at the
 radius -- A number representing the radius of the radialGradient.
 focal -- A `Vector` that represents the position of the x, y coordinates as the focal point for the gradient's trajectory.
 spread -- Defines how the gradient is rendered by the renderer. For more details see the w3c svg spec.
-stops -- A `Collection` of `Stops` that is two-way databound. Individual stops may be manipulated.
+stops -- A `CollectionArray` of `Stops` that is two-way databound. Individual stops may be manipulated.
 */
 FN.RadialGradient = {
   radius: 20
@@ -194,7 +194,7 @@ FN.RadialGradient = {
 left -- A `Vector` that represents the position of the x, y coordinates to the “left” of the gradient's two end points.
 right -- A `Vector` that represents the position of the x, y coordinates to the “right” of the gradient's two end points.
 spread -- Defines how the gradient is rendered by the renderer. For more details see the w3c svg spec.
-stops -- A `Collection` of `Stop` instances that is two-way databound. Individual stops may be manipulated.
+stops -- A `CollectionArray` of `Stop` instances that is two-way databound. Individual stops may be manipulated.
 */
 FN.LinearGradient = {
   left: undefined,

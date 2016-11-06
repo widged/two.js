@@ -7,20 +7,23 @@ import CollectionEventTypes from './CollectionEventTypes';
  * Array like collection that triggers inserted and removed events
  * removed : pop / shift / splice
  * inserted : push / unshift / splice (with > 2 arguments)
- * e.g: used for anchorColl attribute of a Path.
+ * e.g: used for `anchors` attribute of a Path.
  */
 class Collection  {
 
   constructor(arr) {
     this.dispatcher = new EventEmitter(Object.keys(CollectionEventTypes));
     this.state = {items: arr};
-    if (arguments.length > 1) {
-      Array.prototype.push.apply(this, arguments);
-    } else if (arguments[0] && Array.isArray(arguments[0])) {
-      Array.prototype.push.apply(this, arguments[0]);
-    }
+
   }
 
+  get length() {
+    return this.items.length;
+  }
+  set length(_) {
+    // console.trace();
+    // this.items.length = _;
+  }
   get items() {
     return this.state.items || [];
   }
@@ -39,55 +42,82 @@ class Collection  {
     this.dispatcher.emit(CollectionEventTypes.order);
   }
 
+/*
   pop() {
-    var popped = Array.prototype.pop.apply(this, arguments);
-    this.whenItemsRemoved([popped]);
-    return popped;
+    var items = this.items;
+    var removed = this.items.pop();
+    this.whenItemsRemoved([removed]);
+    return removed;
   }
+  */
 
+/*
   shift() {
-    var shifted = Array.prototype.shift.apply(this, arguments);
-    this.whenItemsRemoved([shifted]);
-    return shifted;
+    var items = this.items;
+    var removed = this.items.shift();
+    this.whenItemsRemoved([removed]);
+    return removed;
+  }
+*/
+
+/*
+  unshift(...args) {
+    var items = this.items;
+    var added = this.items.unshift(...args);
+    this.whenItemsAdded([added]);
+    return added;
+  }
+*/
+
+
+  push(d) {
+    var items = this.items;
+    var added = items.push(d);
+    this.item = items;
+    this.whenItemsAdded([added]);
+    return added;
   }
 
-  push() {
-    var pushed = Array.prototype.push.apply(this, arguments);
-    this.whenItemsAdded(arguments)
-    return pushed;
-  }
-
-  unshift() {
-    var unshifted = Array.prototype.unshift.apply(this, arguments);
-    this.whenItemsAdded(arguments);
-    return unshifted;
-  }
-
-  splice() {
-    var spliced = Array.prototype.splice.apply(this, arguments);
-    var inserted;
-
+  splice(...args) {
+    var items = this.items;
+    var spliced = items.splice(...args);
+    this.item = items;
     this.whenItemsRemoved(spliced)
 
-    if (arguments.length > 2) {
-      inserted = this.slice(arguments[0], arguments[0] + arguments.length - 2);
+    var inserted;
+    if (args.length > 2) {
+      inserted = this.slice(args[0], args[0] + args.length - 2);
       this.whenItemsAdded(inserted);
       this.whenItemsReordered();
     }
     return spliced;
   }
 
-  sort() {
-    Array.prototype.sort.apply(this, arguments);
+
+  sort(...args) {
+    var items = this.items;
+    items.sort(...args);
+    this.items = items;
     this.whenItemsReordered();
     return this;
   }
 
   reverse() {
-    Array.prototype.reverse.apply(this, arguments);
+    var items = this.items;
+    items.reverse();
+    this.items = items;
     this.whenItemsReordered();
     return this;
   }
+
+
+  /*
+
+
+
+
+    */
+
 }
 
 

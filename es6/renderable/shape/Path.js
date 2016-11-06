@@ -3,7 +3,7 @@
 import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
 
-const Collection = IMPORTS.CollectionNonArray;
+const CollectionArray = IMPORTS.Collection;
 const {CollectionEventTypes} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
@@ -47,7 +47,7 @@ class Path extends Renderable {
     props.join = 'miter'; // Default of Adobe Illustrator
     props.beginning = 0;
     props.ending    = 1;
-    // anchorColl -- A `Collection` of `Anchors` that is two-way databound. Individual `anchors` may be manipulated.
+    // anchorColl -- A `CollectionArray` of `Anchors` that is two-way databound. Individual `anchors` may be manipulated.
     // let's clone to be on the safe side
     if(!isUndefined(anchors)) { props.anchorColl = (anchors || []).slice(0); }
     // automatic --  whether two.js curves, lines, and commands should be computed
@@ -66,7 +66,7 @@ class Path extends Renderable {
     if(k === 'anchorColl') {
       // remove any even listener from the current `anchors`
       this.disactivateAnchors(this.getState().anchorColl);
-      v = new Collection(v);
+      v = new CollectionArray(v);
     } else if(['closed','curved','automatic'].includes(k)) {
       v = (v === true) ? true : false;
     }
@@ -84,7 +84,7 @@ class Path extends Renderable {
       var oldV = this.getState().anchorColl;
       if (oldV && typeof oldV.dispatcher === 'function') { oldV.dispatcher.off(); }
       if(v.constructor.name === 'Array') {
-        // v = new Collection((v || []).slice(0));
+        // v = new CollectionArray((v || []).slice(0));
       }
     }
     return v;
@@ -95,7 +95,7 @@ class Path extends Renderable {
     super.afterPropertyChange(k, v, oldV);
     var {changeTracker} = this.getState();
     if(k === 'anchorColl') {
-      // Listen for Collection changes and bind / unbind
+      // Listen for CollectionArray changes and bind / unbind
       var anchorColl = v;
       if (anchorColl && typeof anchorColl.dispatcher === 'function') {
         anchorColl.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('activateAnchors',    () => { this.activateAnchors(v);   }));

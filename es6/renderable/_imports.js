@@ -20,8 +20,8 @@ import matrixFN  from '../lib/struct-matrix/matrix-fn';
 import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
 
 import CollectionEventTypes   from '../lib/struct-collection/CollectionEventTypes';
+import CollectionArray  from '../lib/struct-collection/CollectionArray';
 import Collection  from '../lib/struct-collection/Collection';
-import CollectionNonArray  from '../lib/struct-collection/CollectionNonArray';
 
 import rendererBridge   from '../renderer/renderer-bridge';
 
@@ -36,7 +36,7 @@ export default {
   Anchor, anchorFN,
   Vector, VectorEventTypes,
   Matrix, matrixFN,
-  Collection, CollectionEventTypes, CollectionNonArray,
+  CollectionArray, CollectionEventTypes, Collection,
   rendererBridge,
   exportFN, rectFN, curveFN, groupFN
 };
