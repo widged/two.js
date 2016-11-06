@@ -64,7 +64,7 @@ var updateShapeCanvas = function(shp) {
   var context = getContext(canvas);
   var {width, height} = updateAndClearCanvasRect(canvas, rect.width, rect.height, scale);
 
-  // Shape properties
+  // Renderable properties
   if (isNumber(opacity)) { context.globalAlpha = opacity; }
   // :REVIEW: closure over shape
   var renderGradient = (gdt, context) => {  return drawGradientShape(gdt, context, shp); };

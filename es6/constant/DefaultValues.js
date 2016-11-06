@@ -53,12 +53,18 @@ scale - A `number` that represents the uniform scale of the path in the drawing 
 translation - A `Vector` that represents x, y translation of the path in the drawing space.
 clip - A `boolean` describing whether to render this shape as a clipping mask. This property is set automatically in correspondence with `Group.mask`. Defaults to false.
 */
-FN.Shape = {
+FN.Renderable = {
   translation: [0,0],
   rotation: 0,
   scale: 1,
   clip: false
   // mask: null,
+};
+
+FN.Shape = {
+  translation: [0,0],
+  rotation: 0,
+  scale: 1,
 };
 
 FN.ShapeIdentifier = 'two_';
@@ -91,7 +97,7 @@ FN.Group = {
 
    mask: null
  };
- // rotation, translation, scale, mask from Shape
+ // rotation, translation, scale, mask from Renderable
 
 
 /*
@@ -128,7 +134,7 @@ FN.Path = {
   clip: false,
 
 };
-// rotation, translation, scale, mask from Shape
+// rotation, translation, scale, mask from Renderable
 
 /**
 value - A string representing the text that will be rendered to the stage.
@@ -164,7 +170,7 @@ FN.Text = {
   visible: true,
 
   clip: false
-}; // rotation, translation, scale, mask, clip from Shape
+}; // rotation, translation, scale, mask, clip from Renderable
 
 
 FN.Gradient = {

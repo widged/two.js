@@ -2,7 +2,7 @@
 
 import is  from '../util/is';
 import _  from '../util/common';
-import Shape     from '../Shape';
+import Renderable     from '../Renderable';
 import shapeFN    from '../shape-fn';
 import Collection  from '../struct/Collection';
 import DefaultValues from '../constant/DefaultValues';
@@ -19,7 +19,7 @@ const PROP_KEYS = Object.keys(PROP_DEFAULTS);
  * or `Path`.stroke with a `Gradient` to render a gradient for that part of the `Path`.
  * Check the examples page for exact usage.
  */
-class Gradient extends Shape {
+class Gradient extends Renderable {
 
   // --------------------
   // Constructor

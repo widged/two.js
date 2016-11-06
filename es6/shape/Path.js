@@ -9,7 +9,7 @@ import is  from '../util/is';
 import Collection  from '../struct/Collection';
 
 import Anchor  from '../Anchor';
-import Shape   from '../Shape';
+import Shape from '../Shape';
 import shapeFN from '../shape-fn';
 import pathFN  from './fn-path';
 import shapeRendering   from '../renderer-lib/renderer-bridge';

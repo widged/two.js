@@ -4,7 +4,7 @@ import CollectionEventTypes   from '../constant/CollectionEventTypes';
 import _  from '../util/common';
 import is  from '../util/is';
 import Path  from './Path';
-import Shape  from '../Shape';
+import Shape from '../Shape';
 import shapeFN    from '../shape-fn';
 import groupFN  from './fn-group';
 import Children  from '../ChildrenCollection';

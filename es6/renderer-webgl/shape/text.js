@@ -72,7 +72,7 @@ var updateShapeCanvas = function(shp) {
 
   // dimensions
   var {width, height} = updateAndClearCanvasRect(canvas, rect.width, rect.height, scale);
-  // Shape Styles
+  // Renderable Styles
   opacity = rendererOpacity || opacity;
   if (isNumber(opacity)) { context.globalAlpha = opacity; }
   // :REVIEW: closure over shape
