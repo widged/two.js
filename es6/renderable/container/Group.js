@@ -12,7 +12,7 @@ const {isNumber, isArray, isUndefined} = is;
 const {exclude, arrayOrArguments}  = common;
 const {serializeProperties} = exportFN;
 const {rectCentroid, rectTopLeft, includeAnchorInBoundingRect} = rectFN;
-const {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
+const {adoptShapes, dropShapes, addShapesToList, removeShapesFromChildren, removeGroupFromParent} = groupFN;
 const {translateChildren} = groupFN;
 const {updateShape}      = rendererBridge;
 
@@ -110,7 +110,7 @@ class Group extends Renderable {
     // Create copy of it in case we're getting passed a childrenColls array directly.
     objects = arrayOrArguments(objects).slice(0);
     var {childrenColl} = this.getProps();
-    this.state.props.childrenColl = addShapesToChildren(objects, childrenColl);
+    this.state.props.childrenColl = addShapesToList(objects, childrenColl);
     return this;
   }
 
