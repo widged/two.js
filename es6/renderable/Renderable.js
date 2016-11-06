@@ -52,7 +52,7 @@ class Renderable {
       classList: [],
     });
 
-    changeTracker.raise(['matrix','scale','clip']);
+    changeTracker.raise(['matrix','scale','clip','opacity']);
 
     var flagMatrix = () => {  changeTracker.raise(['matrix']);   };
     this.getProps().translation.dispatcher.on(VectorEventTypes.change, flagMatrix);

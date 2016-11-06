@@ -8,7 +8,7 @@ const {Collection, CollectionEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, common, exportFN, rectFN, groupFN, shapeRendering} = IMPORTS;
 
-const {isNumber, isArray} = is;
+const {isNumber, isArray, isUndefined} = is;
 const {exclude, arrayOrArguments}  = common;
 const {serializeProperties} = exportFN;
 const {rectCentroid, rectTopLeft, includeAnchorInBoundingRect} = rectFN;
@@ -38,37 +38,17 @@ class Group extends Renderable {
    */
   constructor(...shapes) {
     super();
-
-    // any definition bound to this should be defined once and only once,
-    // in the constructor
-    this.bound = {
-      whenChildrenInserted : ((children) => { adoptShapes(this, children); }).bind(this),
-      whenChildrenRemoved : ((children) => { dropShapes(this, children); }).bind(this),
-      whenChildrenShuffled : (() => { changeTracker.raise(['order']); }).bind(this)
-    };
-
-
     this.setState({
       additions: [],
       substractions : []
     });
-
-    this.setProps(PROP_DEFAULTS);
-    this.setProps({
-      children: shapes,
-    });
-    var {renderer, changeTracker} = this.getState();
-
-    /**
-    * children - A Collection of all the children of the group.
-    */
-
-
-    changeTracker.raise(['opacity']);
+    var props = PROP_DEFAULTS;
+    // children - A Collection of all the children of the group.
+    if(!isUndefined(shapes)) { props.children = shapes; }
+    this.setProps(props);
 
     // var excluded = 'closed,curved,automatic,beginning,ending,mask'.split(',')
     // unraised flags: 'additions,substractions,order,mask'
-
   }
 
   // --------------------
@@ -78,9 +58,7 @@ class Group extends Renderable {
   get children() { return this.state.children; }
   set children(shapes) {
     var oldChildren = this.state.children;
-    this.setState({
-      children: shapes
-    });
+    this.setState({ children: shapes });
   }
 
   get mask() { return this.state.mask; }
@@ -103,10 +81,9 @@ class Group extends Renderable {
   afterPropertyChange(key, newV, oldV) {
     if(key === 'children') {
       var children = newV;
-      children.dispatcher.on(CollectionEventTypes.insert, this.bound.whenChildrenInserted);
-      children.dispatcher.on(CollectionEventTypes.remove, this.bound.whenChildrenRemoved);
-      children.dispatcher.on(CollectionEventTypes.order, this.bound.whenChildrenShuffled);
-
+      children.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('whenChildrenInserted', (children) => { adoptShapes(this, children); } ));
+      children.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('whenChildrenRemoved', (children) => { dropShapes(this, children); } ));
+      children.dispatcher.on(CollectionEventTypes.order, this.bindOnce('whenChildrenShuffled', () => { this.getState().changeTracker.raise(['order']); } ));
     }
   }
 
