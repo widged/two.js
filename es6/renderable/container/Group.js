@@ -56,34 +56,25 @@ class Group extends Renderable {
   // --------------------
 
   get children() { return this.state.children; }
-  set children(shapes) {
-    var oldChildren = this.state.children;
-    this.setState({ children: shapes });
-  }
 
-  get mask() { return this.state.mask; }
-  set mask(v) {
-    var state =
-    this.setState({mask: v});
-    this.getState().changeTracker.raise(['mask']);
-    if (!v.clip) { v.clip = true; }
-  }
-
-  beforePropertySet(key, newV) {
-    newV = super.beforePropertySet(key, newV);
-    if(key === 'children') {
+  beforePropertySet(k, v) {
+    v = super.beforePropertySet(k, v);
+    if(k === 'children') {
         var oldChildren = this.getState().children;
         if (oldChildren && oldChildren.dispatcher) { oldChildren.dispatcher.off(); }
-        newV = new ChildrenCollection(newV);
+        v = new ChildrenCollection(v);
     }
-    return newV;
+    return v;
   }
-  afterPropertyChange(key, newV, oldV) {
-    if(key === 'children') {
-      var children = newV;
+  afterPropertyChange(k, v, oldV) {
+    if(k === 'children') {
+      var children = v;
       children.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('whenChildrenInserted', (children) => { adoptShapes(this, children); } ));
       children.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('whenChildrenRemoved', (children) => { dropShapes(this, children); } ));
       children.dispatcher.on(CollectionEventTypes.order, this.bindOnce('whenChildrenShuffled', () => { this.getState().changeTracker.raise(['order']); } ));
+    } else if(k === 'mask') {
+      this.getState().changeTracker.raise(['mask']);
+      if (v && !v.clip) { v.clip = true; }
     }
   }
 
