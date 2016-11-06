@@ -23,11 +23,12 @@ var renderPath = (shp, ctx, forced, parentClipped) => {
 
   var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
   var matrix  = getShapeMatrix(shp);
-  var { anchorColl:anchors,  closed } = shapeProps;
+  var { anchorColl,  closed } = shapeProps;
   var { cap,  join,  miter  } = shapeProps;
 
   opacity = opacity * parentRenderer.opacity;
 
+  var anchors = anchorColl.items;
   length = anchors.length;
   last = length - 1;
 

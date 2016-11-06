@@ -111,7 +111,7 @@ class Path extends Renderable {
   }
 
   activateAnchors(anchorColl)  {
-    var anchors = anchorColl.items;
+    var anchors = (anchorColl || {}.items);
     var i = (anchors || []).length, anchor = null;
     while(i--) {
       anchor = anchors[i];
@@ -147,11 +147,12 @@ class Path extends Renderable {
       var shp = this;
       updateShape(shp);
       var {anchorColl, closed, lengths: lns} = shp.getProps();
+      var anchors = (anchorColl || {}).items;
       var {lengths, sum} = updateLength({
         limit,
-        anchorColl: anchorColl,
+        anchors,
         pathClosed: closed,
-        lastClosed: (arrayLast(anchorColl).command === Commands.CLOSE) ? true : false,
+        lastClosed: (arrayLast(anchors).command === Commands.CLOSE) ? true : false,
         lengths: lns
       });
       shp.setState({lengths, length: sum});
@@ -260,7 +261,7 @@ class Path extends Renderable {
   clone() {
     var shp = this;
     var  {closed, curved, automatic, anchorColl} = shp.getProps();
-    var anchors = anchorColl.map((d) => { return d.clone(); });
+    var anchors = anchorColl.items.map((d) => { return d.clone(); });
     var clone = new Path(anchors, closed, curved, !automatic);
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
       k = PROP_KEYS[i];
@@ -277,7 +278,7 @@ class Path extends Renderable {
     var obj = serializeProperties(shp, {}, []);
 
     var  {closed, curved, automatic, anchorColl} = shp.getProps();
-    obj.anchorColl = anchorColl.map((d) => { return d.toObject(); });
+    obj.anchorColl = anchorColl.items.map((d) => { return d.toObject(); });
     return obj;
   }
 }
