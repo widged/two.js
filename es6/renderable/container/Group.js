@@ -16,11 +16,8 @@ const {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, r
 const {translateChildren} = groupFN;
 const {updateShape}      = shapeRendering;
 
-
 const PROP_DEFAULTS= RenderableDefaults.Group;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
-
-
 
 /**
  * A `Group` is a container object — it can hold shapes as well as other groups.
@@ -50,11 +47,9 @@ class Group extends Renderable {
     // unraised flags: 'additions,substractions,order,mask'
   }
 
-  // --------------------
-  // Accessors
-  // --------------------
-
-  get children() { return this.state.children; }
+  // -----------------
+  // IStated
+  // -----------------
 
   beforePropertySet(k, v) {
     v = super.beforePropertySet(k, v);
@@ -76,6 +71,14 @@ class Group extends Renderable {
       if (v && !v.clip) { v.clip = true; }
     }
   }
+
+
+  // --------------------
+  // Accessors
+  // --------------------
+
+  get children() { return this.state.children; }
+
 
   // --------------------
   // Main

@@ -6,13 +6,13 @@ import Renderable from '../Renderable';
 const {ChildrenCollection} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
-var {is, rectFN, exportFN, matrixFN, shapeRendering} = IMPORTS;
+const {is, rectFN, exportFN, matrixFN, shapeRendering} = IMPORTS;
 
-var {isObject, isUndefined, isNumber} = is;
-var {shimBoundingClientRect} = rectFN;
-var {serializeProperties} = exportFN;
-var {getComputedMatrix}   = matrixFN;
-var {updateShape}         = shapeRendering;
+const {isObject, isUndefined, isNumber} = is;
+const {shimBoundingClientRect} = rectFN;
+const {serializeProperties} = exportFN;
+const {getComputedMatrix}   = matrixFN;
+const {updateShape}         = shapeRendering;
 
 const PROP_DEFAULTS = RenderableDefaults.Text;
 const PROP_KEYS  = Object.keys(PROP_DEFAULTS);

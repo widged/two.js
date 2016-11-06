@@ -8,8 +8,8 @@ import exportFN    from '../fn-export';
 import RenderableDefaults from '../RenderableDefaults';
 import Gradient  from './Gradient';
 
-var {cloned, serialized} = exportFN;
-var {isNumber} = is;
+const {cloned, serialized} = exportFN;
+const {isNumber} = is;
 
 const PROP_DEFAULTS = RenderableDefaults.RadialGradient;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
@@ -60,7 +60,7 @@ class RadialGradient extends Gradient {
   }
 
   // -----------------
-  // IShape
+  // IStated
   // -----------------
 
   beforePropertySet(key, newV) {

@@ -8,14 +8,14 @@ const {Anchor, Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, common, curveFN, rectFN, exportFN, shapeRendering} = IMPORTS;
 
-var {isUndefined, isNull} = is;
-var {arrayLast}           = common;
-var {subdivideTo, updateLength} = curveFN;
-var {rectTopLeft, rectCentroid} = rectFN;
-var {serializeProperties}       = exportFN;
-var {updateShape, copyVertices} = shapeRendering;
+const {isUndefined, isNull} = is;
+const {arrayLast}           = common;
+const {subdivideTo, updateLength} = curveFN;
+const {rectTopLeft, rectCentroid} = rectFN;
+const {serializeProperties}       = exportFN;
+const {updateShape, copyVertices} = shapeRendering;
 
-var {min, max, round} = Math;
+const {min, max, round} = Math;
 
 const PROP_DEFAULTS= RenderableDefaults.Path;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
@@ -88,6 +88,8 @@ class Path extends Renderable {
     }
     return v;
   }
+
+
   afterPropertyChange(k, v, oldV) {
     super.afterPropertyChange(k, v, oldV);
     var {changeTracker} = this.getState();
@@ -107,10 +109,6 @@ class Path extends Renderable {
       changeTracker.raise(['clip']);
     }
   }
-
-  // --------------------
-  // Flow
-  // --------------------
 
   activateAnchors(anchors)  {
     var i = (anchors || []).length, anchor = null;

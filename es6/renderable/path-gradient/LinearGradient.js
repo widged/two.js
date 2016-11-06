@@ -1,15 +1,17 @@
 /* jshint esnext: true */
 
-import _  from '../../TwoUtil';
-import is  from '../../lib/is/is';
-import VectorEventTypes    from '../../lib/struct-Vector/VectorEventTypes';
-import Vector    from '../../lib/struct-vector/Vector';
-import exportFN    from '../fn-export';
-import RenderableDefaults from '../RenderableDefaults';
+import IMPORTS from '../_imports';
+
+import Renderable  from '../Renderable';
 import Gradient  from './Gradient';
 
-var {isNumber} = is;
-var {cloned} = exportFN;
+const {Collection} = IMPORTS;
+const {Vector, VectorEventTypes} = IMPORTS;
+const {RenderableDefaults} = IMPORTS;
+const {is, exportFN} = IMPORTS;
+
+const {isNumber} = is;
+const {cloned} = exportFN;
 
 const PROP_DEFAULTS = RenderableDefaults.LinearGradient;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
@@ -41,9 +43,8 @@ class LinearGradient extends Gradient {
 
   }
 
-
   // -----------------
-  // IShape
+  // IStated
   // -----------------
 
   beforePropertySet(key, newV) {
@@ -58,6 +59,7 @@ class LinearGradient extends Gradient {
     }
     return newV;
   }
+
   afterPropertyChange(key, newV, oldV) {
     super.afterPropertyChange();
     if(newV === oldV) { return; }
@@ -70,19 +72,7 @@ class LinearGradient extends Gradient {
       raise();
     }
   }
-  /*
-  afterPropertyChange(key, newV, oldV) {
-    super.afterPropertyChange();
-    if(newV === oldV) { return; }
-    if(['left','right'].includes(key)) {
-      if(newV && newV.dispatcher) {
-        var raise = () => { this.getState().changeTracker.raise(['endPoints']); };
-        newV.dispatcher.on( VectorEventTypes.change, this.bindOnce('flagEndPoints', raise ) );
-        this.getState().changeTracker.drop(['endPoints']);
-      }
-    }
-  }
-*/
+
 
   // -----------------
   // IRenderable

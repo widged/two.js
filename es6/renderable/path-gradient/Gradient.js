@@ -1,14 +1,17 @@
 /* jshint esnext: true */
 
 import IMPORTS from '../_imports';
-var {Collection}  = IMPORTS;
 
 import Renderable  from '../Renderable';
 
-const {cloned, serializeProperties} = IMPORTS.exportFN;
-const {isString, isNumber} = IMPORTS.is;
-const {Gradient: PROP_DEFAULTS}  = IMPORTS.RenderableDefaults;
+const {Collection}  = IMPORTS;
+const {RenderableDefaults}  = IMPORTS;
+const {is, exportFN} = IMPORTS;
 
+const {isString, isNumber, isUndefined} = is;
+const {cloned, serializeProperties} = exportFN;
+
+const PROP_DEFAULTS  = RenderableDefaults.Gradient;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 /**
@@ -26,17 +29,14 @@ class Gradient extends Renderable {
   constructor(stops) {
     super();
     var {renderer} = this.getState();
-    renderer.type = 'gradient';
-    this.setProps(PROP_DEFAULTS);
-    this.setProps({
-      stops
-    });
+    var props = PROP_DEFAULTS;
+    if(!isUndefined(stops)) { props.stops = stops; }
+    this.setProps(props);
   }
 
   // -----------------
-  // IShape
+  // IStated
   // -----------------
-
 
   beforePropertySet(k, v) {
     v = super.beforePropertySet(k, v);
