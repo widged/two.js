@@ -29,7 +29,6 @@ class RadialGradient extends Gradient {
    * coordinates to define the focal position of the radial gradient's trajectory.
    */
   constructor(cx, cy, r, stops, fx, fy) {
-
     super(stops);
 
     var {changeTracker} = this.getState();
@@ -91,7 +90,7 @@ class RadialGradient extends Gradient {
   clone() {
     var shp = this;
     var {stops, center, radius, focal} = shp;
-    var clonedStops = stops.map((d) => { return Object.assign({},d); });
+    var clonedStops = (stops || []).map((d) => { return Object.assign({},d); });
     var clone = new RadialGradient(
       center.x,
       center.y,

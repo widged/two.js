@@ -1,8 +1,10 @@
 /* jshint esnext: true */
 
 import svgFN    from './fn-svg';
+import is    from '../../lib/is/is';
 import shapeRendering   from '../../renderer/renderer-bridge';
 
+var {isNumber} = is;
 var {createElement, setAttributes} = svgFN;
 var {anyPropChanged, getShapeProps, getShapeRenderer} = shapeRendering;
 
@@ -13,10 +15,10 @@ var renderLinearGradient = (shp, domElement) => {
   var attrs = {};
 
   if (anyPropChanged(shp, ['endPoints'])) {
-    attrs.x1 = shp.left.x;
-    attrs.y1 = shp.left.y;
-    attrs.x2 = shp.right.x;
-    attrs.y2 = shp.right.y;
+    var {x1, y1} = shp.left || {};
+    if(isNumber(x1) || isNumber(y1)) { attrs.x1 = x1 || 0; attrs.y1 = y1 || 0; }
+    var {x2, y2} = shp.right || {};
+    if(isNumber(x2) || isNumber(y2)) { attrs.x2 = x2 || 0; attrs.y2 = y2 || 0; }
   }
 
   if (anyPropChanged(shp, ['spread'])) {
@@ -44,7 +46,7 @@ var renderLinearGradient = (shp, domElement) => {
     var {x: x1, y: y1} = left  || {x: 0, y: 0};
     var {x: x2, y: y2} = right || {x: 0, y: 0};
 
-    for (var i = 0, ni = stops.length, stop, stopRenderer, stopNode; i < ni; i++) {
+    for (var i = 0, ni = (stops || []).length, stop, stopRenderer, stopNode; i < ni; i++) {
       stop = stops[i];
       var {offset, color, opacity} = getShapeProps(stop, ['offset','color','opacity']);
       stopNode = svgFN.createGradientStop(offset, color, opacity);

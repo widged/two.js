@@ -131,7 +131,7 @@ FN.Path = {
   automatic: true,
   beginning: 0,
   ending: 1.0,
-  
+
   clip: false,
 
 };
@@ -175,6 +175,7 @@ FN.Text = {
 
 
 FN.Gradient = {
+  stops: undefined,
   spread: 'pad'
 };
 
@@ -196,7 +197,6 @@ spread -- Defines how the gradient is rendered by the renderer. For more details
 stops -- A `Collection` of `Stop` instances that is two-way databound. Individual stops may be manipulated.
 */
 FN.LinearGradient = {
-  stops: undefined,
   left: undefined,
   right: undefined
 };

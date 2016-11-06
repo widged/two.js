@@ -23,7 +23,7 @@ var renderLinearGradient = (shp, canvasContext, elem) => {
     var {x: x2, y: y2} = right || {x: 0, y: 0};
     renderer.gradient = canvasContext.createLinearGradient( x1, y1, x2, y2 );
 
-    for (var i = 0, ni = stops.length; i < ni; i++) {
+    for (var i = 0, ni = (stops || []).length; i < ni; i++) {
       var {offset, color} = getShapeProps(stops[i], ['offset','color']);
       renderer.gradient.addColorStop(offset, color);
     }

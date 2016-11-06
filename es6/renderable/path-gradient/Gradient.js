@@ -40,7 +40,7 @@ class Gradient extends Renderable {
 
   beforePropertySet(k, v) {
     v = super.beforePropertySet(k, v);
-    if(k === 'stops') {
+    if(k === 'stops' && Array.isArray(v)) {
       v = v.map((stop, i) => {
         var {offset, opacity, color} = stop || {};
         var isOdd = (i % 2 === 0) ? true : false;
@@ -52,9 +52,12 @@ class Gradient extends Renderable {
         color   = isString(color) ? color : isOdd ? '#fff' : '#000';
         return {offset, opacity, color};
       });
-      v = new Collection((v || []).slice(0));
+      v = new Collection(v);
     }
     return v;
+  }
+  afterPropertyChange(k, v, oldV) {
+    super.afterPropertyChange(k, v, oldV);
   }
 
   // -----------------

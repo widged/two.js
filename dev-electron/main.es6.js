@@ -38,7 +38,6 @@ appNode.appendChild(h('canvas'))
   }).appendTo(appNode);
   renderShapes(two);
 
-
 appNode.appendChild(h('svg'))
   var two = new TwoClassic({
     width: 600,
@@ -54,7 +53,6 @@ appNode.appendChild(h('webgl'))
     type: Types.webgl
   }).appendTo(appNode);
   renderShapes(two);
-
 
 
 
@@ -106,7 +104,6 @@ var radius = Math.max(150, 100);
     {offset: 0, color: 'rgba(255, 0, 0, 1)', opacity: 1},
     {offset: 0.5, color: 'rgba(255, 0, 0, 0)', opacity: 0},
   );
-  
   var vignette = two.makeGeometry(RoundedRectangle(390, 70, 150, 100, 10))
   vignette.setProps({fill: radialGradient});
 

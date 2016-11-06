@@ -8,7 +8,7 @@ const {Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, exportFN} = IMPORTS;
 
-const {isNumber} = is;
+const {isNumber, isUndefined} = is;
 const {cloned} = exportFN;
 
 const PROP_DEFAULTS = RenderableDefaults.LinearGradient;
@@ -29,16 +29,11 @@ class LinearGradient extends Gradient {
    * which represent the color value along the gradient's trajectory.
    */
   constructor(x1, y1, x2, y2, stops) {
-
     super(stops);
-    // this.setProps(PROP_DEFAULTS);
-    this.setProps({
-      left: {x:x1,y:y1},
-      right: {x:x2,y:y2},
-    });
-
-    this.getState().changeTracker.drop(['endPoints']);
-
+    var props = PROP_DEFAULTS;
+    if(isNumber(x1) || isNumber(y1)) { props.left  =  {x:x1 || 0,y:y1 || 0}; }
+    if(isNumber(x2) || isNumber(y2)) { props.right =  {x:x2 || 0,y:y2 || 0}; }
+    this.setProps(props);
   }
 
   // -----------------
@@ -63,11 +58,10 @@ class LinearGradient extends Gradient {
     if(newV === oldV) { return; }
     if(['left','right'].includes(key)) {
       let changeTracker = this.getState().changeTracker;
-      var raise = () => { this.getState().changeTracker.raise(['endPoints']); };
       if(newV && newV.dispatcher) {
-        newV.dispatcher.on( VectorEventTypes.change, this.bindOnce('flagEndPoints', raise ) );
+        newV.dispatcher.on( VectorEventTypes.change, this.bindOnce('flagEndPoints', () => { this.getState().changeTracker.raise(['endPoints']); } ) );
       }
-      raise();
+      this.getState().changeTracker.raise(['endPoints']);
     }
   }
 
