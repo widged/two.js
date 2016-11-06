@@ -42,81 +42,96 @@ class Path extends Renderable {
   constructor(anchors, closed, curved, manual) {
     super();
     // init
-    this.setState(PROP_DEFAULTS);
-    var {changeTracker} = this.getState();
-
+    var props = PROP_DEFAULTS;
+    props.cap  = 'butt'; // Default of Adobe Illustrator
+    props.join = 'miter'; // Default of Adobe Illustrator
+    props.beginning = 0;
+    props.ending    = 1;
+    // vertices -- A `Collection` of `Anchors` that is two-way databound. Individual vertices may be manipulated.
     // let's clone to be on the safe side
-    var clone = (anchors || []).slice(0);
-    this.setProps({
-      cap: 'butt', // Default of Adobe Illustrator
-      join: 'miter', // Default of Adobe Illustrator
-      // vertices -- A `Collection` of `Anchors` that is two-way databound. Individual vertices may be manipulated.
-      vertices: new Collection(clone),
-      // automatic --  whether two.js curves, lines, and commands should be computed
-      // automatically or left to the developer.
-      automatic: !manual,
-      closed: !!closed,
-      curved: !!curved,
-      beginning: 0,
-      ending: 1,
-    });
-    // length,closed,curved,automatic,beginning,ending,clip
-    changeTracker.raise(['vertices,length']);     // unraisedFlag: clip
-    this.whenVerticesChange();
+    if(!isUndefined(anchors)) { props.vertices = (anchors || []).slice(0); }
+    // automatic --  whether two.js curves, lines, and commands should be computed
+    if(!isUndefined(manual))  { props.automatic = !manual; }
+    if(!isUndefined(closed))  { props.closed = !!closed; }
+    if(!isUndefined(curved))  { props.curved = !!curved; }
+    this.setProps(props);
+  }
+
+  // --------------------
+  // IStated
+  // --------------------
+
+  beforePropertySet(k, v) {
+    v = super.beforePropertySet(k, v);
+    if(k === 'vertices') {
+      // remove any even listener from the current vertices
+      this.disactivateAnchors(this.getState().vertices);
+      v = new Collection(v);
+    } else if(['closed','curved','automatic'].includes(k)) {
+      v = (v === true) ? true : false;
+    }
+    if(k === 'automatic') {
+      var oldAuto = this.getState().automatic;
+      if(v !== oldAuto) {
+        var method = v ? 'ignore' : 'listen';
+        (this.getState().vertices || []).forEach(function(v) { v[method](); });
+      }
+    } else if(k === 'beginning') {
+      v = min(max(v, 0.0), this.getState().ending || 0);
+    } else if(k === 'ending') {
+      v = min(max(v, this.getState().beginning || 0), 1.0);
+    } else if(k === 'vertices') {
+      var oldV = this.getState().vertices;
+      if (oldV && typeof oldV.dispatcher === 'function') { oldV.dispatcher.off(); }
+      if(v.constructor.name === 'Array') {
+        // v = new Collection((v || []).slice(0));
+      }
+    }
+    return v;
+  }
+  afterPropertyChange(k, v, oldV) {
+    super.afterPropertyChange(k, v, oldV);
+    var {changeTracker} = this.getState();
+    if(k === 'vertices') {
+      // Listen for Collection changes and bind / unbind
+      var vertices = v;
+      if (vertices && typeof vertices.dispatcher === 'function') {
+        vertices.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('activateAnchors',    () => { this.activateAnchors(v);   }));
+        vertices.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('disactivateAnchors', () => { this.disactivateAnchors(v); }));
+      }
+      // Bind Initial Vertices
+      this.activateAnchors(vertices);
+      this.getState().changeTracker.raise(['vertices','length']);     // unraisedFlag: clip
+    } else if(['closed','curved','beginning','ending'].includes(k) && v !== oldV) {
+      changeTracker.raise(['vertices']);
+    } else if(['clip'].includes(k) && v !== oldV) {
+      changeTracker.raise(['clip']);
+    }
   }
 
   // --------------------
   // Flow
   // --------------------
 
-  whenVerticesChange(oldVerticesColl) {
-    var shp;
-
-    var {changeTracker, vertices} = this.getState();
-
-    var whenVectorChange = (() => {
-      changeTracker.raise(['vertices','length']);
-    }).bind(shp);
-
-    var whenVerticesInserted = ((items) => {
-      // This function is called a lot
-      // when importing a large SVG
-      var i = items.length;
-      while(i--) { items[i].dispatcher.on(VectorEventTypes.change, whenVectorChange); }
-      whenVectorChange();
-    }).bind(shp);
-
-    var whenVerticesRemoved = ((items) => {
-      var i = items.length;
-      while(i--) { items[i].dispatcher.off(VectorEventTypes.change, whenVectorChange); }
-      whenVectorChange();
-    }).bind(shp);
-
-    // Listen for Collection changes and bind / unbind
-    if (vertices && typeof vertices.dispatcher === 'function') {
-      vertices.dispatcher.on(CollectionEventTypes.insert, whenVerticesInserted);
-      vertices.dispatcher.on(CollectionEventTypes.remove, whenVerticesRemoved);
+  activateAnchors(anchors)  {
+    var i = (anchors || []).length, anchor = null;
+    while(i--) {
+      anchor = anchors[i];
+      if(anchor && anchor.dispatcher) {
+        anchor.dispatcher.on(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['vertices']); } ));
+      }
     }
-    // Bind Initial Vertices
-    whenVerticesInserted(vertices);
-
   }
 
-  whenLengthChange(limit) {
-    var shp = this;
-    updateShape(shp);
-    var {vertices, closed, lengths: lns} = shp.getState();
-    var {lengths, sum} = updateLength({
-      limit,
-      vertices: vertices,
-      pathClosed: closed,
-      lastClosed: (arrayLast(vertices).command === Commands.CLOSE) ? true : false,
-      lengths: lns
-    });
-    shp.setState({lengths, length: sum});
-    return shp;
-
+  disactivateAnchors(anchors)  {
+    var i = (anchors || []).length, anchor = null;
+    while(i--) {
+      anchor = anchors[i];
+      anchor.dispatcher.off(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['vertices']); } ));
+    }
   }
+
+
   // --------------------
   // Accessors
   // --------------------
@@ -127,42 +142,23 @@ class Path extends Renderable {
     }
     return this.state.length;
   }
-  beforePropertySet(key, newV) {
-    newV = super.beforePropertySet(key, newV);
-    if(['closed','curved','automatic'].includes(key)) {
-      newV = (newV === true) ? true : false;
-    }
-    if(key === 'automatic') {
-      var oldAuto = this.getState().automatic;
-      if(newV !== oldAuto) {
-        var method = newV ? 'ignore' : 'listen';
-        (this.getState().vertices || []).forEach(function(v) { v[method](); });
-      }
-    } else if(key === 'beginning') {
-      newV = min(max(newV, 0.0), this.getState().ending || 0);
-    } else if(key === 'ending') {
-      newV = min(max(newV, this.getState().beginning || 0), 1.0);
-    } else if(key === 'vertices') {
-      var oldV = this.getState().vertices;
-      if (oldV && typeof oldV.dispatcher === 'function') { oldV.dispatcher.off(); }
-      if(newV.constructor.name === 'Array') {
-        // newV = new Collection((newV || []).slice(0));
-      }
-    }
-    return newV;
-  }
-  afterPropertyChange(key, newV, oldV) {
-    super.afterPropertyChange(key, newV, oldV);
-    var {changeTracker} = this.getState();
-    if(['closed','curved','beginning','ending'].includes(key) && newV !== oldV) {
-      changeTracker.raise(['vertices']);
-    } else if(['clip'].includes(key) && newV !== oldV) {
-      changeTracker.raise(['clip']);
-    } else if(key === 'vertices') {
-      this.whenVerticesChange();
-    }
-  }
 
+
+    whenLengthChange(limit) {
+      var shp = this;
+      updateShape(shp);
+      var {vertices, closed, lengths: lns} = shp.getState();
+      var {lengths, sum} = updateLength({
+        limit,
+        vertices: vertices,
+        pathClosed: closed,
+        lastClosed: (arrayLast(vertices).command === Commands.CLOSE) ? true : false,
+        lengths: lns
+      });
+      shp.setState({lengths, length: sum});
+      return shp;
+
+    }
 
   // -----------------
   // Pseudo accessors

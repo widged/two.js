@@ -131,6 +131,7 @@ FN.Path = {
   automatic: true,
   beginning: 0,
   ending: 1.0,
+  
   clip: false,
 
 };
