@@ -57,11 +57,6 @@ class Collection  {
     return removed;
   }
 */
-  push() {
-    var pushed = Array.prototype.push.apply(this, arguments);
-    this.whenItemsAdded(arguments)
-    return pushed;
-  }
 
 /*
   unshift(...args) {
@@ -71,6 +66,14 @@ class Collection  {
     return added;
   }
 */
+
+
+  push() {
+    var pushed = Array.prototype.push.apply(this, arguments);
+    this.whenItemsAdded(arguments)
+    return pushed;
+  }
+
 
   splice() {
     var spliced = Array.prototype.splice.apply(this, arguments);
@@ -86,44 +89,7 @@ class Collection  {
     return spliced;
   }
 
-  sort() {
-    Array.prototype.sort.apply(this, arguments);
-    this.whenItemsReordered();
-    return this;
-  }
 
-  reverse() {
-    Array.prototype.reverse.apply(this, arguments);
-    this.whenItemsReordered();
-    return this;
-  }
-}
-
-/*
-
-push(d) {
-  var items = this.items;
-  var added = items.push(d);
-  this.item = items;
-  this.whenItemsAdded([added])
-  return added;
-}
-
-
-  splice(...args) {
-    var items = this.items;
-    var spliced = items.splice(...args);
-    this.item = items;
-    this.whenItemsRemoved(spliced)
-
-    var inserted;
-    if (args.length > 2) {
-      inserted = this.slice(args[0], args[0] + args.length - 2);
-      this.whenItemsAdded(inserted);
-      this.whenItemsReordered();
-    }
-    return spliced;
-  }
 
   sort(...args) {
     var items = this.items;
@@ -140,7 +106,52 @@ push(d) {
     this.whenItemsReordered();
     return this;
   }
-  */
+
+  /*
+
+  push(d) {
+    var items = this.items;
+    var added = items.push(d);
+    this.item = items;
+    this.whenItemsAdded([added])
+    return added;
+  }
+
+
+    splice(...args) {
+      var items = this.items;
+      var spliced = items.splice(...args);
+      this.item = items;
+      this.whenItemsRemoved(spliced)
+
+      var inserted;
+      if (args.length > 2) {
+        inserted = this.slice(args[0], args[0] + args.length - 2);
+        this.whenItemsAdded(inserted);
+        this.whenItemsReordered();
+      }
+      return spliced;
+    }
+
+    sort(...args) {
+      var items = this.items;
+      items.sort(...args);
+      this.items = items;
+      this.whenItemsReordered();
+      return this;
+    }
+
+    reverse() {
+      var items = this.items;
+      items.reverse();
+      this.items = items;
+      this.whenItemsReordered();
+      return this;
+    }
+    */
+
+}
+
 
 
 export default Collection;
