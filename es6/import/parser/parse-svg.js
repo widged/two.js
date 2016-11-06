@@ -376,7 +376,7 @@ var tags = {
 
     });
 
-    // Create the vertices for our Path
+    // Create the anchorColl for our Path
 
     var points = [];
     commands.forEach(function(command, i) {

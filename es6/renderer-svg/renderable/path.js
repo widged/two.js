@@ -30,9 +30,9 @@ var renderPath = (shp, domElement) => {
     attrs.transform = 'matrix(' + matrix.toString() + ')';
   }
 
-  if(anyPropChanged(shp, ['vertices'])) {
-    var {vertices, closed} = shapeProps;
-    attrs.d = toString(vertices, closed);
+  if(anyPropChanged(shp, ['anchorColl'])) {
+    var {anchorColl, closed} = shapeProps;
+    attrs.d = toString(anchorColl, closed);
   }
 
   if(anyPropChanged(shp, ['fill','stroke','linewidth','opacity','visibility'])) {

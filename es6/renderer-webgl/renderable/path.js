@@ -24,8 +24,8 @@ var renderPath = (shp, gl, program, forcedParent) => {
 
   // <<< code that varies between text and path
   var getBoundingClientRect = (shp) => {
-    var { vertices,  linewidth} = shapeProps;
-    return getPathBoundingClientRect(vertices, linewidth);
+    var { anchorColl,  linewidth} = shapeProps;
+    return getPathBoundingClientRect(anchorColl, linewidth);
   };
 
   var assertShapeChange = (shp) => {
@@ -83,7 +83,7 @@ var updateShapeCanvas = function(shp) {
   var renderer = getShapeRenderer(shp);
 
   // styles
-  var { vertices,  stroke,  linewidth,  fill,  opacity,  cap,  join,  miter,  closed} = shapeProps;
+  var { anchorColl,  stroke,  linewidth,  fill,  opacity,  cap,  join,  miter,  closed} = shapeProps;
   var {scale, opacity: rendererOpacity, rect} = renderer;
   opacity = rendererOpacity || opacity;
   linewidth = linewidth * scale;
@@ -109,7 +109,7 @@ var updateShapeCanvas = function(shp) {
   var {x, y} = renderer.rect.centroid;
   context.translate(x, y);
 
-  drawPathAnchors(canvas, vertices, closed);
+  drawPathAnchors(canvas, anchorColl, closed);
 
   if (!isHidden.test(fill))   context.fill();
   if (!isHidden.test(stroke)) context.stroke();

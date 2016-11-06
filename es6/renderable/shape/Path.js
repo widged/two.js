@@ -27,7 +27,7 @@ const PROP_KEYS = Object.keys(PROP_DEFAULTS);
  * A path takes an array of `Anchors`. This is essential for the two-way databinding.
  * It then takes two booleans, closed and curved which delineate whether the shape
  * should be closed (lacking endpoints) and whether the shape should calculate
- * curves or straight lines between the vertices. Finally, manual is an optional
+ * curves or straight lines between the anchorColl. Finally, manual is an optional
  * argument if you'd like to override the default behavior of two.js and handle anchor
  * positions yourself. Generally speaking, this isn't something you need to deal
  * with, although some great usecases arise from this customability, e.g: advanced curve manipulation.
@@ -46,9 +46,9 @@ class Path extends Renderable {
     props.join = 'miter'; // Default of Adobe Illustrator
     props.beginning = 0;
     props.ending    = 1;
-    // vertices -- A `Collection` of `Anchors` that is two-way databound. Individual vertices may be manipulated.
+    // anchorColl -- A `Collection` of `Anchors` that is two-way databound. Individual anchorColl may be manipulated.
     // let's clone to be on the safe side
-    if(!isUndefined(anchors)) { props.vertices = (anchors || []).slice(0); }
+    if(!isUndefined(anchors)) { props.anchorColl = (anchors || []).slice(0); }
     // automatic --  whether two.js curves, lines, and commands should be computed
     if(!isUndefined(manual))  { props.automatic = !manual; }
     if(!isUndefined(closed))  { props.closed = !!closed; }
@@ -62,9 +62,9 @@ class Path extends Renderable {
 
   beforePropertySet(k, v) {
     v = super.beforePropertySet(k, v);
-    if(k === 'vertices') {
-      // remove any even listener from the current vertices
-      this.disactivateAnchors(this.getState().vertices);
+    if(k === 'anchorColl') {
+      // remove any even listener from the current anchorColl
+      this.disactivateAnchors(this.getState().anchorColl);
       v = new Collection(v);
     } else if(['closed','curved','automatic'].includes(k)) {
       v = (v === true) ? true : false;
@@ -73,14 +73,14 @@ class Path extends Renderable {
       var oldAuto = this.getState().automatic;
       if(v !== oldAuto) {
         var method = v ? 'ignore' : 'listen';
-        (this.getState().vertices || []).forEach(function(v) { v[method](); });
+        (this.getState().anchorColl || []).forEach(function(v) { v[method](); });
       }
     } else if(k === 'beginning') {
       v = min(max(v, 0.0), this.getState().ending || 0);
     } else if(k === 'ending') {
       v = min(max(v, this.getState().beginning || 0), 1.0);
-    } else if(k === 'vertices') {
-      var oldV = this.getState().vertices;
+    } else if(k === 'anchorColl') {
+      var oldV = this.getState().anchorColl;
       if (oldV && typeof oldV.dispatcher === 'function') { oldV.dispatcher.off(); }
       if(v.constructor.name === 'Array') {
         // v = new Collection((v || []).slice(0));
@@ -93,18 +93,18 @@ class Path extends Renderable {
   afterPropertyChange(k, v, oldV) {
     super.afterPropertyChange(k, v, oldV);
     var {changeTracker} = this.getState();
-    if(k === 'vertices') {
+    if(k === 'anchorColl') {
       // Listen for Collection changes and bind / unbind
-      var vertices = v;
-      if (vertices && typeof vertices.dispatcher === 'function') {
-        vertices.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('activateAnchors',    () => { this.activateAnchors(v);   }));
-        vertices.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('disactivateAnchors', () => { this.disactivateAnchors(v); }));
+      var anchorColl = v;
+      if (anchorColl && typeof anchorColl.dispatcher === 'function') {
+        anchorColl.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('activateAnchors',    () => { this.activateAnchors(v);   }));
+        anchorColl.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('disactivateAnchors', () => { this.disactivateAnchors(v); }));
       }
       // Bind Initial Vertices
-      this.activateAnchors(vertices);
-      this.getState().changeTracker.raise(['vertices','length']);     // unraisedFlag: clip
+      this.activateAnchors(anchorColl);
+      this.getState().changeTracker.raise(['anchorColl','length']);     // unraisedFlag: clip
     } else if(['closed','curved','beginning','ending'].includes(k) && v !== oldV) {
-      changeTracker.raise(['vertices']);
+      changeTracker.raise(['anchorColl']);
     } else if(['clip'].includes(k) && v !== oldV) {
       changeTracker.raise(['clip']);
     }
@@ -115,7 +115,7 @@ class Path extends Renderable {
     while(i--) {
       anchor = anchors[i];
       if(anchor && anchor.dispatcher) {
-        anchor.dispatcher.on(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['vertices']); } ));
+        anchor.dispatcher.on(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchorColl']); } ));
       }
     }
   }
@@ -124,7 +124,7 @@ class Path extends Renderable {
     var i = (anchors || []).length, anchor = null;
     while(i--) {
       anchor = anchors[i];
-      anchor.dispatcher.off(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['vertices']); } ));
+      anchor.dispatcher.off(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchorColl']); } ));
     }
   }
 
@@ -144,12 +144,12 @@ class Path extends Renderable {
     whenLengthChange(limit) {
       var shp = this;
       updateShape(shp);
-      var {vertices, closed, lengths: lns} = shp.getProps();
+      var {anchorColl, closed, lengths: lns} = shp.getProps();
       var {lengths, sum} = updateLength({
         limit,
-        vertices: vertices,
+        anchorColl: anchorColl,
         pathClosed: closed,
-        lastClosed: (arrayLast(vertices).command === Commands.CLOSE) ? true : false,
+        lastClosed: (arrayLast(anchorColl).command === Commands.CLOSE) ? true : false,
         lengths: lns
       });
       shp.setState({lengths, length: sum});
@@ -183,7 +183,7 @@ class Path extends Renderable {
   // :TODO: recode as anchorAt, delaying any rendering action
   // -----------------
   /**
-   * Orient the vertices of the shape to the upper lefthand
+   * Orient the anchorColl of the shape to the upper lefthand
    * corner of the path.
    */
   corner() {
@@ -192,7 +192,7 @@ class Path extends Renderable {
   }
 
   /**
-   * Orient the vertices of the shape to the center of the
+   * Orient the anchorColl of the shape to the center of the
    * path.
    */
   center() {
@@ -206,7 +206,7 @@ class Path extends Renderable {
 
 
   /**
-   * Creates a new set of vertices that are lineTo anchors. For previously
+   * Creates a new set of anchorColl that are lineTo anchors. For previously
    * straight lines the anchors remain the same. For curved lines, however,
    * `subdivide` is used to generate a new set of straight lines that are p
    * erceived as a curve.
@@ -216,15 +216,15 @@ class Path extends Renderable {
     updateShape(shp);
     var automatic = false;
     var curved = false;
-    var {closed, vertices} = shp.getProps();
+    var {closed, anchorColl} = shp.getProps();
     var newVertices = subdivideTo({
       limit,
-      vertices   : vertices,
+      anchorColl   : anchorColl,
       pathClosed : closed,
-      lastClosed : (arrayLast(vertices).command === Commands.CLOSE) ? true : false,
+      lastClosed : (arrayLast(anchorColl).command === Commands.CLOSE) ? true : false,
       automatic: automatic
     });
-    shp.setState({automatic, curved, vertices: newVertices});
+    shp.setState({automatic, curved, anchorColl: newVertices});
     return shp;
   }
 
@@ -242,7 +242,7 @@ class Path extends Renderable {
     var {changeTracker} = shp.getState();
     changeTracker.drop(['opacity','visible','clip']);
     changeTracker.drop(['fill','stroke','linewidth','decoration']);
-    changeTracker.drop(['vertices']);
+    changeTracker.drop(['anchorColl']);
     changeTracker.drop(['cap, join, miter']);
 
     return shp;
@@ -259,8 +259,8 @@ class Path extends Renderable {
    // :NOTE: Not used internally, only called by the user
   clone() {
     var shp = this;
-    var  {closed, curved, automatic, vertices} = shp.getProps();
-    var anchors = vertices.map((d) => { return d.clone(); });
+    var  {closed, curved, automatic, anchorColl} = shp.getProps();
+    var anchors = anchorColl.map((d) => { return d.clone(); });
     var clone = new Path(anchors, closed, curved, !automatic);
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
       k = PROP_KEYS[i];
@@ -276,8 +276,8 @@ class Path extends Renderable {
 
     var obj = serializeProperties(shp, {}, []);
 
-    var  {closed, curved, automatic, vertices} = shp.getProps();
-    obj.vertices = vertices.map((d) => { return d.toObject(); });
+    var  {closed, curved, automatic, anchorColl} = shp.getProps();
+    obj.anchorColl = anchorColl.map((d) => { return d.toObject(); });
     return obj;
   }
 }

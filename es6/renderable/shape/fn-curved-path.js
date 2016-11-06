@@ -374,18 +374,18 @@ FN.getSubdivisions = (a, b, limit) => {
     });
 
   };
-  FN.subdivideTo = ({limit, vertices, pathClosed, lastClosed, automatic}) => {
+  FN.subdivideTo = ({limit, anchorColl, pathClosed, lastClosed, automatic}) => {
     //TODO: DRYness (function below updateLength)
 
-    if(!Array.isArray(vertices)) { return []; }
+    if(!Array.isArray(anchorColl)) { return []; }
 
     var {getSubdivisions} = FN;
-    var b = arrayLast(vertices);
-    var lastIndex = (vertices.length - 1);
+    var b = arrayLast(anchorColl);
+    var lastIndex = (anchorColl.length - 1);
     var closed = pathClosed || lastClosed;
 
     var points = [];
-    vertices.forEach((a, i) => {
+    anchorColl.forEach((a, i) => {
 
       if (i <= 0 && !closed) {
         b = a;
@@ -446,20 +446,20 @@ FN.getSubdivisions = (a, b, limit) => {
     return points;
   };
 
-FN.updateLength = ({limit, vertices, pathClosed, lastClosed, lengths}) => {
+FN.updateLength = ({limit, anchorColl, pathClosed, lastClosed, lengths}) => {
   //TODO: DRYness (function above 'subdivideTo')
 
   if (!Array.isArray(lengths)) { lengths = []; }
-  if(!Array.isArray(vertices)) { return {lengths, sum: 0}; }
+  if(!Array.isArray(anchorColl)) { return {lengths, sum: 0}; }
 
   var {getCurveLengthAB} = FN;
 
-  var b = arrayLast(vertices);
+  var b = arrayLast(anchorColl);
   var closed = pathClosed || lastClosed;
-  var lastIndex = (vertices.length - 1);
+  var lastIndex = (anchorColl.length - 1);
   var sum = 0;
 
-  vertices.forEach((a, i) => {
+  anchorColl.forEach((a, i) => {
 
     if ((i <= 0 && !closed) || a.command === Commands.MOVE) {
       b = a;
@@ -525,18 +525,18 @@ NotInUse.getPointAt = (t, obj, pth) => {
   var {getPointOnCubicBezier} = FN;
       var x, x1, x2, x3, x4, y, y1, y2, y3, y4, left, right;
       var target = pth.length * min(max(t, 0), 1);
-      var length = pth.vertices.length;
+      var length = pth.anchorColl.length;
       var last = length - 1;
 
       var a = null;
       var b = null;
 
-      var {lengths, closed, vertices} = pth.getState();
+      var {lengths, closed, anchorColl} = pth.getState();
       for (var i = 0, l = lengths.length, sum = 0; i < l; i++) {
 
         if (sum + lengths[i] > target) {
-          a = vertices[closed ? mod(i, length) : i];
-          b = vertices[min(max(i - 1, 0), last)];
+          a = anchorColl[closed ? mod(i, length) : i];
+          b = anchorColl[min(max(i - 1, 0), last)];
           target -= sum;
           t = target / lengths[i];
           break;

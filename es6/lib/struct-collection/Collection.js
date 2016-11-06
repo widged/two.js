@@ -7,14 +7,13 @@ import CollectionEventTypes from './CollectionEventTypes';
  * Array like collection that triggers inserted and removed events
  * removed : pop / shift / splice
  * inserted : push / unshift / splice (with > 2 arguments)
- * e.g: used for vertices attribute of a Path.
+ * e.g: used for anchorColl attribute of a Path.
  */
 class Collection  {
 
-  constructor() {
+  constructor(arr) {
     this.dispatcher = new EventEmitter(Object.keys(CollectionEventTypes));
-    this.state = {items: []};
-
+    this.state = {items: arr};
     if (arguments.length > 1) {
       Array.prototype.push.apply(this, arguments);
     } else if (arguments[0] && Array.isArray(arguments[0])) {

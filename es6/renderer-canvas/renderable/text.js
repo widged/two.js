@@ -25,10 +25,10 @@ var renderText = (shp, ctx, forced, parentClipped) => {
 
   var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
   var { matrix } = shp.getState();
-  var { vertices,  closed } = shapeProps;
+  var { anchorColl,  closed } = shapeProps;
 
   opacity = opacity * parentRenderer.opacity;
-  var anchors = vertices; // Commands
+  var anchors = anchorColl; // Commands
 
   if (!forced && (!visible || clip)) { return shp; }
 

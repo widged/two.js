@@ -36,29 +36,29 @@ FN.updatePath = (shp) => {
   var {plotPath} = FN;
   var {copyVertices} = FN;
   var {changeTracker} = shp.getState();
-  var {vertices, beginning, ending, automatic} = shp.getProps();
-  if(changeTracker.oneChange('vertices'))  {
-    vertices = copyVertices({ vertices, beginning, ending });
-    shp.setProps({vertices});
+  var {anchorColl, beginning, ending, automatic} = shp.getProps();
+  if(changeTracker.oneChange('anchorColl'))  {
+    anchorColl = copyVertices({ anchorColl, beginning, ending });
+    shp.setProps({anchorColl});
     if (automatic) { plotPath(shp); }
   }
   return shp;
 };
 
 /**
- * Based on closed / curved and sorting of vertices plot where all points
+ * Based on closed / curved and sorting of anchorColl plot where all points
  * should be and where the respective handles should be too.
- * If curved goes through the vertices and calculates the curve.
- * If not, then goes through the vertices and calculates the lines.
+ * If curved goes through the anchorColl and calculates the curve.
+ * If not, then goes through the anchorColl and calculates the lines.
  */
 FN.plotPath = (shp) => {
-  var {vertices, closed, curved} = shp.getProps();
+  var {anchorColl, closed, curved} = shp.getProps();
   if (curved) {
-    matrixFN.getCurveFromPoints(vertices, closed);
+    matrixFN.getCurveFromPoints(anchorColl, closed);
     return shp;
   }
-  for (var i = 0; i < vertices.length; i++) {
-    vertices[i].command = i === 0 ? Commands.MOVE : Commands.LINE;
+  for (var i = 0; i < anchorColl.length; i++) {
+    anchorColl[i].command = i === 0 ? Commands.MOVE : Commands.LINE;
   }
   return shp;
 };
@@ -112,7 +112,7 @@ FN.preprocess = (shp) => {
 FN.getBoundingClientRect = (shp, shallow) => {
    var {getShapeMatrix} = FN;
    var matrix = getShapeMatrix(shp);
-   var {linewidth, vertices: anchors} = shp.getProps();
+   var {linewidth, anchorColl: anchors} = shp.getProps();
    let getMatrixAndParent = (shp) => { return { matrix: getShapeMatrix(shp), next: shp.parent}; };
    if(!shallow) { matrix = getComputedMatrix(shp, getMatrixAndParent); }
    // :TODO: save matrix to avoid unnecessary recomputation?
@@ -152,7 +152,7 @@ FN.orientAnchorsTowards = (shp, pointTowards) => {
   // :TODO: defaults to rectCentroid
   // :REVIEW: this causes unwanted behaviors... optional rather than default behavior?
   var {getBoundingClientRect} = FN;
-  var {vertices:anchors} = shp.getProps();
+  var {anchorColl:anchors} = shp.getProps();
   var pt;
   if(typeof pointTowards === "function") {
     pt = pointTowards(getBoundingClientRect(shp, true));
@@ -169,10 +169,10 @@ FN.orientAnchorsTowards = (shp, pointTowards) => {
 
 
 
-FN.copyVertices = ({vertices, beginning, ending}) => {
+FN.copyVertices = ({anchorColl, beginning, ending}) => {
   var {round} = Math;
 
-  var l = vertices.length;
+  var l = anchorColl.length;
   var last = l - 1, v;
 
   var ia = round((beginning) * last);
@@ -180,7 +180,7 @@ FN.copyVertices = ({vertices, beginning, ending}) => {
 
   var lst = [];
   for (var i = ia; i < ib + 1; i++) {
-    v = vertices[i];
+    v = anchorColl[i];
     lst.push(v);
   }
 

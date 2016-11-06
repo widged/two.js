@@ -23,7 +23,7 @@ var renderPath = (shp, ctx, forced, parentClipped) => {
 
   var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
   var { matrix } = shp.getState();
-  var { vertices:anchors,  closed } = shapeProps;
+  var { anchorColl:anchors,  closed } = shapeProps;
   var { cap,  join,  miter  } = shapeProps;
 
   opacity = opacity * parentRenderer.opacity;
