@@ -20,7 +20,8 @@ class ChildrenCollection extends CollectionArray {
     super(arr);
 
     this.ids = {};
-    this.children = this;
+    this.items = this;
+    // this.children = this;
 
     this.dispatcher.on(CollectionEventTypes.insert, this.attachChildren.bind(this));
     this.dispatcher.on(CollectionEventTypes.remove, this.detachChildren.bind(this));
@@ -31,17 +32,22 @@ class ChildrenCollection extends CollectionArray {
   // Main
   // --------------------
 
+  get children() {
+    console.trace()
+    console.log('xxxx')
+  }
+
   attachChildren()  {
-    var {ids, children} = this;
-    for (var i = 0; i < children.length; i++) {
-      ids[children[i].id] = children[i];
+    var {ids, items} = this;
+    for (var i = 0; i < items.length; i++) {
+      ids[items[i].id] = items[i];
     }
     return ids;
   }
   detachChildren() {
-    var {ids, children} = this;
-    for (var i = 0; i < children.length; i++) {
-        delete ids[children[i].id];
+    var {ids, items} = this;
+    for (var i = 0; i < items.length; i++) {
+        delete ids[items[i].id];
       }
       return ids;
   }
