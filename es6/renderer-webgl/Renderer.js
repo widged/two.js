@@ -2,7 +2,7 @@
 
 import _  from '../TwoUtil';
 import is  from '../lib/is/is';
-import Array2   from '../lib/struct-array/Array';
+import FloatArray   from '../lib/struct-float-array/FloatArray';
 import dom  from '../platform/dom';
 import Renderer from '../renderer/TwoRenderer';
 import base from './renderable/base';
@@ -25,11 +25,11 @@ class WebglRenderer extends Renderer {
     super(scene, options);
 
     this.setState({
-      matrix: new Array2(identity),
+      matrix: new FloatArray(identity),
       scale: 1,
       opacity: 1,
       renderer: {
-        matrix: new Array2(identity),
+        matrix: new FloatArray(identity),
         scale: 1,
         opacity: 1
       },

@@ -2,7 +2,7 @@
 
 import is  from '../../lib/is/is';
 import TwoError from '../../TwoError';
-import Array2   from '../../lib/struct-array/Array';
+import FloatArray   from '../../lib/struct-float-array/FloatArray';
 
 var {isObject} = is;
 
@@ -156,7 +156,7 @@ FN.updateTexture = function(gl, canvas, renderer) {
 
 };
 
-var uv = new Array2([
+var uv = new FloatArray([
   0, 0,
   1, 0,
   0, 1,

@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import Matrix   from '../../lib/struct-matrix/Matrix';
-import Array2   from '../../lib/struct-array/Array';
+import FloatArray   from '../../lib/struct-float-array/FloatArray';
 import shapeRendering   from '../../renderer/renderer-bridge';
 import rendererFN from './fn-renderer';
 import glFN       from './fn-gl';

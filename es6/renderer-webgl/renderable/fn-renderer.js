@@ -5,7 +5,7 @@ import LinearGradient from '../../renderable/shape-gradient/LinearGradient';
 import RadialGradient from '../../renderable/shape-gradient/RadialGradient';
 import shapeRendering from '../../renderer/renderer-bridge';
 import Matrix   from '../../lib/struct-matrix/Matrix';
-import Array2   from '../../lib/struct-array/Array';
+import FloatArray   from '../../lib/struct-float-array/FloatArray';
 import base from './base';
 import glFN   from './fn-gl';
 
@@ -143,7 +143,7 @@ var getTriangles = function(rect, triangles) {
 
   // First Triangle
 
-  if(!triangles) { triangles = new Array2(12); }
+  if(!triangles) { triangles = new FloatArray(12); }
 
   triangles[0] = left;
   triangles[1] = top;
@@ -200,7 +200,7 @@ FN.recomputeMatrixAndScaleIfNecessary = (shp) => {
   var rendererMatrix;
   var parentMatrixChanged = (parentMatrix && parentMatrix.manual) || anyPropChanged(parent, ['matrix']);
   if ( matrix.manual || anyPropChanged(shp, ['matrix']) ||  parentMatrixChanged ) {
-    var transformation = (new Array2(9));
+    var transformation = (new FloatArray(9));
     matrix.toArray(true, transformation); // Reduce amount of object / array creation / deletion
     renderer.matrix = multiplyMatrix(transformation, parentRenderer.matrix, renderer.matrix );
     renderer.scale = scale * parentRenderer.scale;

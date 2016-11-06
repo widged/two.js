@@ -88,8 +88,6 @@ class TwoClassic   {
     this.state.scene = new TwoScene({width, height, beforeRender});
   }
 
-
-
   /*
    These events are not captured internally.
    They are provided for the user to

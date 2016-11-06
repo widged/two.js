@@ -2,7 +2,7 @@
 
 import _  from '../../TwoUtil';
 import is  from '../is/is';
-import Array2   from '../struct-array/Array';
+import FloatArray   from '../struct-float-array/FloatArray';
 
 var {isArray} = is;
 /**
@@ -28,7 +28,7 @@ var cos = Math.cos, sin = Math.sin, tan = Math.tan;
 class Matrix {
   constructor(a, b, c, d, e, f) {
 
-    this.elements = new Array2(9);
+    this.elements = new FloatArray(9);
 
     var elements = a;
     if (!isArray(elements)) {
@@ -353,7 +353,7 @@ Matrix.Multiply = (A, B, C) => {
   var B3 = B[3], B4 = B[4], B5 = B[5];
   var B6 = B[6], B7 = B[7], B8 = B[8];
 
-  if(!C) { C = new Array2(9); }
+  if(!C) { C = new FloatArray(9); }
 
   C[0] = A0 * B0 + A1 * B3 + A2 * B6;
   C[1] = A0 * B1 + A1 * B4 + A2 * B7;
