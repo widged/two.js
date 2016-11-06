@@ -12,9 +12,9 @@ const {Gradient: PROP_DEFAULTS}  = IMPORTS.DefaultValues;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 
 /**
- * A `Gradient` defines a color transition. By itself a `Gradient` doesn't render anything
- * to the screen. However, in conjunction with a `Path` you can style `Path.fill`
- * or `Path`.stroke with a `Gradient` to render a gradient for that part of the `Path`.
+ * A `Gradient` defines a color transition. A `Gradient` is not really a shape.
+ * It is a styling effect that can be applied to a `Path`. You can style `Path.fill`
+ * or `Path.stroke` with a `Gradient` to render a gradient for that part of the `Path`.
  * Check the examples page for exact usage.
  */
 class Gradient extends Renderable {
