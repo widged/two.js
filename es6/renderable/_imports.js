@@ -23,6 +23,7 @@ import shapeRendering   from '../renderer-lib/renderer-bridge';
 import exportFN  from './fn-export';
 import rectFN  from './fn-rect';
 import pathFN  from './fn-path';
+import groupFN  from './fn-group';
 
 
 export default {
@@ -31,5 +32,5 @@ export default {
   Anchor, Vector, VectorEventTypes, Matrix,
   Collection, CollectionEventTypes,
   shapeRendering,
-  exportFN, rectFN, pathFN
+  exportFN, rectFN, pathFN, groupFN
 };

@@ -1,8 +1,8 @@
 /* jshint esnext: true */
 
-import IMPORTS from '../_imports';
+import is  from '../util/is';
 
-var {isNumber} = IMPORTS.is;
+var {isNumber} = is;
 
 var FN = {};
 var NotInUse = {};

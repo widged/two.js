@@ -2,7 +2,6 @@
 
 import IMPORTS    from '../_imports';
 import Shape from '../Shape';
-import groupFN from './fn-group';
 import ChildrenCollection from './ChildrenCollection';
 
 const {Collection, CollectionEventTypes} = IMPORTS;
@@ -12,10 +11,9 @@ const {isNumber, isArray} = IMPORTS.is;
 const {exclude, arrayOrArguments}  = IMPORTS.common;
 const {serializeProperties} = IMPORTS.exportFN;
 const {rectCentroid, rectTopLeft} = IMPORTS.rectFN;
+const {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = IMPORTS.groupFN;
+const {translateChildren} = IMPORTS.groupFN;
 const {updateShape} = IMPORTS.shapeRendering;
-
-const {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
-const {translateChildren} = groupFN;
 
 
 const PROP_DEFAULTS= DefaultValues.Group;
