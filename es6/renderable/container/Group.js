@@ -6,14 +6,15 @@ import ChildrenCollection from './ChildrenCollection';
 
 const {Collection, CollectionEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
+const {is, common, exportFN, rectFN, groupFN, shapeRendering} = IMPORTS;
 
-const {isNumber, isArray} = IMPORTS.is;
-const {exclude, arrayOrArguments}  = IMPORTS.common;
-const {serializeProperties} = IMPORTS.exportFN;
-const {rectCentroid, rectTopLeft, includeAnchorInBoundingRect} = IMPORTS.rectFN;
-const {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = IMPORTS.groupFN;
-const {translateChildren} = IMPORTS.groupFN;
-const {updateShape} = IMPORTS.shapeRendering;
+const {isNumber, isArray} = is;
+const {exclude, arrayOrArguments}  = common;
+const {serializeProperties} = exportFN;
+const {rectCentroid, rectTopLeft, includeAnchorInBoundingRect} = rectFN;
+const {adoptShapes, dropShapes, addShapesToChildren, removeShapesFromChildren, removeGroupFromParent} = groupFN;
+const {translateChildren} = groupFN;
+const {updateShape} = shapeRendering;
 
 
 const PROP_DEFAULTS= RenderableDefaults.Group;
