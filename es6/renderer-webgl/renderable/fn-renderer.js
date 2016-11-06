@@ -175,7 +175,7 @@ FN.recomputeTrianglesAndRectIfNecessary = (shp, assertShapeChange, getBoundingCl
   var renderer = getShapeRenderer(shp);
 
   if (!renderer.texture
-   || anyPropChanged(shp, ['anchorColl','fill','stroke','linewidth','opacity','visible','scale'])
+   || anyPropChanged(shp, ['anchors','fill','stroke','linewidth','opacity','visible','scale'])
    || anyPropChanged(parent, ['opacity'])
    || assertShapeChange(shp)
  ) {

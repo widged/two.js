@@ -30,7 +30,7 @@ var renderPath = (shp, domElement) => {
     attrs.transform = 'matrix(' + matrix.toString() + ')';
   }
 
-  if(anyPropChanged(shp, ['anchorColl'])) {
+  if(anyPropChanged(shp, ['anchors'])) {
     var {anchorColl, closed} = shapeProps;
     var anchors = anchorColl.items;
     attrs.d = toString(anchors, closed);

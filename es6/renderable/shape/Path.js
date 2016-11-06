@@ -102,9 +102,9 @@ class Path extends Renderable {
       }
       // Bind Initial Vertices
       this.activateAnchors(anchorColl);
-      this.getState().changeTracker.raise(['anchorColl','length']);     // unraisedFlag: clip
+      this.getState().changeTracker.raise(['anchors','length']);     // unraisedFlag: clip
     } else if(['closed','curved','beginning','ending'].includes(k) && v !== oldV) {
-      changeTracker.raise(['anchorColl']);
+      changeTracker.raise(['anchors']);
     } else if(['clip'].includes(k) && v !== oldV) {
       changeTracker.raise(['clip']);
     }
@@ -116,7 +116,7 @@ class Path extends Renderable {
     while(i--) {
       anchor = anchors[i];
       if(anchor && anchor.dispatcher) {
-        anchor.dispatcher.on(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchorColl']); } ));
+        anchor.dispatcher.on(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchors']); } ));
       }
     }
   }
@@ -126,7 +126,7 @@ class Path extends Renderable {
     var i = (anchors || []).length, anchor = null;
     while(i--) {
       anchor = anchors[i];
-      anchor.dispatcher.off(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchorColl']); } ));
+      anchor.dispatcher.off(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchors']); } ));
     }
   }
 
@@ -243,7 +243,7 @@ class Path extends Renderable {
     var {changeTracker} = shp.getState();
     changeTracker.drop(['opacity','visible','clip']);
     changeTracker.drop(['fill','stroke','linewidth','decoration']);
-    changeTracker.drop(['anchorColl']);
+    changeTracker.drop(['anchors']);
     changeTracker.drop(['cap, join, miter']);
 
     return shp;

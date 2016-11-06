@@ -37,7 +37,7 @@ FN.updatePath = (shp) => {
   var {copyVertices} = FN;
   var {changeTracker} = shp.getState();
   var {anchorColl, beginning, ending, automatic} = shp.getProps();
-  if(changeTracker.oneChange('anchorColl'))  {
+  if(changeTracker.oneChange('anchors'))  {
     anchorColl = copyVertices({ anchorColl, beginning, ending });
     shp.setProps({anchorColl});
     if (automatic) { plotPath(shp); }
