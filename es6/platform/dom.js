@@ -6,9 +6,9 @@ import is  from '../lib/is/is';
  * Cross browser dom events.
  */
 
-var {isFunction} = is;
+const {isFunction} = is;
 
-var FN = {};
+let FN = {};
 
 FN.temp = (document ? document.createElement('div') : {});
 
@@ -16,7 +16,7 @@ FN.temp = (document ? document.createElement('div') : {});
 FN.hasEventListeners = isFunction(global.addEventListener);
 
 FN.onWindowResize = function(func, bool) {
-  var {hasEventListeners} = FN;
+  const {hasEventListeners} = FN;
   var elem = window;
   if (hasEventListeners) {
     elem.addEventListener('resize', func, !!bool);

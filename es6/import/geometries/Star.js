@@ -2,9 +2,10 @@
 
 import is  from '../../lib/is/is';
 
-var {isNumber} = is;
+const {isNumber} = is;
 
-var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
+const {cos, sin, PI} = Math;
+const TWO_PI = PI * 2;
 
 /**
  * star

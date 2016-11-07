@@ -2,14 +2,14 @@
 
 import anchorFN from '../../lib/struct-anchor/anchor-fn';
 import Commands from '../../lib/struct-anchor/CommandTypes';
-import _    from '../../TwoUtil';
+import util    from '../../TwoUtil';
 import base from './base';
 
-var {toFixed} = _;
-var {getContext} = base;
-var {curveSegment} = anchorFN;
+const {toFixed} = util;
+const {getContext} = base;
+const {curveSegment} = anchorFN;
 
-var FN = {};
+let FN = {};
 
 FN.drawPathAnchors = (canvas, anchors, closed) => {
   var canvasContext = getContext(canvas);

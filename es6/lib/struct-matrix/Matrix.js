@@ -1,14 +1,11 @@
 /* jshint esnext: true */
 
-import _  from '../../TwoUtil';
 import is  from '../is/is';
 import FloatArray   from '../struct-float-array/FloatArray';
 
-var {isArray} = is;
-/**
- * Constants
- */
-var cos = Math.cos, sin = Math.sin, tan = Math.tan;
+const {isArray} = is;
+const {cos, sin, tan} = Math;
+
 
 /**
  * Matrix contains an array of elements that represent

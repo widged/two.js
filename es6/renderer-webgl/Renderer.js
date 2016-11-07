@@ -1,6 +1,5 @@
 /* jshint esnext: true */
 
-import _  from '../TwoUtil';
 import is  from '../lib/is/is';
 import FloatArray   from '../lib/struct-float-array/FloatArray';
 import dom  from '../platform/dom';

@@ -17,7 +17,7 @@ var {getContext, renderShape} = base;
 
 var {isObject, isString} = is;
 
-var FN = {};
+let FN = {};
 
 FN.isHidden = /(none|transparent)/i;
 
@@ -79,9 +79,9 @@ FN.drawGradientShape = (gdt, context, shp) => {
 
 FN.renderAnyPath = (gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas) => {
 
-  var completed = false;
+  const {updateRendererIfNecesary} = FN;
 
-  var {updateRendererIfNecesary} = FN;
+  var completed = false;
 
   // nothing to do if there is nothing visible to the user
   var { visible,  opacity,  clip /*,  mask*/} = getShapeProps( shp,
@@ -115,7 +115,7 @@ FN.renderAnyPath = (gl, program, shp, assertShapeChange, getBoundingClientRect, 
 
 
 FN.updateRendererIfNecesary   =  (shp, gl, program, assertShapeChange, getBoundingClientRect, updateShapeCanvas) => {
-  var {recomputeTrianglesAndRectIfNecessary, recomputeMatrixAndScaleIfNecessary} = FN;
+  const {recomputeTrianglesAndRectIfNecessary, recomputeMatrixAndScaleIfNecessary} = FN;
   // main
   var renderer = recomputeMatrixAndScaleIfNecessary(shp);
   var parentRenderer  = getShapeRenderer(shp.parent);

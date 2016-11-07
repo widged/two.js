@@ -6,7 +6,7 @@ import rendererBridge   from '../../renderer/renderer-bridge';
 var {preprocess} = rendererBridge;
 
 
-var FN = {};
+let FN = {};
 
 // ------------------------------------
 //  Interface
@@ -15,7 +15,7 @@ var FN = {};
 var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
 FN.renderScene = (gp, ctx) => {
-  var {renderShape} = FN;
+  const {renderShape} = FN;
   return renderShape(gp, ctx);
 };
 

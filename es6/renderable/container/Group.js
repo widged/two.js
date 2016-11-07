@@ -11,7 +11,7 @@ const {is, common, exportFN, rectFN, rendererBridge} = IMPORTS;
 const {isNumber, isArray, isUndefined} = is;
 const {exclude, arrayOrArguments}  = common;
 const {serializeProperties} = exportFN;
-const {rectCentroid, rectTopLeft, includeAnchorInBoundingRect} = rectFN;
+const {rectCentroid, rectTopLeft, includePointInBoundingRect} = rectFN;
 const {adoptShapes, dropShapes, addShapesToList, removeShapesFromChildren, removeGroupFromParent} = groupFN;
 const {translateChildren} = groupFN;
 const {updateShape}      = rendererBridge;
@@ -120,7 +120,7 @@ class Group extends Renderable {
    add(...objects) {
     // Create copy of it in case we're getting passed a childrenColls array directly.
     objects = arrayOrArguments(objects).slice(0);
-    var {childrenColl} = this.getProps();
+    const {childrenColl} = this.getProps();
     this.state.props.childrenColl = addShapesToList(objects, childrenColl);
     return this;
   }
@@ -134,7 +134,8 @@ class Group extends Renderable {
     objects = arrayOrArguments(objects).slice(0);
     // If no objects are specified, remove the group from the parent group.
     if (!objects) { this.parent = removeGroupFromParent(this, this.parent); }
-    this.state.childrenColl = removeShapesFromChildren(objects, this.state.childrenColl);
+    const {childrenColl} = this.getProps();
+    this.state.props.childrenColl = removeShapesFromChildren(objects, childrenColl);
 
     return this;
 

@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-var FN = {};
+let FN = {};
 /*
 
   Tests were initially written as toString.call because benchmarks of the time indicated that toString.call()

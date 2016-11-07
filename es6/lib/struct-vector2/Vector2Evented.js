@@ -4,8 +4,6 @@ import EventEmitter  from '../event-emitter/EventEmitter';
 import VectorEventTypes    from './VectorEventTypes';
 import Vector2    from './Vector2';
 
-
-
 /**
  * A Vector2Evented captures coordinates. A `Vector2Evented` is specific to two.js because its
  * main properties, x and y, trigger events which allow the renderers to efficiently
@@ -27,7 +25,7 @@ import Vector2    from './Vector2';
 
   get x() { return this.state.x; }
   set x(_){
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     this.state.x = x;
     this.whenChange('pt', {x,y});
     return this;
@@ -35,7 +33,7 @@ import Vector2    from './Vector2';
 
   get y() { return this.state.y; }
   set y(v) {
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     this.state.y = y;
     this.whenChange('pt', {x,y});
     return this;
@@ -44,7 +42,7 @@ import Vector2    from './Vector2';
   get dispatcher()    { return this.intern.dispatcher; }
 
   whenChange(attributeName, oldXY) {
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     if(!oldXY || x !== oldXY.x || y !== oldXY.y) {
       if(!this.intern.dispatcher) { this.intern.dispatcher = new EventEmitter([VectorEventTypes.change]); }
       this.intern.dispatcher.emit(VectorEventTypes.change);
@@ -54,10 +52,10 @@ import Vector2    from './Vector2';
   /**
   Set the x, y properties of the vector to the arguments x, y.
   */
-  set(x, y) {
-    var {x1,y1} = this.state;
-    super.set(x,y);
-    this.whenChange('pt', {x1,y1});
+  set(x1, y2) {
+    const {x,y} = this.state;
+    super.set(x1,y2);
+    this.whenChange('pt', {x,y});
     return this;
   }
 
@@ -66,7 +64,7 @@ import Vector2    from './Vector2';
   * Set the x, y properties of the vector from another vector, v.
   */
   copy(v) {
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     super.copy(v);
     this.whenChange('pt', {x,y});
     return this;
@@ -76,7 +74,7 @@ import Vector2    from './Vector2';
   * Set the x, y properties of the vector to 0.
   */
   clear() {
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     super.clear();
     this.whenChange('pt', {x,y});
     return this;
@@ -87,7 +85,7 @@ import Vector2    from './Vector2';
   * Add to vectors together. The sum of the x, y values will be set to the instance.
   */
   add(v1, v2) {
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     super.add(v1, v2);
     this.whenChange('pt', {x,y});
     return this;
@@ -97,7 +95,7 @@ import Vector2    from './Vector2';
   * Add the x, y values of the instance to the values of another vector. Set the sum to the instance's values.
   */
   addSelf(v) {
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     super.addSelf(v);
     this.whenChange('pt', {x,y});
     return this;
@@ -107,7 +105,7 @@ import Vector2    from './Vector2';
   * Subtract two vectors. Set the difference to the instance.
   */
   sub(v1, v2) {
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     super.sub(v1, v2);
     this.whenChange('pt', {x,y});
     return this;
@@ -117,7 +115,7 @@ import Vector2    from './Vector2';
   * Subtract a vector, v, from the instance.
   */
   subSelf(v) {
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     super.subSelf(v);
     this.whenChange('pt', {x,y});
     return this;
@@ -127,7 +125,7 @@ import Vector2    from './Vector2';
   * Multiply the x, y values of the instance by another vector's, v, x, y values.
   */
   multiplySelf(v) {
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     super.multiplySelf(v);
     this.whenChange('pt', {x,y});
     return this;
@@ -137,7 +135,7 @@ import Vector2    from './Vector2';
   * Multiply the x, y values of the instance by another number, value.
   */
   multiplyScalar(s) {
-    var {x,y} = this.state;
+    let {x,y} = this.state;
     super.multiplyScalar(s);
     this.whenChange('pt', {x,y});
     return this;
@@ -147,8 +145,8 @@ import Vector2    from './Vector2';
   * Divide the x, y values of the instance by another number, value.
   */
   divideScalar(s) {
-    var {x,y} = this.state;
-    var r = super.divideScalar(s);
+    let {x,y} = this.state;
+    let r = super.divideScalar(s);
     this.whenChange('pt', {x,y});
     return r;
   }
@@ -157,8 +155,8 @@ import Vector2    from './Vector2';
   * Toggle the sign of the instance's x, y values.
   */
   negate() {
-    var {x,y} = this.state;
-    var r = super.negate();
+    let {x,y} = this.state;
+    let r = super.negate();
     this.whenChange('pt', {x,y});
     return r;
   }
@@ -167,8 +165,8 @@ import Vector2    from './Vector2';
   * Reduce the length of the vector to the unit circle.
   */
   normalize() {
-    var {x,y} = this.state;
-    var r = super.normalize();
+    let {x,y} = this.state;
+    let r = super.normalize();
     this.whenChange('pt', {x,y});
     return r;
   }
@@ -179,8 +177,8 @@ import Vector2    from './Vector2';
   Set the length of a vector to a specified distance, length.
   */
   setLength(l) {
-    var {x,y} = this.state;
-    var r = super.setLength(l);
+    let {x,y} = this.state;
+    let r = super.setLength(l);
     this.whenChange('pt', {x,y});
     return r;
   }
@@ -190,8 +188,8 @@ import Vector2    from './Vector2';
   * vector, v, by an amount, t. Where t is a value 0-1.
   */
   lerp(v, t) {
-    var {x,y} = this.state;
-    var r = super.lerp(v, t);
+    let {x,y} = this.state;
+    let r = super.lerp(v, t);
     this.whenChange('pt', {x,y});
     return r;
   }

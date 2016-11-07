@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 export default function(path, callback) {
-  var xhr = new XMLHttpRequest();
+  let xhr = new XMLHttpRequest();
   xhr.open('GET', path);
 
   xhr.onreadystatechange = function() {

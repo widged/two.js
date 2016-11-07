@@ -3,7 +3,10 @@
 import is  from '../../lib/is/is';
 import Resolution from '../Resolution';
 
-var {isNumber} = is;
+const {PI, floor, min, cos, sin} = Math;
+const TWO_PI = PI * 2, HALF_PI = PI / 2;
+
+const {isNumber} = is;
 
 /**
  * roundedRectangle
@@ -21,7 +24,7 @@ function roundedRectangle(ox, oy, width, height, radius) {
     var x, y;
 
     if (!isNumber(radius)) {
-      radius = Math.floor(Math.min(width, height) / 12);
+      radius = floor(min(width, height) / 12);
     }
 
     var points = [
@@ -71,28 +74,28 @@ function roundCorner(points, x, y, radius, quadrant) {
 
   switch (quadrant) {
     case 1:
-      start = - Math.PI / 2;
+      start = - HALF_PI;
       end = 0;
       break;
     case 2:
-      start = - Math.PI;
-      end = - Math.PI / 2;
+      start = - PI;
+      end = - HALF_PI;
       break;
     case 3:
-      start = - Math.PI * 1.5;
-      end = - Math.PI;
+      start = - PI * 1.5;
+      end = - PI;
       break;
     case 4:
       start = 0;
-      end = Math.PI / 2;
+      end = PI / 2;
       break;
   }
 
   var curve = [];
   for (var i = 0; i < length; i++) {
     var theta = map(length - i, 0, length, start, end);
-    var tx = radius * Math.cos(theta) + x - xr;
-    var ty = radius * Math.sin(theta) + y - yr;
+    var tx = radius * cos(theta) + x - xr;
+    var ty = radius * sin(theta) + y - yr;
     curve.push([tx, ty]);
   }
 

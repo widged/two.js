@@ -2,11 +2,10 @@
 
 import util from '../../TwoUtil';
 
-var {min, max} = Math;
-var {toFixed} = util;
+const {min, max} = Math;
+const {toFixed} = util;
 
-
-var FN = {};
+let FN = {};
 
 FN.rectCentroid = (rect) => { return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; };
 FN.rectTopLeft = (rect) => { return { x: rect.left, y: rect.top }; };
@@ -35,7 +34,7 @@ FN.shimBoundingClientRect = ({x,y}) => {
  * Updates a Rect to include an additional anchor. Typically takes anchors that are
  * "centered" around 0 and returns them to be anchored upper-left.
  */
-FN.includeAnchorInBoundingRect = (rect, {x,y,controls, relative}) => {
+FN.includePointInBoundingRect = (rect, {x,y,controls, relative}) => {
   if(!rect) { rect = {left : Infinity, right : -Infinity, top : Infinity, bottom : -Infinity}; }
   var changed;
   if (controls) {

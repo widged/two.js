@@ -3,7 +3,9 @@
 import is  from '../../lib/is/is';
 import Resolution from '../Resolution';
 
-var {isNumber} = is;
+const {isNumber} = is;
+const {cos, sin, PI} = Math;
+const TWO_PI = PI * 2;
 
 /**
  * ellipse
@@ -12,10 +14,7 @@ var {isNumber} = is;
  * ellipse by default) and width, height parameters to define the width and
  * height of the ellipse.
  */
-
 export default function(ox, oy, rx, ry, res) {
-
-	var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
 
 	if (!isNumber(ry)) { ry = rx; }
 

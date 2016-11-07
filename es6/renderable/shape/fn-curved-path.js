@@ -9,16 +9,16 @@ import Vector2   from '../../lib/struct-vector2/Vector2';
 import Vector2Evented   from '../../lib/struct-vector2/Vector2Evented';
 import Matrix   from '../../lib/struct-matrix/Matrix';
 
-var {mod, arrayLast} = util;
-var {isObject, isNumber, isNull} = is;
-var {atan2, sqrt, sin, cos, pow, PI, round, min, max} = Math;
+const {mod, arrayLast} = util;
+const {isObject, isNumber, isNull} = is;
+const {atan2, sqrt, sin, cos, pow, PI, round, min, max} = Math;
 
 /**
 * A collection of utility functions and variables used throughout the project.
 * This is where much of the algorithmic computation lies: computing curve handles,
 * subdividing cubic bezier curves, interpretting svg nodes.
 */
-var Curve = {
+const Curve = {
 
   CollinearityEpsilon: pow(10, -30),
 
@@ -74,8 +74,8 @@ var Curve = {
 };
 
 
-var FN = {};
-var NotInUse = {};
+let FN = {};
+let NotInUse = {};
 
 
 /**
@@ -85,7 +85,7 @@ var NotInUse = {};
  */
 FN.subdivide = (x1, y1, x2, y2, x3, y3, x4, y4, limit) => {
 
-  var {getPointOnCubicBezier} = FN;
+  const {getPointOnCubicBezier} = FN;
 
   limit = limit || Curve.RecursionLimit;
   var amount = limit + 1;
@@ -120,7 +120,7 @@ FN.getPointOnCubicBezier = (t, a, b, c, d)  => {
  */
 FN.getCurveLength = (x1, y1, x2, y2, x3, y3, x4, y4, limit)  => {
 
-  var {integrate} = FN;
+  const {integrate} = FN;
 
   var sqrt = sqrt;
 
@@ -160,7 +160,7 @@ FN.getCurveLength = (x1, y1, x2, y2, x3, y3, x4, y4, limit)  => {
  */
 
 FN.getCurveLengthAB = (a, b, limit) => {
-  var {getCurveLength} = FN;
+  const {getCurveLength} = FN;
   // TODO: DRYness
   var x1, x2, x3, x4, y1, y2, y3, y4;
 
@@ -214,7 +214,7 @@ FN.integrate = (f, a, b, n)  => {
  */
 FN.getCurveFromPoints = (points, closed)  => {
 
-  var {getControlPoints} = FN;
+  const {getControlPoints} = FN;
 
   var l = points.length, last = l - 1;
 
@@ -272,7 +272,7 @@ FN.distanceBetween = (p1, p2)  => {
  * vertex.
  */
 FN.getControlPoints = (a, b, c)  => {
-  var {angleBetween, distanceBetween} = FN;
+  const {angleBetween, distanceBetween} = FN;
 
   var HALF_PI = PI / 2;
 
@@ -344,7 +344,7 @@ FN.getReflection = (a, b, relative)  => {
 };
 
 FN.getSubdivisions = (a, b, limit) => {
-    var {subdivide} = FN;
+    const {subdivide} = FN;
     // TODO: DRYness
     var x1, x2, x3, x4, y1, y2, y3, y4;
 
@@ -380,7 +380,7 @@ FN.getSubdivisions = (a, b, limit) => {
 
     if(!Array.isArray(anchors)) { return []; }
 
-    var {getSubdivisions} = FN;
+    const {getSubdivisions} = FN;
     var b = arrayLast(anchors);
     var lastIndex = (anchors.length - 1);
     var closed = pathClosed || lastClosed;
@@ -453,7 +453,7 @@ FN.updateLength = ({limit, anchors, pathClosed, lastClosed, lengths}) => {
   if (!Array.isArray(lengths)) { lengths = []; }
   if(!Array.isArray(anchors)) { return {lengths, sum: 0}; }
 
-  var {getCurveLengthAB} = FN;
+  const {getCurveLengthAB} = FN;
 
   var b = arrayLast(anchors);
   var closed = pathClosed || lastClosed;
@@ -523,7 +523,7 @@ NotInUse.getPointsFromArcData = (center, xAxisRotation, rx, ry, ts, td, ccw)  =>
  * coordinates to that percentage on a Path's curve.
  */
 NotInUse.getPointAt = (t, obj, pth) => {
-  var {getPointOnCubicBezier} = FN;
+  const {getPointOnCubicBezier} = FN;
       var x, x1, x2, x3, x4, y, y1, y2, y3, y4, left, right;
       var target = pth.length * min(max(t, 0), 1);
       var length = pth.getProps().anchors.length;

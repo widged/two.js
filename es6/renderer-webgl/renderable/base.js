@@ -5,7 +5,7 @@ import rendererBridge   from '../../renderer/renderer-bridge';
 
 var {preprocess} = rendererBridge;
 
-var FN = {};
+let FN = {};
 
 // ------------------------------------
 //  Interface
@@ -14,13 +14,13 @@ var FN = {};
 var shapeCache = new Cache((key) => { return require('./' + key).default; });
 
 FN.renderScene = (gp, ctx, program) => {
-  var {renderShape} = FN;
+  const {renderShape} = FN;
   return renderShape(gp, ctx, program);
 };
 
 
 FN.renderShape = (shp, ctx, condi, clip) => {
-  var renderFn = shapeCache.get(shp.shapeType);
+  const renderFn = shapeCache.get(shp.shapeType);
   if(!renderFn) { console.log('[webgl.renderShape] Renderer not found', shp.shapeType); }
   // TODO: Add a check here to only invoke update if need be.
   preprocess(shp);

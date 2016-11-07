@@ -5,15 +5,15 @@ import rendererBridge   from '../../renderer/renderer-bridge';
 
 var {getShapeRenderer} = rendererBridge;
 
-var FN = {};
+let FN = {};
 
 /**
  * Create an svg namespaced element.
  */
 FN.createElement = function(name, attrs) {
   // var xlink = 'http://www.w3.org/1999/xlink';
-  var tag = name;
-  var elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  const tag = name;
+  const elem = document.createElementNS('http://www.w3.org/2000/svg', tag);
   dom.setAttributes(elem, attrs);
   return elem;
 };
@@ -29,9 +29,9 @@ FN.clear = (node) => {
  *
  */
 FN.getClip = function(shp) {
-  var {createElement} = FN;
-  var renderer = getShapeRenderer(shp);
-  var clipR = renderer.clip;
+  const {createElement} = FN;
+  const renderer = getShapeRenderer(shp);
+  let clipR = renderer.clip;
 
   if (!clipR) {
     var root = shp;
@@ -47,7 +47,7 @@ FN.getClip = function(shp) {
 };
 
 FN.createGradientStop = (offset, color, opacity) => {
-  let {createElement, setAttributes} = FN;
+  const {createElement, setAttributes} = FN;
   var node = createElement('stop');
   setAttributes( node, {
     offset : 100 * offset + '%',
@@ -58,7 +58,7 @@ FN.createGradientStop = (offset, color, opacity) => {
 };
 
 FN.renderNode = (parentNode, nodeType, attrs, defs) => {
-  var {createElement, setAttributes} = FN;
+  const {createElement, setAttributes} = FN;
   // If there is no attached DOM element yet, create it with all necessary attributes.
   if (!parentNode) {
     parentNode = createElement(nodeType, attrs);

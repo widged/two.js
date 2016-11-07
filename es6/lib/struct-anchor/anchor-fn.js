@@ -4,11 +4,11 @@ import util from '../../TwoUtil';
 
 import Commands from './CommandTypes';
 
-var {CLOSE, CURVE, MOVE, LINE} = Commands;
-var {mod, toFixed} = util;
-var {min, max} = Math;
+const {CLOSE, CURVE, MOVE, LINE} = Commands;
+const {mod, toFixed} = util;
+const {min, max} = Math;
 
-var FN = {};
+let FN = {};
 
 FN.curveSegment = (a, b) => {
   var ar, bl, vx, vy, ux, uy;

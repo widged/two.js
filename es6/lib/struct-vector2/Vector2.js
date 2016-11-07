@@ -233,5 +233,15 @@ import VectorEventTypes    from './VectorEventTypes';
 
 Vector2.zero = new Vector2();
 
+Vector2.validatePoint = ({x,y}) => {
+  var pt;
+  if (!isNaN(x) || !isNaN(y)) {
+    if(isNaN(x)) { x = 0; }
+    if(isNaN(y)) { y = 0; }
+    pt = {x,y};
+  }
+  return pt;
+};
+
 
 export default Vector2;

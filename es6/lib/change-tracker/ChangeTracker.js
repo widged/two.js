@@ -5,32 +5,40 @@ class ChangeTracker {
     this.state = {flat : []};
   }
 
-
   listChanges() { return this.state.flat; }
   raise(keys) {
-    var {flat} = this.state;
-    keys.forEach((k) => {
+    let {flat} = this.state;
+    let i = keys.length, k = null;
+    while (i--) {
+      k = keys[i];
       if(!flat.includes(k)) { flat.push(k); }
-    });
+    }
   }
 
   drop(keys) {
-    var {flat} = this.state;
-    keys.forEach((k) => {
-      var idx = flat.indexOf(k);
+    let {flat} = this.state;
+    let i = keys.length, k = null, idx = null;
+    while (i--) {
+      k = keys[i];
+      idx = flat.indexOf(k);
       if(idx !== -1) { flat.splice(idx, 1); }
-    });
+    }
   }
 
   oneChange(k) {
-    var {flat} = this.state;
+    let {flat} = this.state;
     return flat.includes(k);
   }
+
   anyChange(keys) {
-    var {flat} = this.state;
-    return keys.filter((k) => {
-      return flat.includes(k);
-    }).length ? true : false;
+    let {flat} = this.state;
+    let acc = false;
+    if(!keys || !keys.length) { return acc;}
+    let i = keys.length, k = null;
+    while (i-- && !acc) {
+      if(flat.includes(keys[i])) { acc = true; }
+    }
+    return acc;
   }
 }
 

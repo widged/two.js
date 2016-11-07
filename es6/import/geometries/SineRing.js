@@ -2,11 +2,10 @@
 
 import Commands from '../../lib/struct-anchor/CommandTypes';
 
-var PI = Math.PI, TWO_PI = Math.PI * 2, cos = Math.cos,
-  sin = Math.sin, abs = Math.abs;
-
 const {MOVE, CURVE} = Commands;
 
+const {cos, sin, abs, PI} = Math;
+const TWO_PI = PI * 2;
 
 function sineRing(ox, oy, r, periods, amplitude, mod) {
 

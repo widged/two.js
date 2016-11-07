@@ -3,10 +3,9 @@
 import Matrix   from './Matrix';
 import Vector2   from '../struct-vector2/Vector2';
 
-var FN = {};
+let FN = {};
 
-var {atan2, sqrt, sin, cos, pow, PI, round, min, max} = Math;
-
+const {atan2, sqrt, sin, cos, pow, PI, round, min, max} = Math;
 
 /**
  * Return the computed matrix of a nested object.
@@ -14,7 +13,7 @@ var {atan2, sqrt, sin, cos, pow, PI, round, min, max} = Math;
  */
 FN.getComputedMatrix = (obj, getMatrixAndNext) => {
 
-  var {matrix, next} = getMatrixAndNext(obj);
+  let {matrix, next} = getMatrixAndNext(obj);
   matrix = (matrix && matrix.identity()) || new Matrix();
 
   var matrices = [];
@@ -53,7 +52,7 @@ FN.deltaTransformPoint = (matrix, x, y) => {
  * https://gist.github.com/2052247
  */
 FN.decomposeMatrix = (matrix) => {
-  var {deltaTransformPoint} = FN;
+  const {deltaTransformPoint} = FN;
 
   // calculate delta transform point
   var px = deltaTransformPoint(matrix, 0, 1);

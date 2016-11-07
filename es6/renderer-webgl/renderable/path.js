@@ -12,7 +12,7 @@ var {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
 var {drawPathAnchors} = canvasFN;
 var {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
 var {drawFill, drawStroke, drawGradientShape} = rendererFN;
-var {includeAnchorInBoundingRect} = rectFN;
+var {includePointInBoundingRect} = rectFN;
 var {canvas, getContext, renderShape} = base;
 var {max} = Math;
 
@@ -48,7 +48,7 @@ var getPathBoundingClientRect = function(anchors, border) { // border is shape l
 
   var rect = null;
   for (var i = 0, ni = anchors.length, d = null; i < ni; i++) {
-    rect = includeAnchorInBoundingRect(rect, anchors[i]);
+    rect = includePointInBoundingRect(rect, anchors[i]);
   }
 
   // Expand borders

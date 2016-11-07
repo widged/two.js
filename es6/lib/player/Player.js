@@ -31,7 +31,7 @@ class Player {
  *  `play` adds the instance to the requestAnimationFrame loop. In affect enabling animation for this instance.
  */
   play() {
-    var {ticker} = this.state;
+    let {ticker} = this.state;
     if(!ticker) {
       ticker = getRequestAnimationFrame(() => { this.whenTick(); });
     }

@@ -7,7 +7,7 @@ import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
 
 var {getComputedMatrix} = matrixFN;
 var {isArray, isObject} = is;
-var {removeRectBorder, includeAnchorInBoundingRect, shimBoundingClientRect} = rectFN;
+var {removeRectBorder, includePointInBoundingRect, shimBoundingClientRect} = rectFN;
 
 var FN = {}, NotInUse = {};
 
@@ -16,8 +16,8 @@ var FN = {}, NotInUse = {};
 // --------------------
 
 FN.preprocess = (shp) => {
-  var {updateShape, orientAnchorsTowards} = FN;
-  var {pointTowards} = shp.getProps();
+  const {updateShape, orientAnchorsTowards} = FN;
+  const {pointTowards} = shp.getProps();
   // TODO: Update to not __always__ update. Just when it needs to.
   updateShape(shp);
   if(pointTowards) {
@@ -28,7 +28,7 @@ FN.preprocess = (shp) => {
 FN.orientAnchorsTowards = (shp, pointTowards) => {
   // :TODO: defaults to rectCentroid
   // :REVIEW: this causes unwanted behaviors... optional rather than default behavior?
-  var {getBoundingClientRect} = FN;
+  const {getBoundingClientRect} = FN;
   var {anchorColl:anchors} = shp.getProps();
   var pt;
   if(typeof pointTowards === "function") {
@@ -53,10 +53,10 @@ FN.getShapeRenderer = (shp) => {
 };
 
 FN.updateShape = (shp, isDeep) => {
-  var {updateShape, updateAnyShape, updatePath, plotPath} = FN;
+  const {updateShape, updateAnyShape, updatePath, plotPath} = FN;
   if(!shp) { return; }
   if(shp.shapeType === 'path') {
-    var changed = shp.changed;
+    let changed = shp.changed;
     if(changed) { shp = updatePath(shp);  }
     if (shp.getProps().automatic) { plotPath(shp); }
     updateAnyShape(shp, isDeep);
@@ -69,9 +69,9 @@ FN.updateShape = (shp, isDeep) => {
 
 
 FN.updatePath = (shp) => {
-  var {copyVertices} = FN;
-  var {changeTracker} = shp.getState();
-  var {anchorColl, beginning, ending, automatic} = shp.getProps();
+  const {copyVertices} = FN;
+  const {changeTracker} = shp.getState();
+  const {anchorColl, beginning, ending, automatic} = shp.getProps();
   if(changeTracker.oneChange('anchors'))  {
     var anchors = anchorColl.items;
     anchors = copyVertices({ anchors, beginning, ending });
@@ -125,7 +125,7 @@ FN.plotPath = (shp) => {
  * to be as up-to-date as possible for the render. Called once a frame.
  */
 FN.updateAnyShape = (shp, deep) => {
-  var {getShapeMatrix} = FN;
+  const {getShapeMatrix} = FN;
   var matrix = getShapeMatrix(shp);
   var {changeTracker} = shp.getState();
   var {translation, scale, rotation} = shp.getProps();
@@ -157,7 +157,7 @@ FN.updateAnyShape = (shp, deep) => {
  * positioning, i.e in the space directly affecting the object and not where it is nested.
  */
 FN.getBoundingClientRect = (shp, shallow) => {
-   var {getShapeMatrix} = FN;
+   const {getShapeMatrix} = FN;
    var matrix = getShapeMatrix(shp);
    var {linewidth, anchorColl: anchors} = shp.getProps();
    let getMatrixAndParent = (shp) => { return { matrix: getShapeMatrix(shp), next: shp.parent}; };
@@ -165,24 +165,24 @@ FN.getBoundingClientRect = (shp, shallow) => {
    // :TODO: save matrix to avoid unnecessary recomputation?
    var rect = null;
    if(shp.shapeType === 'path') {
-     for (var i = 0, ni = anchors.length, v = null; i < ni; i++) {
-       v = anchors[i];
+     for (let i = 0, ni = anchors.length, a = null; i < ni; i++) {
+       a = anchors[i];
        // :REVIEW: WHY multiply?
        // v = matrix.multiply(v.x, v.y, 1);
-       rect = includeAnchorInBoundingRect(rect, {x:v.x, y:v.y});
+       rect = includePointInBoundingRect(rect, {x: a.x, y: a.y});
        rect = removeRectBorder(rect, linewidth / 2);
      }
   } else if(shp.shapeType === 'group') {
     rect = null;
     var {childrenColl} = shp.getState();
-    for(var i = 0, ni = childrenColl.length, child = null; i < ni; i++ ) {
+    for(let i = 0, ni = childrenColl.length, child = null; i < ni; i++ ) {
       child = childrenColl[i];
       if (!/(linear-gradient|radial-gradient|gradient)/.test(child.shapeType)) {
         // TODO: Update only when it needs to.
         // updateShape(child, true);
         rect = FN.getBoundingClientRect(child, shallow);
-        rect = includeAnchorInBoundingRect(rect, {x: rect.left, y: rect.top });
-        rect = includeAnchorInBoundingRect(rect, {x: rect.right, y: rect.bottom });
+        rect = includePointInBoundingRect(rect, {x: rect.left, y: rect.top });
+        rect = includePointInBoundingRect(rect, {x: rect.right, y: rect.bottom });
       }
     }
     rect = removeRectBorder(rect, 0); // will add width and height

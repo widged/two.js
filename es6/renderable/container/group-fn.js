@@ -3,10 +3,10 @@
 import is  from '../../lib/is/is';
 import rectFN  from '../../lib/struct-bounding-rect/bounding-rect-fn';
 
-var {isNumber} = is;
-var {getEnclosingRect} = rectFN;
+const {isNumber} = is;
+const {getEnclosingRect} = rectFN;
 
-var FN = {};
+let FN = {};
 var NotInUse = {};
 
 
@@ -15,7 +15,7 @@ FN.isShape = (object) => {
 };
 
 FN.addShapesToList = (shapes, childrenColl) => {
-  var {isShape} = FN;
+  const {isShape} = FN;
   if(!childrenColl.addItem) { throw "[GroupFN.addShapesTochidren] case not covered"; }
   for (var i = 0, ni = shapes.length, shp = null; i < ni; i++) {
     shp = shapes[i];
@@ -36,10 +36,10 @@ FN.removeShapesFromChildren = (objects, childrenColl) => {
 };
 
 FN.adoptShapes = (group, shapes) => {
-  var {replaceParent} = FN;
+  const {replaceParent} = FN;
 
   if(group.childrenColl) {
-    var {children, ids} = group;
+    let {children, ids} = group;
     if(!ids) { ids = group.ids = {}; }
     for (let i = 0; i < children.length; i++) {
       ids[children[i].id] = children[i];
@@ -51,10 +51,10 @@ FN.adoptShapes = (group, shapes) => {
 };
 
 FN.dropShapes = (group, shapes) => {
-  var {replaceParent} = FN;
+  const {replaceParent} = FN;
 
   if(group.childrenColl) {
-    var {children, ids} = group;
+    let {children, ids} = group;
     if(!ids) { ids = group.ids = {}; }
     for (let i = 0; i < children.length; i++) {
       delete ids[children[i].id];
@@ -88,20 +88,20 @@ FN.replaceParent = (that, child, newParent) => {
   var parent = child.parent;
   var index;
 
-  var {additions, substractions, changeTracker} = that.getState();
+  let {additions, substractions, changeTracker} = that.getState();
   if (parent === newParent) {
-    var {changeTracker: parentTracker} = parent.getState();
+    let {changeTracker: parentTracker} = parent.getState();
     additions.push(child);
     parentTracker.raise(['additions']);
     return;
   }
 
-  var {childrenColl:parentChildren} = that.getProps();
+  let {childrenColl:parentChildren} = that.getProps();
   if(!parentChildren.ids)    { parentChildren.ids = {}; }
   if (parent && parentChildren.ids[child.id]) {
 
-    var {additions: parentAdditions, substractions: parentSubstrations} = parent.getState();
-    var {changeTracker: parentTracker} = parent.getState();
+    let {additions: parentAdditions, substractions: parentSubstrations} = parent.getState();
+    const {changeTracker: parentTracker} = parent.getState();
 
 
     index = (Array.from(parentChildren) || []).indexOf(child);
@@ -151,7 +151,7 @@ FN.translateChildren = (childrenColl, translate) => {
 };
 
 FN.getItemWithId = (group, id) => {
-  var {findFirstMember, nodeChildren} = FN;
+  const {findFirstMember, nodeChildren} = FN;
   return findFirstMember(
     group, nodeChildren,
     (node) => { return node.id === id; }
@@ -163,7 +163,7 @@ FN.getItemWithId = (group, id) => {
  * Empty array if none found.
  */
 NotInUse.listItemsWithClassName = (group, cl) => {
-  var {findAllMembers, nodeChildren} = FN;
+  const {findAllMembers, nodeChildren} = FN;
   return findAllMembers(
     group, nodeChildren,
     (node) => { return node.classList.indexOf(cl) !== -1; }
@@ -176,7 +176,7 @@ NotInUse.listItemsWithClassName = (group, cl) => {
  * Returns an empty array if none found.
  */
 NotInUse.listItemsWithType =  (group, type) => {
-  var {findAllMembers, nodeChildren} = FN;
+  const {findAllMembers, nodeChildren} = FN;
   return findAllMembers(
     group, nodeChildren,
     (node) => { return node instanceof type; }
@@ -188,18 +188,18 @@ NotInUse.listItemsWithType =  (group, type) => {
  * Returns null if none found.
  */
 FN.findFirstMember = (item, getMembers, assert) => {
-  var {findAllMembers} = FN;
+  const {findAllMembers} = FN;
   var list = findAllMembers(item, getMembers, assert, {stopOnFirstMatch: true});
   return list[0] || null;
 };
 
 
 FN.findAllMembers = (item, getMembers, assert, config) => {
-  var {stopOnFirstMatch} = config || {};
-  var recurse = (item, found) => {
+  const {stopOnFirstMatch} = config || {};
+  const recurse = (item, found) => {
     if (assert(item)) { found.push(item); }
     if(!stopOnFirstMatch) {
-      var members = getMembers(item);
+      const members = getMembers(item);
       if (members) {
         var i = members.length;
         while (i--) { recurse(members[i], found); }

@@ -2,7 +2,7 @@
 
 import RendererTypes from '../renderer/RendererTypes';
 
-var FN = {};
+let FN = {};
 
 // https://two.js.org/#documentation
 

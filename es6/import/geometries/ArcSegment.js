@@ -1,30 +1,27 @@
 /* jshint esnext: true */
 
+import Commands from '../../lib/struct-anchor/CommandTypes';
+
+const {cos, sin, abs, PI} = Math;
+const TWO_PI = PI * 2, HALF_PI = PI/2;
+
+const {MOVE, CURVE, CLOSE} = Commands;
+
 /**
- * arcSegment
+ * @function arcSegment
  *
  * Defines an arc segment from center point ox, oy with an inner and outer radius
  * of iRadius, oRadius. Lastly, you need to supply a start and ending angle sAngle, eAngle. Optionally,
  * pass the resolution for how many points on the arc are desired.
+ *
+ * x : Origin X
+ * y : Origin Y
+ * iRadius : Inner Radius
+ * oRadius : Outer Radius
+ * sAngle : Starting Angle
+ * eAngle : Ending Angle
+ * resolution : Resolution
  */
-
-import Commands from '../../lib/struct-anchor/CommandTypes';
-
-var PI = Math.PI, TWO_PI = Math.PI * 2, HALF_PI = Math.PI/2,
-  cos = Math.cos, sin = Math.sin, abs = Math.abs;
-
-const {MOVE, CURVE, CLOSE} = Commands;
-
-/*
-@function ArcSegment
-  x : Origin X
-  y : Origin Y
-  iRadius : Inner Radius
-  oRadius : Outer Radius
-  sAngle : Starting Angle
-  eAngle : Ending Angle
-  resolution : Resolution
-*/
 function arcSegment(x, y, iRadius, oRadius, sAngle, eAngle, resolution) {
 
   resolution = resolution || 8;

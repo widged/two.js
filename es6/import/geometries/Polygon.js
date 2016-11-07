@@ -1,5 +1,8 @@
 /* jshint esnext: true */
 
+const {cos, sin, PI} = Math;
+const TWO_PI = PI * 2;
+
 /**
  * polygon
  *
@@ -9,8 +12,6 @@
  * a triangle.
  */
 export default function(ox, oy, r, sides) {
-
-  var TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
 
   sides = Math.max(sides || 0, 3);
 

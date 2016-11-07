@@ -7,7 +7,7 @@ class Cache {
     this.cached = {};
   }
   get(key) {
-    var {cached, keyLoader} = this;
+    let {cached, keyLoader} = this;
     if(!cached.hasOwnProperty(key)) {
       var m = keyLoader(key);
       cached[key] = m;

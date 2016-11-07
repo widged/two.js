@@ -4,7 +4,7 @@ import is from './lib/is/is';
 
 var {isArray, isArrayLike, isObject} = is;
 
-var FN = {};
+let FN = {};
 
 // ------------------------
 // Arrays, Iterables
@@ -37,6 +37,10 @@ FN.mod = (v, l) => {
 };
 
 FN.exclude = (list) => { return (d) => { return !list.includes(d); }; };
+
+var isNumber = (o) =>  {
+  return (typeof o === 'number') || o instanceof Number;
+};
 
 
 

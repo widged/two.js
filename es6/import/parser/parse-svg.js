@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import is from '../../lib/is/is';
-import _ from '../../TwoUtil';
+import util from '../../TwoUtil';
 import Resolution from '../Resolution';
 import Commands from '../../lib/struct-anchor/CommandTypes';
 import Path from '../../lib/struct-anchor/Anchor';
@@ -15,11 +15,11 @@ import Matrix from '../../lib/struct-matrix/Matrix';
 import matrixFN  from '../renderable/fn-matrix';
 import Anchor from '../renderable/Anchor';
 
-var {isObject, isUndefined, isNotNumber, isArray, isNull} = is;
-var {getReflection, decomposeMatrix} = matrixFN;
-var {mod} = _;
-var {pow, cos, sin} = Math;
-var TWO_PI = Math.PI * 2;
+const {isObject, isUndefined, isNotNumber, isArray, isNull} = is;
+const {getReflection, decomposeMatrix} = matrixFN;
+const {mod} = util;
+const {PI, pow, cos, sin, sqrt, acos, abs} = Math;
+const TWO_PI = PI * 2;
 
 /**
  * Walk through item properties and pick the ones of interest.
@@ -582,7 +582,7 @@ var tags = {
 
           var rx = parseFloat(coords[0]);
           var ry = parseFloat(coords[1]);
-          var xAxisRotation = parseFloat(coords[2]) * Math.PI / 180;
+          var xAxisRotation = parseFloat(coords[2]) * PI / 180;
           var largeArcFlag = parseFloat(coords[3]);
           var sweepFlag = parseFloat(coords[4]);
 
@@ -612,11 +612,11 @@ var tags = {
           // adjust radii
           var l = _x2 / rx2 + _y2 / ry2;
           if (l > 1) {
-            rx *= Math.sqrt(l);
-            ry *= Math.sqrt(l);
+            rx *= sqrt(l);
+            ry *= sqrt(l);
           }
 
-          var amp = Math.sqrt((rx2 * ry2 - rx2 * _y2 - ry2 * _x2) / (rx2 * _y2 + ry2 * _x2));
+          var amp = sqrt((rx2 * ry2 - rx2 * _y2 - ry2 * _x2) / (rx2 * _y2 + ry2 * _x2));
 
           if (isNotNumber(amp)) {
             amp = 0;
@@ -633,11 +633,11 @@ var tags = {
           var cy = _cx * sin(xAxisRotation) + _cy * cos(xAxisRotation) + (y1 + y4) / 2;
 
           // vector magnitude
-          var m = function(v) { return Math.sqrt(Math.pow(v[0], 2) + Math.pow(v[1], 2)); };
+          var m = function(v) { return sqrt(pow(v[0], 2) + pow(v[1], 2)); };
           // ratio between two vectors
           var r = function(u, v) { return (u[0] * v[0] + u[1] * v[1]) / (m(u) * m(v)); };
           // angle between two vectors
-          var a = function(u, v) { return (u[0] * v[1] < u[1] * v[0] ? - 1 : 1) * Math.acos(r(u,v)); };
+          var a = function(u, v) { return (u[0] * v[1] < u[1] * v[0] ? - 1 : 1) * acos(r(u,v)); };
 
           // Calculate theta1 and delta theta F.6.5.4 + F.6.5.5
           var t1 = a([1, 0], [(_x - _cx) / rx, (_y - _cy) / ry]);
@@ -645,16 +645,16 @@ var tags = {
           var v = [( - _x - _cx) / rx, ( - _y - _cy) / ry];
           var dt = a(u, v);
 
-          if (r(u, v) <= -1) dt = Math.PI;
+          if (r(u, v) <= -1) dt = PI;
           if (r(u, v) >= 1) dt = 0;
 
           // F.6.5.6
           if (largeArcFlag)  {
-            dt = mod(dt, Math.PI * 2);
+            dt = mod(dt, PI * 2);
           }
 
           if (sweepFlag && dt > 0) {
-            dt -= Math.PI * 2;
+            dt -= PI * 2;
           }
 
           var length = Resolution;
@@ -868,8 +868,8 @@ var tags = {
       fy = cy;
     }
 
-    var ox = Math.abs(cx + fx) / 2;
-    var oy = Math.abs(cy + fy) / 2;
+    var ox = abs(cx + fx) / 2;
+    var oy = abs(cy + fy) / 2;
 
     var stops = [];
     for (var i = 0; i < node.children.length; i++) {

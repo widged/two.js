@@ -41,29 +41,16 @@ class Anchor extends Vector2 {
       // controls  -- An object that exists only for curves. It holds the anchor's control points of the bezier curve. It contains Two
       // parts, {left, right}, the control point to the `left` of the anchor's position and the control point to its right.
       this.controls = {};
-      var {left, right} = config || {};
-      if (isNumber(left.x)) {
-        this.controls.left.x = left.x;
-      }
-      if (isNumber(left.y)) {
-        this.controls.left.y = left.y;
-      }
-      if (isNumber(right.x)) {
-        this.controls.right.x = right.x;
-      }
-      if (isNumber(right.y)) {
-        this.controls.right.y = right.y;
-      }
+      let {left, right} = config || {};
+      this.controls.left  = Vector2.validatePoint(left);
+      this.controls.right = Vector2.validatePoint(left);
     }
-
   }
-
 
   get changeMonitor() { throw 'no direct access'; }
   set changeMonitor(_) {
     this.intern.changeMonitor = _;
   }
-
 
   get command() {
     return this.state.command;

@@ -10,11 +10,11 @@ import Text from './shape/Text';
 import Anchor from '../lib/struct-anchor/Anchor';
 import rendererBridge   from '../renderer/renderer-bridge';
 
-var {rectCentroid} = rectFN;
-var {isNumber, isArray} = is;
-var {updateShape} = rendererBridge;
+const {rectCentroid} = rectFN;
+const {isNumber, isArray} = is;
+const {updateShape} = rendererBridge;
 
-var FN = {};
+let FN = {};
 
 FN.text = (message, x, y, styles) => {
   return new Text(message, x, y, styles);
