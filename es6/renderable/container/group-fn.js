@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
-import is  from '../lib/is/is';
-import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
+import is  from '../../lib/is/is';
+import rectFN  from '../../lib/struct-bounding-rect/bounding-rect-fn';
 
 var {isNumber} = is;
 var {getEnclosingRect} = rectFN;

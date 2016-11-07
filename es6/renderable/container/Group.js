@@ -2,10 +2,11 @@
 
 import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
+import groupFN from './group-fn';
 
 const {Collection, CollectionEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
-const {is, common, exportFN, rectFN, groupFN, rendererBridge} = IMPORTS;
+const {is, common, exportFN, rectFN, rendererBridge} = IMPORTS;
 
 const {isNumber, isArray, isUndefined} = is;
 const {exclude, arrayOrArguments}  = common;

@@ -26,7 +26,6 @@ import rendererBridge   from '../renderer/renderer-bridge';
 
 import exportFN  from './fn-export';
 import curveFN  from './shape/fn-curved-path';
-import groupFN  from './fn-group';
 
 
 export default {
@@ -37,5 +36,5 @@ export default {
   Matrix, matrixFN,
   Collection, CollectionEventTypes,
   rendererBridge,
-  exportFN, rectFN, curveFN, groupFN
+  exportFN, rectFN, curveFN
 };
