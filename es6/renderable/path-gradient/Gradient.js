@@ -4,7 +4,6 @@ import IMPORTS from '../_imports';
 
 import Renderable  from '../Renderable';
 
-const {CollectionArray}  = IMPORTS;
 const {RenderableDefaults}  = IMPORTS;
 const {is, exportFN} = IMPORTS;
 

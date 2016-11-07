@@ -4,7 +4,6 @@ import is  from '../lib/is/is';
 import Commands  from '../lib/struct-anchor/CommandTypes';
 import matrixFN  from '../lib/struct-matrix/matrix-fn';
 import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
-import CollectionArray  from '../lib/struct-collection/Collection';
 
 var {getComputedMatrix} = matrixFN;
 var {isArray, isObject} = is;

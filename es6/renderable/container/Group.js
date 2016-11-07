@@ -2,9 +2,8 @@
 
 import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
-import ChildrenCollection from './ChildrenCollection';
 
-const {CollectionArray, Collection, CollectionEventTypes} = IMPORTS;
+const {Collection, CollectionEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, common, exportFN, rectFN, groupFN, rendererBridge} = IMPORTS;
 
