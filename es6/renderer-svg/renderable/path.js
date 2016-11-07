@@ -5,12 +5,12 @@ import svgFN    from './fn-svg';
 import anchorFN from '../../lib/struct-anchor/anchor-fn';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {renderShape} = base;
-var {createElement, setAttributes, getClip} = svgFN;
-var {toString} = anchorFN;
-var {getShapeProps, getShapeMatrix, getShapeRenderer, anyPropChanged} = rendererBridge;
+const {renderShape} = base;
+const {createElement, setAttributes, getClip} = svgFN;
+const {toString} = anchorFN;
+const {getShapeProps, getShapeMatrix, getShapeRenderer, anyPropChanged} = rendererBridge;
 
-var renderPath = (shp, domElement) => {
+const renderPath = (shp, domElement) => {
 
   var shapeProps = getShapeProps(shp);
 
@@ -36,8 +36,8 @@ var renderPath = (shp, domElement) => {
     attrs.d = toString(anchors, closed);
   }
 
-  if(anyPropChanged(shp, ['fill','stroke','linewidth','opacity','visibility'])) {
-    var { fill,  stroke,  linewidth,  opacity,  visible} = shapeProps;
+  if(anyPropChanged(shp, ['fill','stroke','linewidth','visibility'])) {
+    var { fill,  stroke,  linewidth,  visible} = shapeProps;
 
     if (fill && getShapeRenderer(fill)) { renderShape(fill, domElement); }
     attrs.fill = fill && fill.id ? 'url(#' + fill.id + ')' : fill;

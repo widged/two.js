@@ -4,11 +4,11 @@ import base from './base';
 import svgFN    from './fn-svg';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {createElement, setAttributes} = svgFN;
-var {renderShape} = base;
-var {anyPropChanged, getShapeProps, getShapeMatrix, getShapeRenderer} = rendererBridge;
+const {createElement, setAttributes} = svgFN;
+const {renderShape} = base;
+const {anyPropChanged, getShapeProps, getShapeMatrix, getShapeRenderer} = rendererBridge;
 
-var renderGroup = (shp, domElement) => {
+const renderGroup = (shp, domElement) => {
 
   var shapeProps = getShapeProps(shp);
 

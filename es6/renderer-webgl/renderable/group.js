@@ -7,13 +7,13 @@ import rendererFN from './fn-renderer';
 import glFN       from './fn-gl';
 import base from './base';
 
-var {renderShape} = base;
-var {Multiply: multiplyMatrix} = Matrix;
-var {recomputeMatrixAndScaleIfNecessary} = rendererFN;
-var {getShapeProps, getShapeRenderer, anyPropChanged, raiseFlags} = rendererBridge;
-var {MaskMode, remove} = glFN;
+const {renderShape} = base;
+const {Multiply: multiplyMatrix} = Matrix;
+const {recomputeMatrixAndScaleIfNecessary} = rendererFN;
+const {getShapeProps, getShapeRenderer, anyPropChanged, raiseFlags} = rendererBridge;
+const {MaskMode, remove} = glFN;
 
-var renderGroup = (shp, gl, program) => {
+const renderGroup = (shp, gl, program) => {
 
   var shapeProps = getShapeProps(shp);
 

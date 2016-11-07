@@ -7,18 +7,16 @@ import rendererFN from './fn-renderer';
 import canvasFN   from './fn-canvas';
 import base from './base';
 
-var {isNumber, isString} = is;
-var {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
-var {drawPathAnchors} = canvasFN;
-var {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
-var {drawFill, drawStroke, drawGradientShape} = rendererFN;
-var {includePointInBoundingRect} = rectFN;
-var {canvas, getContext, renderShape} = base;
-var {max} = Math;
+const {isNumber, isString} = is;
+const {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
+const {drawPathAnchors} = canvasFN;
+const {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
+const {drawFill, drawStroke, drawGradientShape} = rendererFN;
+const {includePointInBoundingRect} = rectFN;
+const {canvas, getContext, renderShape} = base;
+const {max} = Math;
 
-
-
-var renderPath = (shp, gl, program, forcedParent) => {
+const renderPath = (shp, gl, program, forcedParent) => {
 
   var shapeProps = getShapeProps(shp);
 

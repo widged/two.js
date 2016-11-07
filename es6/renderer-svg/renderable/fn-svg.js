@@ -3,7 +3,7 @@
 import dom   from '../../platform/dom';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {getShapeRenderer} = rendererBridge;
+const {getShapeRenderer} = rendererBridge;
 
 const FN = {};
 

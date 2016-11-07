@@ -2,12 +2,12 @@
 
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer} = rendererBridge;
+const {anyPropChanged, getShapeProps, getShapeRenderer} = rendererBridge;
 
-var renderLinearGradient = (shp, ctx) => {
+const renderLinearGradient = (shp, ctx) => {
 
-  var shapeProps = getShapeProps(shp);
-  var renderer   = getShapeRenderer(shp);
+  const shapeProps = getShapeProps(shp);
+  const renderer   = getShapeRenderer(shp);
 
   if (!renderer.gradient || anyPropChanged(shp, ['stops', 'endPoints'])) {
 

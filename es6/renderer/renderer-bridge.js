@@ -5,11 +5,12 @@ import Commands  from '../lib/struct-anchor/CommandTypes';
 import matrixFN  from '../lib/struct-matrix/matrix-fn';
 import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
 
-var {getComputedMatrix} = matrixFN;
-var {isArray, isObject} = is;
-var {removeRectBorder, includePointInBoundingRect, shimBoundingClientRect} = rectFN;
+const {getComputedMatrix} = matrixFN;
+const {isArray, isObject} = is;
+const {removeRectBorder, includePointInBoundingRect, shimBoundingClientRect} = rectFN;
+const {round} = Math;
 
-var FN = {}, NotInUse = {};
+const FN = {}, NotInUse = {};
 
 // --------------------
 // preprocess
@@ -83,8 +84,6 @@ FN.updatePath = (shp) => {
 
 
 FN.copyVertices = ({anchors, beginning, ending}) => {
-  var {round} = Math;
-
   var l = anchors.length;
   var last = l - 1, v;
 
@@ -263,7 +262,6 @@ FN.dropFlags = (shp, keys) => {
         shp.__flags[k] = false;
       });
   }
-
 };
 
 export default FN;

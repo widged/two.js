@@ -5,13 +5,12 @@ import rendererBridge   from '../../renderer/renderer-bridge';
 import rendererFN from './fn-renderer';
 import base from './base';
 
-var {isNumber, isString} = is;
-var {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
-var {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
-var {drawFill, drawStroke} = rendererFN;
-var {canvas, getContext, renderShape, drawGradientShape} = base;
-var {max} = Math;
-
+const {isNumber, isString} = is;
+const {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
+const {hasGradientChanged, renderAnyPath, isHidden, updateAndClearCanvasRect} = rendererFN;
+const {drawFill, drawStroke} = rendererFN;
+const {canvas, getContext, renderShape, drawGradientShape} = base;
+const {max} = Math;
 
 var renderText = (shp, gl, program, forcedParent) => {
 
@@ -30,15 +29,12 @@ var renderText = (shp, gl, program, forcedParent) => {
   var assertShapeChange = () => {
     return hasGradientChanged || anyPropChanged(shp, ['value','family','size','leading','alignment','baseline','style','weight','decoration']);
   };
-
   // >>>
 
   var renderer = renderAnyPath(gl, program, shp, assertShapeChange, getBoundingClientRect, forcedParent, updateShapeCanvas);
   return shp.flagReset();
 
-
 };
-
 
 const TEXT_ALIGNMENTS = {
   left: 'start',

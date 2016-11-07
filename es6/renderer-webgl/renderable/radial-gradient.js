@@ -3,10 +3,10 @@
 import base from './base';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {isCanvasContext} = base;
-var {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
+const {isCanvasContext} = base;
+const {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
 
-var renderRadialGradient = (shp, canvasContext) => {
+const renderRadialGradient = (shp, canvasContext) => {
 
   var shapeProps = getShapeProps(shp);
 

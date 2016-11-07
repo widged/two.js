@@ -4,9 +4,8 @@ import base   from './renderable/base';
 import Renderer from '../renderer/TwoRenderer';
 import svgFN    from './renderable/fn-svg';
 
-var {renderScene} = base;
-var {createElement, setAttributes} = svgFN;
-
+const {renderScene} = base;
+const {createElement, setAttributes} = svgFN;
 
 /**
  * @class

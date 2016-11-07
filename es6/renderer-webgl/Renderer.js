@@ -8,15 +8,10 @@ import base from './renderable/base';
 import rendererBridge   from '../renderer/renderer-bridge';
 import glFN   from './renderable/fn-gl';
 
-var {isUndefined} = is;
-var {raiseFlags, dropFlags, getShapeMatrix} = rendererBridge;
+const {isUndefined} = is;
+const {raiseFlags, dropFlags, getShapeMatrix} = rendererBridge;
 
-/**
- * Constants
- */
-
-var identity = [1, 0, 0, 0, 1, 0, 0, 0, 1];
-
+const identity = [1, 0, 0, 0, 1, 0, 0, 0, 1];
 
 class WebglRenderer extends Renderer {
 
@@ -119,7 +114,5 @@ class WebglRenderer extends Renderer {
     return this;
   }
 }
-
-
 
 export default WebglRenderer;

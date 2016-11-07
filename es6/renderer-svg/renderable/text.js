@@ -3,8 +3,8 @@
 import svgFN    from './fn-svg';
 import rendererBridge from '../../renderer/renderer-bridge';
 
-var {createElement, setAttributes, getClip} = svgFN;
-var {anyPropChanged, getShapeProps, getShapeMatrix, getShapeRenderer} = rendererBridge;
+const {createElement, setAttributes, getClip} = svgFN;
+const {anyPropChanged, getShapeProps, getShapeMatrix, getShapeRenderer} = rendererBridge;
 
 const ALIGNMENTS = {
   left: 'start',
@@ -12,9 +12,9 @@ const ALIGNMENTS = {
   right: 'end'
 };
 
-var renderText = (shp, domElement) => {
+const renderText = (shp, domElement) => {
 
-  var shapeProps = getShapeProps(shp);
+  const shapeProps = getShapeProps(shp);
 
   var attrs = {};
 

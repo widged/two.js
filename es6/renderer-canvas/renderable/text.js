@@ -4,10 +4,9 @@ import is  from '../../lib/is/is';
 import base from './base';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer, getShapeMatrix} = rendererBridge;
-var {isDefaultMatrix, renderShape, isHidden} = base;
-
-var {isString, isNumber} = is;
+const {anyPropChanged, getShapeProps, getShapeRenderer, getShapeMatrix} = rendererBridge;
+const {isDefaultMatrix, renderShape, isHidden} = base;
+const {isString, isNumber} = is;
 
 const ALIGNMENTS = {
     left: 'start',
@@ -16,15 +15,14 @@ const ALIGNMENTS = {
 };
 
 
-var renderText = (shp, ctx, forced, parentClipped) => {
+const renderText = (shp, ctx, forced, parentClipped) => {
 
-  var shapeProps = getShapeProps(shp);
+  const shapeProps = getShapeProps(shp);
+  const renderer = getShapeRenderer(shp);
+  const parentRenderer = getShapeRenderer(shp.parent);
 
-  var renderer = getShapeRenderer(shp);
-  var parentRenderer = getShapeRenderer(shp.parent);
-
-  var { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
-  var { anchorColl,  closed } = shapeProps;
+  let { stroke,  linewidth,  fill,  opacity,  visible,  clip,  mask  } = shapeProps;
+  let { anchorColl,  closed } = shapeProps;
   var  matrix  = getShapeMatrix(shp);
 
   opacity = opacity * parentRenderer.opacity;

@@ -9,13 +9,12 @@ import FloatArray   from '../../lib/struct-float-array/FloatArray';
 import base from './base';
 import glFN   from './fn-gl';
 
-var {getShapeProps, getShapeMatrix, updateShape, anyPropChanged, getShapeRenderer, raiseFlags} = rendererBridge;
-var {Multiply: multiplyMatrix} = Matrix;
-var {updateBuffer, updateTexture, drawTextureAndRect} = glFN;
-var {getContext, renderShape} = base;
+const {getShapeProps, getShapeMatrix, updateShape, anyPropChanged, getShapeRenderer, raiseFlags} = rendererBridge;
+const {Multiply: multiplyMatrix} = Matrix;
+const {updateBuffer, updateTexture, drawTextureAndRect} = glFN;
+const {getContext, renderShape} = base;
 
-
-var {isObject, isString} = is;
+const {isObject, isString} = is;
 
 const FN = {};
 
@@ -30,7 +29,7 @@ FN.hasGradientChanged = (shp) => {
 };
 
 
-var removeChildNode = function(child, gl) {
+const removeChildNode = function(child, gl) {
   if (child.children) {
     for (var i = 0; i < child.children.length; i++) {
       removeChildNode(child.children[i], gl);

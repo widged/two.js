@@ -3,10 +3,8 @@
 import rendererBridge   from '../../renderer/renderer-bridge';
 import svgFN    from './fn-svg';
 
-var {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
-var {renderNode, createGradientStop} = svgFN;
-
-
+const {getShapeProps, getShapeRenderer, anyPropChanged} = rendererBridge;
+const {renderNode, createGradientStop} = svgFN;
 
 var renderRadialGradient = (shp, domElement) => {
 

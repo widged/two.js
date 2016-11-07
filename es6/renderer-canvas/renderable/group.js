@@ -3,10 +3,10 @@
 import base from './base';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer, getShapeMatrix} = rendererBridge;
-var {isDefaultMatrix, renderShape} = base;
+const {anyPropChanged, getShapeProps, getShapeRenderer, getShapeMatrix} = rendererBridge;
+const {isDefaultMatrix, renderShape} = base;
 
-var renderGroup = (shp, ctx) => {
+const renderGroup = (shp, ctx) => {
 
   var shapeProps = getShapeProps(shp);
   var renderer   = getShapeRenderer(shp);

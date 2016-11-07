@@ -4,7 +4,7 @@ import Cache   from '../../lib/cache/Cache';
 import Commands from '../../lib/struct-anchor/CommandTypes';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {preprocess} = rendererBridge;
+const {preprocess} = rendererBridge;
 
 const FN = {};
 
@@ -12,7 +12,7 @@ const FN = {};
 //  Interface
 // ------------------------------------
 
-var shapeCache = new Cache((key) => { return require('./' + key).default; });
+const shapeCache = new Cache((key) => { return require('./' + key).default; });
 
 FN.renderScene = (gp, ctx) => {
   const {renderShape} = FN;
