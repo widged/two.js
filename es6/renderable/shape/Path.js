@@ -4,7 +4,7 @@ import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
 
 const CollectionArray = IMPORTS.Collection;
-const {CollectionEventTypes} = IMPORTS;
+const {Collection, CollectionEventTypes} = IMPORTS;
 const {Anchor, Vector, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, common, curveFN, rectFN, exportFN, rendererBridge} = IMPORTS;
@@ -66,7 +66,7 @@ class Path extends Renderable {
     if(k === 'anchorColl') {
       // remove any even listener from the current `anchors`
       this.disactivateAnchors(this.getState().anchorColl);
-      v = new CollectionArray(v);
+      v = new Collection(v);
     } else if(['closed','curved','automatic'].includes(k)) {
       v = (v === true) ? true : false;
     }

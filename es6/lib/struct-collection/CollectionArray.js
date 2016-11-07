@@ -14,11 +14,17 @@ class CollectionArray  {
   constructor(arr) {
     this.dispatcher = new EventEmitter(Object.keys(CollectionEventTypes));
     this.state = {items: arr};
+    /*
     if (arguments.length > 1) {
       Array.prototype.push.apply(this, arguments);
     } else if (arguments[0] && Array.isArray(arguments[0])) {
       Array.prototype.push.apply(this, arguments[0]);
     }
+    */
+  }
+
+  get length() {
+    return this.items.length;
   }
 
   get items() {
@@ -40,7 +46,7 @@ class CollectionArray  {
   }
 
   addItem(d) {
-    Array.prototype.push.apply(this, [d]);
+    // Array.prototype.push.apply(this, [d]);
     var items = this.items;
     var added = items.push(d);
     this.items = items;

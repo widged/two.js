@@ -56,7 +56,7 @@ class Group extends Renderable {
     if(k === 'childrenColl') {
         var oldChildren = this.getState().childrenColl;
         if (oldChildren && oldChildren.dispatcher) { oldChildren.dispatcher.off(); }
-        v = new CollectionArray(v);
+        v = new Collection(v);
     }
     return v;
   }
@@ -166,7 +166,7 @@ class Group extends Renderable {
 
   /**
    * Returns a new instance of a Two.Group with the same settings.
-   * This will copy the childrenColl as well, which can be computationally expensive.
+   * This will copy the `children` as well, which can be computationally expensive.
    */
    /*
     :TODO: Group has a gotcha in that it's at the moment required to be bound to
@@ -192,7 +192,7 @@ class Group extends Renderable {
 
   /**
    * Export the data from the instance of Group into a plain JavaScript
-   * object. This also makes all childrenColl plain JavaScript objects. Great
+   * object. This also makes all `children` plain JavaScript objects. Great
    * for turning into JSON and storing in a database.
    */
    // :NOTE: Not used internally, only called by the user

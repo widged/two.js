@@ -70,11 +70,6 @@ class Collection  {
 */
 
   addItem(d) {
-    return this.push(d);
-
-  }
-
-  push(d) {
     var items = this.items;
     var added = items.push(d);
     this.item = items;

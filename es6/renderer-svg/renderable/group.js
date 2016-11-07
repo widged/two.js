@@ -39,8 +39,9 @@ var renderGroup = (shp, domElement) => {
   }
 
   var {childrenColl} = shapeProps;
-  for (var i = 0, ni = childrenColl.length; i < ni; i++) {
-    var child = childrenColl[i];
+  var children = childrenColl.items;
+  for (var i = 0; i < children.length; i++) {
+    var child = children[i];
     renderShape(child, domElement);
   }
 

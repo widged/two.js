@@ -52,7 +52,6 @@ class Gradient extends Renderable {
         color   = isString(color) ? color : isOdd ? '#fff' : '#000';
         return {offset, opacity, color};
       });
-      v = new CollectionArray(v);
     }
     return v;
   }

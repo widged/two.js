@@ -36,8 +36,9 @@ var renderGroup = (shp, ctx) => {
   }
 
   var {childrenColl} = shp.getProps();
-  for (var i = 0; i < childrenColl.length; i++) {
-    var child = childrenColl[i];
+  var children = childrenColl.items;
+  for (var i = 0; i < children.length; i++) {
+    var child = children[i];
     renderShape(child, ctx);
   }
 
