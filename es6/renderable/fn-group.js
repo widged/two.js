@@ -16,10 +16,10 @@ FN.isShape = (object) => {
 
 FN.addShapesToList = (shapes, childrenColl) => {
   var {isShape} = FN;
-  if(childrenColl.constructor.name !== 'ChildrenCollection') { throw "[GroupFN.addShapesTochidren] case not covered"; }
+  if(!childrenColl.addItem) { throw "[GroupFN.addShapesTochidren] case not covered"; }
   for (var i = 0, ni = shapes.length, shp = null; i < ni; i++) {
     shp = shapes[i];
-    if (isShape(shp)) { childrenColl.push(shp); }
+    if (isShape(shp)) { childrenColl.addItem(shp); }
   }
   return childrenColl;
 };
@@ -37,6 +37,14 @@ FN.removeShapesFromChildren = (objects, childrenColl) => {
 
 FN.adoptShapes = (group, shapes) => {
   var {replaceParent} = FN;
+
+  if(group.childrenColl) {
+    var {ids, items} = group.childrenColl;
+    if(!ids) { ids = group.ids = {}; }
+    for (var i = 0; i < items.length; i++) {
+      ids[items[i].id] = items[i];
+    }
+  }
   for (var i = 0; i < shapes.length; i++) {
     replaceParent(group, shapes[i], group);
   }
@@ -44,6 +52,16 @@ FN.adoptShapes = (group, shapes) => {
 
 FN.dropShapes = (group, shapes) => {
   var {replaceParent} = FN;
+
+  if(group.childrenColl) {
+    var {ids, items} = group.childrenColl;
+    if(!ids) { ids = group.ids = {}; }
+    for (var i = 0; i < items.length; i++) {
+      delete ids[items[i].id];
+    }
+    return ids;
+  }
+
   for (var i = 0; i < shapes.length; i++) {
     replaceParent(group, shapes[i]);
   }
@@ -79,6 +97,7 @@ FN.replaceParent = (that, child, newParent) => {
   }
 
   var {childrenColl:parentChildren} = that.getProps();
+  if(!parentChildren.ids)    { parentChildren.ids = {}; }
   if (parent && parentChildren.ids[child.id]) {
 
     var {additions: parentAdditions, substractions: parentSubstrations} = parent.getState();

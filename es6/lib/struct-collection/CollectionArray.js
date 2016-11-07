@@ -51,6 +51,11 @@ class CollectionArray  {
     return shifted;
   }
 
+  addItem() {
+    var pushed = Array.prototype.push.apply(this, arguments);
+    this.whenItemsAdded(arguments)
+    return pushed;
+  }
   push() {
     var pushed = Array.prototype.push.apply(this, arguments);
     this.whenItemsAdded(arguments)
