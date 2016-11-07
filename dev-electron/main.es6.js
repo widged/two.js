@@ -55,7 +55,6 @@ appNode.appendChild(h('webgl'))
   renderShapes(two);
 
 
-
 }
 main();
 

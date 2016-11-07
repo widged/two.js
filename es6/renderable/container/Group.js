@@ -78,14 +78,8 @@ class Group extends Renderable {
   // Accessors
   // --------------------
 
-  get childrenColl() {
-    console.trace();
-    return this.state.childrenColl;
-  }
-
   get children() {
-    console.trace();
-    return this.state.children;
+    return this.state.childrenColl.items;
   }
 
   get ids() {
