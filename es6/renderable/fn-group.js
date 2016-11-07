@@ -39,13 +39,13 @@ FN.adoptShapes = (group, shapes) => {
   var {replaceParent} = FN;
 
   if(group.childrenColl) {
-    var {ids, items} = group.childrenColl;
+    var {children, ids} = group;
     if(!ids) { ids = group.ids = {}; }
-    for (var i = 0; i < items.length; i++) {
-      ids[items[i].id] = items[i];
+    for (let i = 0; i < children.length; i++) {
+      ids[children[i].id] = children[i];
     }
   }
-  for (var i = 0; i < shapes.length; i++) {
+  for (let i = 0, ni = shapes.length; i < ni; i++) {
     replaceParent(group, shapes[i], group);
   }
 };
@@ -54,15 +54,15 @@ FN.dropShapes = (group, shapes) => {
   var {replaceParent} = FN;
 
   if(group.childrenColl) {
-    var {ids, items} = group.childrenColl;
+    var {children, ids} = group;
     if(!ids) { ids = group.ids = {}; }
-    for (var i = 0; i < items.length; i++) {
-      delete ids[items[i].id];
+    for (let i = 0; i < children.length; i++) {
+      delete ids[children[i].id];
     }
     return ids;
   }
 
-  for (var i = 0; i < shapes.length; i++) {
+  for (let i = 0, ni = shapes.length; i < ni; i++) {
     replaceParent(group, shapes[i]);
   }
 };

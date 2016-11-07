@@ -34,6 +34,7 @@ class Group extends Renderable {
   constructor(...shapes) {
     super();
     this.setState({
+      ids: [],
       additions: [],
       substractions : []
     });
@@ -45,6 +46,7 @@ class Group extends Renderable {
     // var excluded = 'closed,curved,automatic,beginning,ending,mask'.split(',')
     // unraised flags: 'additions,substractions,order,mask'
   }
+
 
   // -----------------
   // IStated
@@ -76,8 +78,23 @@ class Group extends Renderable {
   // Accessors
   // --------------------
 
-  get childrenColl() { return this.state.childrenColl; }
+  get childrenColl() {
+    console.trace();
+    return this.state.childrenColl;
+  }
 
+  get children() {
+    console.trace();
+    return this.state.children;
+  }
+
+  get ids() {
+    return this.state.ids;
+  }
+
+  set ids(_) {
+    this.state.ids = _;
+  }
 
   // --------------------
   // Main
