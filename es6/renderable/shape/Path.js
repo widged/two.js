@@ -67,6 +67,10 @@ class Path extends Renderable {
     this.setProps(props);
   }
 
+  get changed() {
+    return this.state.anchorChangeMonitor.changed;
+  }
+
   // --------------------
   // IStated
   // --------------------

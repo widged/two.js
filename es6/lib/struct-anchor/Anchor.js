@@ -58,6 +58,7 @@ class Anchor extends Vector {
 
   }
 
+
   get changeMonitor() { throw 'no direct access'; }
   set changeMonitor(_) {
     this.intern.changeMonitor = _;

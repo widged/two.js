@@ -56,7 +56,7 @@ FN.updateShape = (shp, isDeep) => {
   var {updateShape, updateAnyShape, updatePath, plotPath} = FN;
   if(!shp) { return; }
   if(shp.shapeType === 'path') {
-    var changed = shp.state.anchorChangeMonitor.changed;
+    var changed = shp.changed;
     if(changed) { shp = updatePath(shp);  }
     if (shp.getProps().automatic) { plotPath(shp); }
     updateAnyShape(shp, isDeep);
