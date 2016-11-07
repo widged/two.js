@@ -5,19 +5,17 @@ import Commands  from './CommandTypes';
 import VectorEventTypes   from '../struct-vector/VectorEventTypes';
 import Vector  from '../struct-vector/Vector';
 
-var {isNumber, isObject} = is;
+const {isNumber, isObject} = is;
+const {MOVE, CURVE} = Commands;
 
-  /**
-   * Taken from the Adobe Illustrator nomenclature an `Anchor` holds 3 `Vector`s:
-   * the anchor point and its `left` and `right` handles: .
-   * An anchor provides renderers information about what action to take when
-   * plotting points. It inherits all properties and methods from `Vector`.
-   * For curves, anchors also define the control points of bezier curves.
-   */
-
-
-
- class Anchor extends Vector {
+/**
+ * Taken from the Adobe Illustrator nomenclature an `Anchor` holds 3 `Vector`s:
+ * the anchor point and its `left` and `right` handles: .
+ * An anchor provides renderers information about what action to take when
+ * plotting points. It inherits all properties and methods from `Vector`.
+ * For curves, anchors also define the control points of bezier curves.
+ */
+class Anchor extends Vector {
 
    /**
    * new Two.Anchor(x, y, lx, ly, rx, ry, command);
@@ -31,37 +29,32 @@ var {isNumber, isObject} = is;
 
     this.intern.changeMonitor = null;
     // command  -- The command for the given anchor. It must be one of `CommandsTypes`.
-    this.state.command = command || Commands.MOVE;
+    this.state.command = command || MOVE;
     this.state.relative = true;
 
-    if (!command) {
-      return this;
+    if(config && command && command !== 'C') {
+      console.log('[WARN] only C expects a config', config, command)
     }
 
-    // controls  -- An object that exists only for curves. It holds the anchor's control points of the bezier curve. It contains Two
-    // parts, {left, right}, the control point to the `left` of the anchor's position and the control point to its right.
+    if(command && command === 'C') {
       Anchor.AppendCurveProperties(this);
-
-      if(config && command !== 'C') {
-        console.log('[WARN] only C expects a config', config, command)
+      // controls  -- An object that exists only for curves. It holds the anchor's control points of the bezier curve. It contains Two
+      // parts, {left, right}, the control point to the `left` of the anchor's position and the control point to its right.
+      this.controls = {};
+      var {left, right} = config || {};
+      if (isNumber(left.x)) {
+        this.controls.left.x = left.x;
       }
-
-      if(command === 'C') {
-        this.controls = {};
-        var {left, right} = config || {};
-        if (isNumber(left.x)) {
-          this.controls.left.x = left.x;
-        }
-        if (isNumber(left.y)) {
-          this.controls.left.y = left.y;
-        }
-        if (isNumber(right.x)) {
-          this.controls.right.x = right.x;
-        }
-        if (isNumber(right.y)) {
-          this.controls.right.y = right.y;
-        }
+      if (isNumber(left.y)) {
+        this.controls.left.y = left.y;
       }
+      if (isNumber(right.x)) {
+        this.controls.right.x = right.x;
+      }
+      if (isNumber(right.y)) {
+        this.controls.right.y = right.y;
+      }
+    }
 
   }
 
@@ -77,7 +70,7 @@ var {isNumber, isObject} = is;
 
   set command(c) {
     this.state.command = c;
-    if (this.state.command === Commands.CURVE && !isObject(this.controls)) {
+    if (this.state.command === CURVE && !isObject(this.controls)) {
       Anchor.AppendCurveProperties(this);
     }
     this.whenChange('command');
