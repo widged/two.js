@@ -35,7 +35,7 @@ var renderGroup = (shp, gl, program) => {
 
   var {childrenColl} = shapeProps;
   // `shp.children` is a collection, not a proper array
-  Array.from(childrenColl).forEach((child) => {
+  childrenColl.items.forEach((child) => {
     renderShape(child, gl, program);
   });
 

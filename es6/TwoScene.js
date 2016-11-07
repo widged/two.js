@@ -61,40 +61,7 @@ class TwoScene {
     return render;
   }
 
-  /**
-   * Convenience Methods
-   */
 
-  /**
-   * Add one or many shapes / groups to the instance. Objects can be added as arguments, two.add(o1, o2, oN), or as an array depicted above.
-   */
-  add(o) {
-
-    var objects = o;
-    if (!(objects instanceof Array)) {
-      objects = Array.from(arguments);
-    }
-
-    this.state.scene.add(objects);
-    return this;
-
-  }
-
-  /**
-   * Remove one or many shapes / groups from the instance. Objects can be removed as arguments, two.remove(o1, o2, oN), or as an array depicted above.
-   */
-  remove(o) {
-
-    var objects = o;
-    if (!(objects instanceof Array)) {
-      objects = Array.from(arguments);
-    }
-
-    this.state.scene.remove(objects);
-
-    return this;
-
-  }
 
   /**
    * Removes all objects from the instance's scene. If you intend to have the browser garbage collect this, don't forget to delete the references in your application as well.
@@ -115,6 +82,22 @@ class TwoScene {
     if(rotation) { pth.rotation = rotation; }
     this.state.scene.add(pth);
     return pth;
+  }
+
+  /**
+   * Add one or many shapes / groups to the instance. Objects can be added as arguments, two.add(o1, o2, oN), or as an array depicted above.
+   */
+  addShapes(arr) {
+    this.state.scene.add(arr);
+    return this;
+  }
+
+  /**
+   * Remove one or many shapes / groups from the instance. Objects can be removed as arguments, two.remove(o1, o2, oN), or as an array depicted above.
+   */
+  removeShapes(arr) {
+    this.state.scene.remove(arr);
+    return this;
   }
 
   addShape(shape, centerIt) {
