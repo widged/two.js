@@ -5,6 +5,7 @@ import util  from '../../TwoUtil';
 import Commands  from '../../lib/struct-anchor/CommandTypes';
 
 import Anchor   from '../../lib/struct-anchor/Anchor';
+import Vector   from '../../lib/struct-vector/Vector';
 import VectorEvented   from '../../lib/struct-vector/VectorEvented';
 import Matrix   from '../../lib/struct-matrix/Matrix';
 
@@ -335,7 +336,7 @@ FN.getControlPoints = (a, b, c)  => {
  */
 FN.getReflection = (a, b, relative)  => {
 
-  return new VectorEvented(
+  return new Vector(
     2 * a.x - (b.x + a.x) - (relative ? a.x : 0),
     2 * a.y - (b.y + a.y) - (relative ? a.y : 0)
   );
@@ -582,7 +583,7 @@ NotInUse.getPointAt = (t, obj, pth) => {
         return obj;
       }
 
-      return new VectorEvented(x, y);
+      return new Vector(x, y);
 
 };
 

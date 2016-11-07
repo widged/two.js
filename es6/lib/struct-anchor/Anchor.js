@@ -28,6 +28,7 @@ var {isNumber, isObject} = is;
    */
   constructor(x, y, command, config) {
     super(x,y);
+
     this.intern.changeMonitor = null;
     // command  -- The command for the given anchor. It must be one of `CommandsTypes`.
     this.state.command = command || Commands.MOVE;
@@ -96,33 +97,15 @@ var {isNumber, isObject} = is;
   whenChange(attributeName) {
     // let's comment out, no need to dispatch events
     // super.whenChange(attributeName);
+    // :TODO: trigger change when controls (left or right) change .
     if(this.intern.changeMonitor) { this.intern.changeMonitor.change(this); }
   }
 
-   /**
-   * Convenience method to add event bubbling to an attached path.
-   */
-  listen() {
-    if (!isObject(this.controls)) {
-      Anchor.AppendCurveProperties(this);
-    }
-    this.controls.left.dispatcher.on(VectorEventTypes.change, this.whenChange);
-    this.controls.right.dispatcher.on(VectorEventTypes.change, this.whenChange);
-    return this;
-  }
-
-  /**
-  * Convenience method to remove event bubbling to an attached path.
-  */
-  ignore() {
-    this.controls.left.dispatcher.off(VectorEventTypes.change, this.whenChange);
-    this.controls.right.dispatcher.off(VectorEventTypes.change, this.whenChange);
-    return this;
-  }
 
   /**
    Returns a new instance of an `Anchor` with the same x, y, controls, and command values as the instance.
   */
+  // :NOTE: the code doing the cloning needs to reattach the changeMonitor
   clone() {
 
     var controls = this.controls;

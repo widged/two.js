@@ -10,7 +10,7 @@ import groupFN  from '../renderable/container/fn-group';
 import Gradient from '../renderable/path-gradient/Gradient';
 import RadialGradient from '../renderable/gradient/RadialGradient';
 import LinearGradient from '../renderable/gradient/RadialGradient';
-import VectorEvented from '../lib/struct-vector/VectorEvented';
+import Vector from '../lib/struct-vector/Vector';
 import Matrix from '../../lib/struct-matrix/Matrix';
 import matrixFN  from '../renderable/fn-matrix';
 import Anchor from '../renderable/Anchor';
@@ -460,7 +460,7 @@ var tags = {
           y1 = coord.y;
 
           if (!control) {
-            control = new VectorEvented();//.copy(coord);
+            control = new Vector();//.copy(coord);
           }
 
           if (lower === 'c') {
@@ -520,7 +520,7 @@ var tags = {
           y1 = coord.y;
 
           if (!control) {
-            control = new VectorEvented();//.copy(coord);
+            control = new Vector();//.copy(coord);
           }
 
           if (control.isZero()) {

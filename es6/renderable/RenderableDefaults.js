@@ -50,7 +50,7 @@ FN.sceneNodeBodyStyle = {
 /*
 rotation - A number that represents the rotation of the path in the drawing space, in radians.
 scale - A `number` that represents the uniform scale of the path in the drawing space.
-translation - A `VectorEvented` that represents x, y translation of the path in the drawing space.
+translation - A `Vector` that represents x, y translation of the path in the drawing space.
 clip - A `boolean` describing whether to render this shape as a clipping mask. This property is set automatically in correspondence with `Group.mask`. Defaults to false.
 */
 FN.Renderable = {
@@ -180,9 +180,9 @@ FN.Gradient = {
 };
 
 /*
-center -- A `VectorEvented` that represents the position of the x, y coordinates at the center of the gradient.
+center -- A `Vector` that represents the position of the x, y coordinates at the center of the gradient.
 radius -- A number representing the radius of the radialGradient.
-focal -- A `VectorEvented` that represents the position of the x, y coordinates as the focal point for the gradient's trajectory.
+focal -- A `Vector` that represents the position of the x, y coordinates as the focal point for the gradient's trajectory.
 spread -- Defines how the gradient is rendered by the renderer. For more details see the w3c svg spec.
 stops -- A list of `Stop` objects that is two-way databound. Individual stops may be manipulated.
 */
@@ -191,8 +191,8 @@ FN.RadialGradient = {
 };
 
 /**
-left -- A `VectorEvented` that represents the position of the x, y coordinates to the “left” of the gradient's two end points.
-right -- A `VectorEvented` that represents the position of the x, y coordinates to the “right” of the gradient's two end points.
+left -- A `Vector` that represents the position of the x, y coordinates to the “left” of the gradient's two end points.
+right -- A `Vector` that represents the position of the x, y coordinates to the “right” of the gradient's two end points.
 spread -- Defines how the gradient is rendered by the renderer. For more details see the w3c svg spec.
 stops -- A list of `Stop` objects that is two-way databound. Individual stops may be manipulated.
 */

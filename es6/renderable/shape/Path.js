@@ -287,7 +287,11 @@ class Path extends Renderable {
   clone() {
     var shp = this;
     var  {closed, curved, automatic, anchorColl} = shp.getProps();
-    var anchors = anchorColl.items.map((d) => { return d.clone(); });
+    var anchors = anchorColl.items.map((d) => {
+      var clone = d.clone();
+      clone.changeMonitor = this.anchorChangeMonitor;
+      return clone; 
+    });
     var clone = new Path(anchors, closed, curved, !automatic);
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
       k = PROP_KEYS[i];
