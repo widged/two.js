@@ -19,15 +19,11 @@ FN.preprocess = (shp) => {
   var {updateShape, orientAnchorsTowards} = FN;
   var {pointTowards} = shp.getProps();
   // TODO: Update to not __always__ update. Just when it needs to.
-  if(shp.shapeType === 'path') {
-    console.log(shp.state.anchorChangeMonitor.changed)
-  }
   updateShape(shp);
   if(pointTowards) {
     orientAnchorsTowards(shp, pointTowards);
   }
 };
-
 
 FN.orientAnchorsTowards = (shp, pointTowards) => {
   // :TODO: defaults to rectCentroid
@@ -60,10 +56,11 @@ FN.updateShape = (shp, isDeep) => {
   var {updateShape, updateAnyShape, updatePath, plotPath} = FN;
   if(!shp) { return; }
   if(shp.shapeType === 'path') {
-    var {automatic} = shp.getProps();
-    // shp = updatePath(shp);
-    if (automatic) { plotPath(shp); }
+    var changed = shp.state.anchorChangeMonitor.changed;
+    if(changed) { shp = updatePath(shp);  }
+    if (shp.getProps().automatic) { plotPath(shp); }
     updateAnyShape(shp, isDeep);
+
   } else {
     updateAnyShape(shp, isDeep);
   }
@@ -122,7 +119,6 @@ FN.plotPath = (shp) => {
   }
   return shp;
 };
-
 
 /**
  * To be called before render that calculates and collates all information

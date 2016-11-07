@@ -105,6 +105,7 @@ class Path extends Renderable {
     super.afterPropertyChange(k, v, oldV);
     var {changeTracker} = this.getState();
     if(k === 'anchorColl') {
+      if(!this.initialized) { this.initialized = true; }
       // Listen for `Collection` changes and bind / unbind
       var anchorColl = v;
       if (anchorColl) {
@@ -116,11 +117,6 @@ class Path extends Renderable {
         // anchorColl.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('disactivateAnchors', () => { this.disactivateAnchors(v); }));
       }
       // Bind Initial Vertices
-      if(this.initialized) {
-        console.trace();
-        console.log('initialized already')
-      }
-      if(!this.initialized) { this.initialized = true; }
       this.activateAnchors(anchorColl);
       this.getState().changeTracker.raise(['anchors','length']);     // unraisedFlag: clip
     } else if(['closed','curved','beginning','ending'].includes(k) && v !== oldV) {
@@ -290,7 +286,7 @@ class Path extends Renderable {
     var anchors = anchorColl.items.map((d) => {
       var clone = d.clone();
       clone.changeMonitor = this.anchorChangeMonitor;
-      return clone; 
+      return clone;
     });
     var clone = new Path(anchors, closed, curved, !automatic);
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
