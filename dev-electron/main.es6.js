@@ -11,7 +11,7 @@
 // script.onload = function() {
 // }
 
-import TwoClassic from '../es6/TwoClassic';
+import TwoLegacy from '../es6/TwoLegacy';
 import Types from '../es6/renderer/RendererTypes';
 import Rectangle from '../es6/import/geometries/Rectangle';
 import RoundedRectangle from '../es6/import/geometries/RoundedRectangle';
@@ -31,7 +31,7 @@ function main() {
 var appNode = document.getElementById('app');
 
 appNode.appendChild(h('canvas'))
-  var two = new TwoClassic({
+  var two = new TwoLegacy({
     width: 600,
     height: 400,
     type: Types.canvas
@@ -39,7 +39,7 @@ appNode.appendChild(h('canvas'))
   renderShapes(two);
 
 appNode.appendChild(h('svg'))
-  var two = new TwoClassic({
+  var two = new TwoLegacy({
     width: 600,
     height: 400,
     type: Types.svg
@@ -47,7 +47,7 @@ appNode.appendChild(h('svg'))
   renderShapes(two);
 
 appNode.appendChild(h('webgl'))
-  var two = new TwoClassic({
+  var two = new TwoLegacy({
     width: 600,
     height: 400,
     type: Types.webgl

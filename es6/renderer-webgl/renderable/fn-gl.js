@@ -6,7 +6,7 @@ import FloatArray   from '../../lib/struct-float-array/FloatArray';
 
 var {isObject} = is;
 
-let FN = {};
+const FN = {};
 
 var SHADER_SOURCES = {
 

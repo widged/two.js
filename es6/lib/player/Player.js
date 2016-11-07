@@ -28,7 +28,7 @@ class Player {
 
 
 /**
- *  `play` adds the instance to the requestAnimationFrame loop. In affect enabling animation for this instance.
+ *  `play` adds the instance to the requestAnimationFrame loop. In affect enabling animation for the instance.
  */
   play() {
     let {ticker} = this.state;
@@ -39,7 +39,7 @@ class Player {
     this.whenPlay();
   }
   /**
-  * `pause` removes the instance from the requestAnimationFrame loop. In affect halting animation for this instance.
+  * `pause` removes the instance from the requestAnimationFrame loop. In affect halting animation for the instance.
   */
   pause() {
     this.playing = false;

@@ -9,7 +9,7 @@ const {toFixed} = util;
 const {getContext} = base;
 const {curveSegment} = anchorFN;
 
-let FN = {};
+const FN = {};
 
 FN.drawPathAnchors = (canvas, anchors, closed) => {
   var canvasContext = getContext(canvas);

@@ -5,8 +5,8 @@ import dom  from '../platform/dom';
 import base from './renderable/base';
 import Renderer from '../renderer/TwoRenderer';
 
-var {isUndefined} = is;
-var {getRatio} = dom;
+const {isUndefined} = is;
+const {getRatio} = dom;
 
 class CanvasRenderer extends Renderer {
 
@@ -27,9 +27,9 @@ class CanvasRenderer extends Renderer {
   }
 
   initializeContext(options) {
-    var {domElement} = this.getState();
-    var canvas    = domElement.getContext('2d');
-    var smoothing = (options.smoothing === true) ? true : false;
+    const {domElement} = this.getState();
+    const canvas    = domElement.getContext('2d');
+    const smoothing = (options.smoothing === true) ? true : false;
     if (!isUndefined(canvas.imageSmoothingEnabled)) {
       canvas.imageSmoothingEnabled = smoothing;
     }
@@ -38,13 +38,13 @@ class CanvasRenderer extends Renderer {
 
   whenSizeChange() {
     // udate dom  node size
-    var {domElement, width, height, scale} = this.getState();
+    const {domElement, width, height, scale} = this.getState();
     dom.updateDomNodeSize(domElement, width, height, scale);
   }
 
   setSize(width, height, ratio) {
-    var {getDeviceRatio, getCanvasContextRatio} = dom;
-    var {ctx} = this.getState();
+    const {getDeviceRatio, getCanvasContextRatio} = dom;
+    const {ctx} = this.getState();
     var scale = ratio;
     if (isUndefined(ratio)) {
         var deviceRatio  = getDeviceRatio() || 1;
@@ -58,7 +58,7 @@ class CanvasRenderer extends Renderer {
 
   render() {
 
-    var {ctx, scale, overdraw, width, height, scene} = this.getState();
+    const {ctx, scale, overdraw, width, height, scene} = this.getState();
 
     var isOne = (scale === 1) ? true : false;
 

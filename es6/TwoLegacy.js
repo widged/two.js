@@ -113,14 +113,14 @@ class TwoClassic   {
 
 
    appendTo(domNode) {
-     var {scene} = this.state;
+     const {scene} = this.state;
      scene.appendTo(domNode);
      return this;
    }
 
 
    update() {
-     var {scene} = this.state;
+     const {scene} = this.state;
      scene.update(
        () => { this.whenUpdated();  },
        () => { this.whenResized(); }
@@ -130,12 +130,12 @@ class TwoClassic   {
 
 
    makeGroup(...objects) {
-     var {scene} = this.state;
+     const {scene} = this.state;
      return scene.addGroup(...objects);
    }
 
    makeGeometry(...objects) {
-     var {scene} = this.state;
+     const {scene} = this.state;
      return scene.addGeometry(...objects);
    }
 
@@ -143,31 +143,31 @@ class TwoClassic   {
    * Convenience methods to add to the scene various shape types
    */
  makeCurve(p) {
-   var {scene} = this.state;
+   const {scene} = this.state;
    var pth = makeShape.curve(p);
    scene.addShape(pth, true);
    return pth;
  }
  makePath(p) {
-   var {scene} = this.state;
+   const {scene} = this.state;
    var pth = makeShape.path(p);
    scene.addShape(pth, true);
    return pth;
  }
  makeText(...args) {
-   var {scene} = this.state;
+   const {scene} = this.state;
    var txt = makeShape.text(...args);
    scene.addShape(txt);
    return txt;
  }
  makeLinearGradient(x1, y1, x2, y2, ...stops) {
-   var {scene} = this.state;
+   const {scene} = this.state;
    var gradient = makeShape.linearGradient(x1, y1, x2, y2, stops);
    scene.addShape(gradient);
    return gradient;
  }
  makeRadialGradient(x1, y1, r, ...stops) {
-   var {scene} = this.state;
+   const {scene} = this.state;
    var gradient = makeShape.radialGradient(x1,y1,r,stops);
    scene.addShape(gradient);
    return gradient;

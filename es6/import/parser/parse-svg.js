@@ -80,7 +80,7 @@ var applySvgAttributes = function(node, elem) {
 
     switch (key) {
       case 'transform':
-        // TODO: Check this out https://github.com/paperjs/paper.js/blob/develop/src/svg/SvgImport.js#L313
+        // TODO: Check out https://github.com/paperjs/paper.js/blob/develop/src/svg/SvgImport.js#L313
         if (value === 'none') break;
         var m = node.getCTM();
 
@@ -165,9 +165,9 @@ from the reference. It then adds it to the instance's drawing space. It returns
 a `Group` object.
 */
 /**
- * Interpret an SVG Node and add it to this instance's scene. The
- * distinction should be made that this doesn't `import` svg's, it solely
- * interprets them into something compatible for Two.js — this is slightly
+ * Interpret an SVG Node and add it to the instance's scene. The
+ * distinction should be made that it doesn't `import` svg's, it solely
+ * interprets them into something compatible for Two.js — it is slightly
  * different than a direct transcription.
  *
  * @param {Object} svgNode - The node to be parsed
@@ -175,7 +175,7 @@ a `Group` object.
  *                                    append all contents directly
  */
 var interpret = function(svgNode, shallow) {
-  // check wether this is actually a svg file
+  // check wether it is actually a svg file
   var tag = svgNode.tagName.toLowerCase();
   if (!(tag in tags)) { return null; }
 

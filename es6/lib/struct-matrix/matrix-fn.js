@@ -3,7 +3,7 @@
 import Matrix   from './Matrix';
 import Vector2   from '../struct-vector2/Vector2';
 
-let FN = {};
+const FN = {};
 
 const {atan2, sqrt, sin, cos, pow, PI, round, min, max} = Math;
 

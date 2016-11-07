@@ -6,8 +6,8 @@ import rectFN  from '../../lib/struct-bounding-rect/bounding-rect-fn';
 const {isNumber} = is;
 const {getEnclosingRect} = rectFN;
 
-let FN = {};
-var NotInUse = {};
+const FN = {};
+const NotInUse = {};;
 
 
 FN.isShape = (object) => {

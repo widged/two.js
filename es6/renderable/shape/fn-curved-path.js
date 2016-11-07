@@ -74,7 +74,7 @@ const Curve = {
 };
 
 
-let FN = {};
+const FN = {};
 let NotInUse = {};
 
 

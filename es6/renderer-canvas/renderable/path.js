@@ -1,17 +1,17 @@
 /* jshint esnext: true */
 
-import _   from '../../TwoUtil';
+import util   from '../../TwoUtil';
 import is  from '../../lib/is/is';
 import base from './base';
 import rendererBridge   from '../../renderer/renderer-bridge';
 
-var {anyPropChanged, getShapeProps, getShapeRenderer, getShapeMatrix} = rendererBridge;
-var {isDefaultMatrix, renderShape, Commands} = base;
+const {anyPropChanged, getShapeProps, getShapeRenderer, getShapeMatrix} = rendererBridge;
+const {isDefaultMatrix, renderShape, Commands} = base;
 
-var {mod, toFixed} = _;
-var {isString, isNumber} = is;
+const {mod, toFixed} = util;
+const {isString, isNumber} = is;
 
-var renderPath = (shp, ctx, forced, parentClipped) => {
+const renderPath = (shp, ctx, forced, parentClipped) => {
 
   var shapeProps = getShapeProps(shp);
 

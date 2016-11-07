@@ -8,7 +8,7 @@ const {CLOSE, CURVE, MOVE, LINE} = Commands;
 const {mod, toFixed} = util;
 const {min, max} = Math;
 
-let FN = {};
+const FN = {};
 
 FN.curveSegment = (a, b) => {
   var ar, bl, vx, vy, ux, uy;
@@ -37,7 +37,7 @@ FN.curveSegment = (a, b) => {
 /**
  * Turn a set of `anchors` into a string for the d property of a path
  * element. It is imperative that the string collation is as fast as
- * possible, because this call will be happening multiple times a
+ * possible, because the call will be happening multiple times a
  * second.
  */
 FN.toString = function(anchors, closed) {

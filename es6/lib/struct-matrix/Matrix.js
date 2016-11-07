@@ -14,7 +14,7 @@ const {cos, sin, tan} = Math;
  * =====
  * a b c
  * d e f
- * g h i  // this row is not really used in 2d transformations
+ * g h i  // the row is not really used in 2d transformations
  * =====
  *
  * String order is for transform strings: a, d, b, e, c, f

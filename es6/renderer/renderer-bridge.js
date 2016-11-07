@@ -27,7 +27,7 @@ FN.preprocess = (shp) => {
 
 FN.orientAnchorsTowards = (shp, pointTowards) => {
   // :TODO: defaults to rectCentroid
-  // :REVIEW: this causes unwanted behaviors... optional rather than default behavior?
+  // :REVIEW: it causes unwanted behaviors... optional rather than default behavior?
   const {getBoundingClientRect} = FN;
   var {anchorColl:anchors} = shp.getProps();
   var pt;
@@ -127,7 +127,7 @@ FN.plotPath = (shp) => {
 FN.updateAnyShape = (shp, deep) => {
   const {getShapeMatrix} = FN;
   var matrix = getShapeMatrix(shp);
-  var {changeTracker} = shp.getState();
+  const {changeTracker} = shp.getState();
   var {translation, scale, rotation} = shp.getProps();
   if (matrix && !matrix.manual && changeTracker.oneChange('matrix')) {
     matrix

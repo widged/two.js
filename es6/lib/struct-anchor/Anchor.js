@@ -42,8 +42,8 @@ class Anchor extends Vector2 {
       // parts, {left, right}, the control point to the `left` of the anchor's position and the control point to its right.
       this.controls = {};
       let {left, right} = config || {};
-      this.controls.left  = Vector2.validatePoint(left);
-      this.controls.right = Vector2.validatePoint(left);
+      this.controls.left  = Vector2.serializePoint(left);
+      this.controls.right = Vector2.serializePoint(right);
     }
   }
 

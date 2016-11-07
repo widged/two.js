@@ -1,6 +1,6 @@
 /* jshint esnext: true */
 
-let FN = {};
+const FN = {};
 
 FN.cloned = (shape) => {
   if(!shape) { return; }

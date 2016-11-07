@@ -14,7 +14,7 @@ const {rectCentroid} = rectFN;
 const {isNumber, isArray} = is;
 const {updateShape} = rendererBridge;
 
-let FN = {};
+const FN = {};
 
 FN.text = (message, x, y, styles) => {
   return new Text(message, x, y, styles);
@@ -32,8 +32,8 @@ FN.radialGradient = (x1, y1, r, stops) => {
  * makePath(x1, y1, x2, y2, xN, yN, open);
  * Draws a path to the instance's drawing space. The arguments are a little tricky. It returns a `Path` object.
  * The method accepts any amount of paired x, y values as denoted by the series above. It then checks to see if there is a final argument, a boolean open, which marks whether or not the shape should be open. If true the path will have two clear endpoints, otherwise it will be closed.
- * This method also recognizes the format `makePath(points, open)` where points is an array of `Anchor`'s and open is an optional boolean describing whether or not to expose endpoints. It is imperative if you generate curves this way to make the list of points `Anchor`'s.
- * The Two.Path that this method creates is the base shape for all of the make functions.
+ * This method also recognizes the format `makePath(points, open)` where points is an array of `Anchor`'s and open is an optional boolean describing whether or not to expose endpoints. It is imperative if you generate curves that way to make the list of points `Anchor`'s.
+ * The Two.Path that is created is the base shape for all of the make functions.
  */
 FN.path = (p) => {
   var l = arguments.length, points = p;
@@ -57,7 +57,7 @@ FN.path = (p) => {
 /**
  * Draws a curved path to the instance's drawing space. The arguments are a little tricky. It returns a `Path` object.
  * The method accepts any amount of paired x, y values as denoted by the series above. It then checks to see if there is a final argument, a boolean open, which marks whether or not the shape should be open. If true the curve will have two clear endpoints, otherwise it will be closed.
- * This method also recognizes the format two.makeCurve(points, open) where points is an array of `Anchor`'s and open is an optional boolean describing whether or not to expose endpoints. It is imperative if you generate curves this way to make the list of points `Anchor`'s.
+ * This method also recognizes the format two.makeCurve(points, open) where points is an array of `Anchor`'s and open is an optional boolean describing whether or not to expose endpoints. It is imperative if you generate curves that way to make the list of points `Anchor`'s.
  */
 FN.curve = (p) => {
   var l = arguments.length, points = p;
@@ -97,7 +97,7 @@ FN.centerPath = (pth) => {
   // TODO: Update only when it needs to.
   updateShape(pth, true);
   var rect = pth.getBoundingClientRect();
-  var {x,y} = rectCentroid;
+  const {x,y} = rectCentroid;
   pth.center().translation.set(x,y);
   return pth;
 };

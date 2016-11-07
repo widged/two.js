@@ -2,7 +2,7 @@
 
 import IMPORTS from './_imports';
 
-const {VectorEventTypes, Vector2Evented}  = IMPORTS;
+const {VectorEventTypes, Vector2, Vector2Evented}  = IMPORTS;
 const {Matrix}  = IMPORTS;
 const {ChangeTracker}  = IMPORTS;
 
@@ -25,15 +25,15 @@ class Renderable {
   // --------------------
 
   constructor(translation) {
-     // id - The id of the path. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if path.id = 4 then document.querySelector('#two-' + group.id) will return the corresponding svg node.
+     // id - The id of the path. In the svg renderer it is the same number as the id attribute given to the corresponding node. i.e: if path.id = 4 then document.querySelector('#two-' + group.id) will return the corresponding svg node.
     this.id = RenderableDefaults.ShapeIdentifier + uniqueId();
     var changeTracker = new ChangeTracker(); // clip, mask
     // set on svg import only
     this.state = {changeTracker};
     this.setState({
-      //  id - The id of the group. In the svg renderer this is the same number as the id attribute given to the corresponding node. i.e: if group.id = 5 then document.querySelector('#two-' + group.id) will return the corresponding node.
+      //  id - The id of the group. In the svg renderer it is the same number as the id attribute given to the corresponding node. i.e: if group.id = 5 then document.querySelector('#two-' + group.id) will return the corresponding node.
       id: this.id,
-      // parent  - A reference to the `Group` that contains this instance.
+      // parent  - A reference to the `Group` that contains the instance.
       parent: undefined,
       //  mask - A reference to the `Path` that masks the content within the group. Automatically sets the referenced Two.Path.clip to true.
       mask: undefined,
@@ -43,8 +43,9 @@ class Renderable {
       matrix: new Matrix(),
     });
 
-    var {x,y} = translation || {};
-    translation = (isNumber(x) || isNumber(y)) ? new Vector2Evented().set(x,y) : new Vector2Evented();
+    translation = Vector2.serializePoint(translation);
+    var {x,y} =  translation || {x: 0, y: 0};
+    translation = new Vector2Evented().set(x,y);
     this.setProps({
       translation,
       rotation: 0,
@@ -63,12 +64,12 @@ class Renderable {
   }
   afterPropertyChange(key, newValue, oldValue) {
     if(['rotation','scale'].includes(key) && newValue !== oldValue) {
-      var {changeTracker} = this.getState();
+      const {changeTracker} = this.getState();
       changeTracker.raise(['matrix']);
     }
     if(newValue !== oldValue) {
       // :TODO: add a raiseOne function to changeTracker
-      var {changeTracker} = this.getState();
+      const {changeTracker} = this.getState();
       changeTracker.raise([key]);
     }
     return newValue;
@@ -116,7 +117,7 @@ class Renderable {
   // --------------------
 
   listFlags() {
-    var {changeTracker} = this.getState();
+    const {changeTracker} = this.getState();
     return changeTracker.listChanges();
   }
 
@@ -145,7 +146,7 @@ class Renderable {
    * If added to a `Group`, removes itself from it.
    */
   remove() {
-    var shp = this;
+    const shp = this;
     // early exit
     if (!shp.parent) { return shp; }
     // main
@@ -161,7 +162,7 @@ class Renderable {
   get shapeType() { return 'shape'; }
 
   flagReset() {
-    var {changeTracker} = this.getState();
+    const {changeTracker} = this.getState();
     changeTracker.drop(['matrix','scale']);
     return this;
   }
@@ -172,7 +173,7 @@ class Renderable {
 
   // :NOTE: Not used internally, only called by the user
   clone() {
-    var shp = this;
+    const shp = this;
     var clone = new Renderable();
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
       k = PROP_KEYS[i];
@@ -183,7 +184,7 @@ class Renderable {
 
   // :NOTE: Not used internally, only called by the user
   toObject() {
-    var shp = this;
+    const shp = this;
     var {translation, rotation, scale} = shp.getProps();
     var target = {
       translation: translation.toObject(),

@@ -85,7 +85,7 @@ class Text extends Renderable {
   */
   // :NOTE: Not used internally, only called by the user
   clone() {
-    var shp = this;
+    const shp = this;
     var {value} = shp.getProps();
     var clone = new Text(value);
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
@@ -97,7 +97,7 @@ class Text extends Renderable {
 
   // :NOTE: Not used internally, only called by the user
   toObject() {
-    var shp = this;
+    const shp = this;
     return serializeProperties(shp, {}, Object.keys(PROP_DEFAULTS));
   }
 }

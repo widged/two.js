@@ -17,7 +17,7 @@ var {getContext, renderShape} = base;
 
 var {isObject, isString} = is;
 
-let FN = {};
+const FN = {};
 
 FN.isHidden = /(none|transparent)/i;
 
@@ -129,7 +129,7 @@ FN.updateRendererIfNecesary   =  (shp, gl, program, assertShapeChange, getBoundi
     renderer.buffer = buffer;
     renderer.textureCoordsBuffer = textureCoordsBuffer;
     updateShapeCanvas(shp, FN);
-    updateTexture(gl, base.canvas, renderer); // :FIXME: this should be the ctx, not the base.canvas
+    updateTexture(gl, base.canvas, renderer); // :FIXME: it should be the ctx, not the base.canvas
   }
   return renderer;
 };

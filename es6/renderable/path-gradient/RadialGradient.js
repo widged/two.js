@@ -72,8 +72,8 @@ class RadialGradient extends Gradient {
    */
    // :NOTE: Not used internally, only called by the user
   clone() {
-    var shp = this;
-    var {stops, center, radius, focal} = shp;
+    const shp = this;
+    let {stops, center, radius, focal} = shp;
     var clonedStops = (stops || []).map((d) => { return Object.assign({},d); });
     var clone = new RadialGradient(
       center.x, center.y,
@@ -90,7 +90,7 @@ class RadialGradient extends Gradient {
 
   // :NOTE: Not used internally, only called by the user
   toObject() {
-    var shp = this;
+    const shp = this;
     var obj = Gradient.prototype.toObject.call(shp);
     PROP_KEYS.forEach((k) => { obj[k] = serialized(shp[k]); });
     return obj;

@@ -2,9 +2,9 @@
 
 import is from './lib/is/is';
 
-var {isArray, isArrayLike, isObject} = is;
+const {isArray, isArrayLike, isObject} = is;
 
-let FN = {};
+const FN = {};
 
 // ------------------------
 // Arrays, Iterables
@@ -38,10 +38,8 @@ FN.mod = (v, l) => {
 
 FN.exclude = (list) => { return (d) => { return !list.includes(d); }; };
 
-var isNumber = (o) =>  {
+const isNumber = (o) =>  {
   return (typeof o === 'number') || o instanceof Number;
 };
-
-
 
 export default FN;

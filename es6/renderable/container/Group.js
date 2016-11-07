@@ -29,8 +29,7 @@ const PROP_KEYS = Object.keys(PROP_DEFAULTS);
 class Group extends Renderable {
 
   /**
-   * If you are constructing groups this way instead of two.makeGroup(), then don't
-   * forget to add the group to the instance's scene, two.add(group).
+   * If you don't use two.makeGroup(), then don't forget to add the group to the instance's scene, two.add(group).
    */
   constructor(...shapes) {
     super();
@@ -187,13 +186,13 @@ class Group extends Renderable {
     :NOTE: Not used internally, only called by the user
    */
   clone() {
-    var shp = this;
+    const shp = this;
     var clone = new Group();
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
       k = PROP_KEYS[i];
       clone[k] = shp[k];
     }
-    // now clone all childrenColl recursively and add them to this group
+    // now clone all childrenColl recursively and add them to the group
     var childrenColl = (shp.state.childrenColl || []).map((child) => {
       var childClone = child.clone(clone);
       clone.add(childClone);
@@ -209,7 +208,7 @@ class Group extends Renderable {
    */
    // :NOTE: Not used internally, only called by the user
   toObject() {
-    var shp = this;
+    const shp = this;
     var obj = super.toObject();
     obj = serializeProperties(shp, obj);
     // now copy all childrenColl recursively

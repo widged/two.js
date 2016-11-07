@@ -3,7 +3,7 @@
 import RendererTypes from '../renderer/RendererTypes';
 import dom from '../platform/dom';
 
-let FN = {};
+const FN = {};
 
 FN.loadModule = (pth) => {
   const Module = require(pth).default;

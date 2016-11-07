@@ -27,7 +27,6 @@ class Gradient extends Renderable {
 
   constructor(stops) {
     super();
-    var {renderer} = this.getState();
     var props = PROP_DEFAULTS;
     if(!isUndefined(stops)) { props.stops = stops; }
     this.setProps(props);
@@ -41,8 +40,8 @@ class Gradient extends Renderable {
     v = super.beforePropertySet(k, v);
     if(k === 'stops' && Array.isArray(v)) {
       v = v.map((stop, i) => {
-        var {offset, opacity, color} = stop || {};
-        var isOdd = (i % 2 === 0) ? true : false;
+        let {offset, opacity, color} = stop || {};
+        const isOdd = (i % 2 === 0) ? true : false;
         // offset -- A 0 to 1 offset value which defines where on the trajectory of the gradient the full color is rendered.
         offset = isNumber(offset) ? offset : isOdd ? 0 : 1;
         // opacity -- A 0 to 1 value which defines the opacity of the stop. This only renders in `svg` mode.
@@ -76,20 +75,20 @@ class Gradient extends Renderable {
 
   // :NOTE: Not used internally, only called by the user
   clone() {
-    var shp = this;
+    const shp = this;
     var clone = new Gradient();
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
       k = PROP_KEYS[i];
       clone[k] = shp[k];
     }
-    var {stops} = this.getProps();
+    const {stops} = this.getProps();
     clone.stops = stops.map(cloned);
     return clone;
   }
 
   // :NOTE: Not used internally, only called by the user
   toObject() {
-    var shp = this;
+    const shp = this;
     var obj = serializeProperties(shp, {}, Object.keys(PROP_DEFAULTS));
     obj.stops = shp.stops.map(function(s) { return s.toObject(); });
     return obj;

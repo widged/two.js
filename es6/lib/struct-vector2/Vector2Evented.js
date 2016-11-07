@@ -197,7 +197,5 @@ import Vector2    from './Vector2';
 
 }
 
-Vector2Evented.zero = new Vector2Evented();
-
 
 export default Vector2Evented;

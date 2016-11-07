@@ -86,8 +86,8 @@ class LinearGradient extends Gradient {
   */
   // :NOTE: Not used internally, only called by the user
   clone() {
-    var shp = this;
-    var {stops, left, right} = shp;
+    const shp = this;
+    let {stops, left, right} = shp;
     stops = (stops || []).map(cloned);
     var clone = new LinearGradient(left.x, left.y, right.x, right.y, stops);
     for (let i = 0, ni = PROP_KEYS.length, k = null; i < ni; i++) {
@@ -100,8 +100,8 @@ class LinearGradient extends Gradient {
   // :NOTE: Not used internally, only called by the user
   toObject() {
     var result = super.toObject();
-    var shp = this;
-    var {left, right} = shp;
+    const shp = this;
+    const {left, right} = shp;
     result.left = left.toObject();
     result.right = right.toObject();
     return result;

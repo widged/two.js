@@ -5,7 +5,7 @@ import rendererBridge   from '../../renderer/renderer-bridge';
 
 var {preprocess} = rendererBridge;
 
-let FN = {};
+const FN = {};
 
 // ------------------------------------
 //  Interface

@@ -8,7 +8,7 @@ import is  from '../lib/is/is';
 
 const {isFunction} = is;
 
-let FN = {};
+const FN = {};
 
 FN.temp = (document ? document.createElement('div') : {});
 

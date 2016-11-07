@@ -231,10 +231,10 @@ import VectorEventTypes    from './VectorEventTypes';
 
 }
 
-Vector2.zero = new Vector2();
-
-Vector2.validatePoint = ({x,y}) => {
+Vector2.serializePoint = (xy) => {
   var pt;
+  if(!xy || (!xy.x && !xy.y)) { return pt; }
+  var {x,y} = xy;
   if (!isNaN(x) || !isNaN(y)) {
     if(isNaN(x)) { x = 0; }
     if(isNaN(y)) { y = 0; }

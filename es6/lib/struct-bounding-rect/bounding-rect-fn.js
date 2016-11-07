@@ -5,7 +5,7 @@ import util from '../../TwoUtil';
 const {min, max} = Math;
 const {toFixed} = util;
 
-let FN = {};
+const FN = {};
 
 FN.rectCentroid = (rect) => { return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }; };
 FN.rectTopLeft = (rect) => { return { x: rect.left, y: rect.top }; };

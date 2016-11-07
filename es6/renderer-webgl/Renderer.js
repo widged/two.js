@@ -87,7 +87,7 @@ class WebglRenderer extends Renderer {
     // udate gl resolution
     ctx = glFN.updateResolution(ctx, program, width * scale, height * scale);
 
-    // udate matrix - Set for this.stage parent scaling to account for HDPI
+    // udate matrix - Set for the stage parent scaling to account for HDPI
     matrix[0] = matrix[4] = scale;
 
     // reset changed properties

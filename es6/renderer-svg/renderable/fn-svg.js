@@ -5,7 +5,7 @@ import rendererBridge   from '../../renderer/renderer-bridge';
 
 var {getShapeRenderer} = rendererBridge;
 
-let FN = {};
+const FN = {};
 
 /**
  * Create an svg namespaced element.

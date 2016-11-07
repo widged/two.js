@@ -2,7 +2,7 @@
 
 import RendererTypes from '../renderer/RendererTypes';
 
-let FN = {};
+const FN = {};
 
 // https://two.js.org/#documentation
 
@@ -51,7 +51,7 @@ FN.sceneNodeBodyStyle = {
 rotation - A number that represents the rotation of the path in the drawing space, in radians.
 scale - A `number` that represents the uniform scale of the path in the drawing space.
 translation - A `Vector2` that represents x, y translation of the path in the drawing space.
-clip - A `boolean` describing whether to render this shape as a clipping mask. This property is set automatically in correspondence with `Group.mask`. Defaults to false.
+clip - A `boolean` describing whether to render the shape as a clipping mask. This property is set automatically in correspondence with `Group.mask`. Defaults to false.
 */
 FN.Renderable = {
   translation: [0,0],

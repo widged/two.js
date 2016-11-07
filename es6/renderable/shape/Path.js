@@ -38,10 +38,10 @@ class ChangeMonitor {
  * should be closed (lacking endpoints) and whether the shape should calculate
  * curves or straight lines between the `anchors`. Finally, manual is an optional
  * argument if you'd like to override the default behavior of two.js and handle anchor
- * positions yourself. Generally speaking, this isn't something you need to deal
- * with, although some great usecases arise from this customability, e.g: advanced curve manipulation.
+ * positions yourself. Generally speaking, it isn't something you need to deal
+ * with, although some great usecases arise from its customability, e.g: advanced curve manipulation.
  *
- * NB. If you are constructing groups this way instead of two.makePath(), then
+ * NB. If you are constructing groups that way instead of two.makePath(), then
  * don't forget to add the group to the instance's scene, two.add(group).
  */
 
@@ -107,18 +107,14 @@ class Path extends Renderable {
 
   afterPropertyChange(k, v, oldV) {
     super.afterPropertyChange(k, v, oldV);
-    var {changeTracker} = this.getState();
+    const {changeTracker} = this.getState();
     if(k === 'anchorColl') {
       if(!this.initialized) { this.initialized = true; }
       // Listen for `Collection` changes and bind / unbind
       var anchorColl = v;
-      if (anchorColl) {
-        // anchorColl.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('activateAnchors',    () => { this.activateAnchors(v);   }));
-        // anchorColl.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('disactivateAnchors', () => { this.disactivateAnchors(v); }));
-      }
       if (anchorColl && typeof anchorColl.dispatcher === 'function') {
-        // anchorColl.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('activateAnchors',    () => { this.activateAnchors(v);   }));
-        // anchorColl.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('disactivateAnchors', () => { this.disactivateAnchors(v); }));
+        anchorColl.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('activateAnchors',    () => { this.activateAnchors(v);   }));
+        anchorColl.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('disactivateAnchors', () => { this.disactivateAnchors(v); }));
       }
       // Bind Initial Vertices
       this.activateAnchors(anchorColl);
@@ -136,9 +132,6 @@ class Path extends Renderable {
     while(i--) {
       anchor = anchors[i];
       if(anchor) { anchor.changeMonitor = this.state.anchorChangeMonitor; }
-      if(anchor && anchor.dispatcher) {
-        // anchor.dispatcher.on(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchors']); } ));
-      }
     }
   }
 
@@ -149,9 +142,6 @@ class Path extends Renderable {
       anchor = anchors[i];
       if(anchor) {
         // anchor.changeMonitor = null;
-      }
-      if(anchor && anchor.dispatcher) {
-        // anchor.dispatcher.off(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchors']); } ));
       }
     }
   }
@@ -170,7 +160,7 @@ class Path extends Renderable {
 
 
     whenLengthChange(limit) {
-      var shp = this;
+      const shp = this;
       updateShape(shp);
       var {anchorColl, closed, lengths: lns} = shp.getProps();
       var anchors = (anchorColl || {}).items;
@@ -238,7 +228,7 @@ class Path extends Renderable {
    * erceived as a curve.
    */
   subdivide(limit) {
-    var shp = this;
+    const shp = this;
     updateShape(shp);
     var automatic = false;
     var curved = false;
@@ -264,9 +254,9 @@ class Path extends Renderable {
    get shapeType() { return 'path'; }
 
   flagReset() {
-    var shp = this;
+    const shp = this;
     super.flagReset();
-    var {changeTracker} = shp.getState();
+    const {changeTracker} = shp.getState();
     changeTracker.drop(['opacity','visible','clip']);
     changeTracker.drop(['fill','stroke','linewidth','decoration']);
     changeTracker.drop(['anchors']);
@@ -285,7 +275,7 @@ class Path extends Renderable {
    */
    // :NOTE: Not used internally, only called by the user
   clone() {
-    var shp = this;
+    const shp = this;
     var  {closed, curved, automatic, anchorColl} = shp.getProps();
     var anchors = anchorColl.items.map((d) => {
       var clone = d.clone();
@@ -302,7 +292,7 @@ class Path extends Renderable {
 
   // :NOTE: Not used internally, only called by the user
   toObject() {
-    var shp = this;
+    const shp = this;
     super.toObject();
 
     var obj = serializeProperties(shp, {}, []);

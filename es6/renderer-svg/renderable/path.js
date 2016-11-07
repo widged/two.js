@@ -88,7 +88,7 @@ var renderPath = (shp, domElement) => {
 
   /**
    * Commented two-way functionality of clips / masks with groups and
-   * polygons. Uncomment when this bug is fixed:
+   * polygons. Uncomment when that bug is fixed:
    * https://code.google.com/p/chromium/issues/detail?id=370951
    */
 
