@@ -1,7 +1,7 @@
 /* jshint esnext: true */
 
 import Matrix   from './Matrix';
-import Vector   from '../struct-vector/Vector';
+import Vector2   from '../struct-vector2/Vector2';
 
 var FN = {};
 
@@ -44,7 +44,7 @@ FN.deltaTransformPoint = (matrix, x, y) => {
   var dx = x * matrix.a + y * matrix.c + 0;
   var dy = x * matrix.b + y * matrix.d + 0;
 
-  return new Vector(dx, dy);
+  return new Vector2(dx, dy);
 
 };
 

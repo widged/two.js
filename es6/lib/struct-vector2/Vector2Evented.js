@@ -2,20 +2,20 @@
 
 import EventEmitter  from '../event-emitter/EventEmitter';
 import VectorEventTypes    from './VectorEventTypes';
-import Vector    from './Vector';
+import Vector2    from './Vector2';
 
 
 
 /**
- * A VectorEvented captures coordinates. A `VectorEvented` is specific to two.js because its
+ * A Vector2Evented captures coordinates. A `Vector2Evented` is specific to two.js because its
  * main properties, x and y, trigger events which allow the renderers to efficiently
  * change only when they need to. By default, setting methods return their instance
- * of `VectorEvented` for the purpose of chaining.
+ * of `Vector2Evented` for the purpose of chaining.
  */
- class VectorEvented extends Vector  {
+ class Vector2Evented extends Vector2  {
 
   /**
-  * construction var vector = new Two.VectorEvented(x, y);
+  * construction var vector = new Two.Vector2Evented(x, y);
   * x -- The x value of the vector.
   * y -- The y value of the vector.
   */
@@ -199,7 +199,7 @@ import Vector    from './Vector';
 
 }
 
-VectorEvented.zero = new VectorEvented();
+Vector2Evented.zero = new Vector2Evented();
 
 
-export default VectorEvented;
+export default Vector2Evented;

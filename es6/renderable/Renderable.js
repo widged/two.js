@@ -2,7 +2,7 @@
 
 import IMPORTS from './_imports';
 
-const {VectorEventTypes, VectorEvented}  = IMPORTS;
+const {VectorEventTypes, Vector2Evented}  = IMPORTS;
 const {Matrix}  = IMPORTS;
 const {ChangeTracker}  = IMPORTS;
 
@@ -44,7 +44,7 @@ class Renderable {
     });
 
     var {x,y} = translation || {};
-    translation = (isNumber(x) || isNumber(y)) ? new VectorEvented().set(x,y) : new VectorEvented();
+    translation = (isNumber(x) || isNumber(y)) ? new Vector2Evented().set(x,y) : new Vector2Evented();
     this.setProps({
       translation,
       rotation: 0,

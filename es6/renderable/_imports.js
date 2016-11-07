@@ -13,9 +13,9 @@ import RenderableDefaults from './RenderableDefaults';
 
 import Anchor   from '../lib/struct-anchor/Anchor';
 import anchorFN   from '../lib/struct-anchor/anchor-fn';
-import VectorEventTypes   from '../lib/struct-vector/VectorEventTypes';
-import VectorEvented   from '../lib/struct-vector/VectorEvented';
-import Vector   from '../lib/struct-vector/Vector';
+import VectorEventTypes   from '../lib/struct-vector2/VectorEventTypes';
+import Vector2Evented   from '../lib/struct-vector2/Vector2Evented';
+import Vector2   from '../lib/struct-vector2/Vector2';
 import Matrix   from '../lib/struct-matrix/Matrix';
 import matrixFN  from '../lib/struct-matrix/matrix-fn';
 import rectFN  from '../lib/struct-bounding-rect/bounding-rect-fn';
@@ -33,7 +33,7 @@ export default {
   is, common, UidGenerator, ChangeTracker,
   Commands, RenderableDefaults,
   Anchor, anchorFN,
-  Vector, VectorEvented, VectorEventTypes,
+  Vector2, Vector2Evented, VectorEventTypes,
   Matrix, matrixFN,
   Collection, CollectionEventTypes,
   rendererBridge,

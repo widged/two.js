@@ -2,20 +2,20 @@
 
 import is  from '../is/is';
 import Commands  from './CommandTypes';
-import VectorEventTypes   from '../struct-vector/VectorEventTypes';
-import Vector  from '../struct-vector/Vector';
+import VectorEventTypes   from '../struct-vector2/VectorEventTypes';
+import Vector2  from '../struct-vector2/Vector2';
 
 const {isNumber, isObject} = is;
 const {MOVE, CURVE} = Commands;
 
 /**
- * Taken from the Adobe Illustrator nomenclature an `Anchor` holds 3 `Vector`s:
+ * Taken from the Adobe Illustrator nomenclature an `Anchor` holds 3 `Vector2`s:
  * the anchor point and its `left` and `right` handles: .
  * An anchor provides renderers information about what action to take when
- * plotting points. It inherits all properties and methods from `Vector`.
+ * plotting points. It inherits all properties and methods from `Vector2`.
  * For curves, anchors also define the control points of bezier curves.
  */
-class Anchor extends Vector {
+class Anchor extends Vector2 {
 
    /**
    * new Two.Anchor(x, y, lx, ly, rx, ry, command);
@@ -146,8 +146,8 @@ class Anchor extends Vector {
  */
 Anchor.AppendCurveProperties = (anchor) => {
   anchor.controls = {
-    left: new Vector(0, 0),
-    right: new Vector(0, 0)
+    left: new Vector2(0, 0),
+    right: new Vector2(0, 0)
   };
 };
 

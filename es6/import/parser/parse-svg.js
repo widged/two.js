@@ -10,7 +10,7 @@ import groupFN  from '../renderable/container/fn-group';
 import Gradient from '../renderable/path-gradient/Gradient';
 import RadialGradient from '../renderable/gradient/RadialGradient';
 import LinearGradient from '../renderable/gradient/RadialGradient';
-import Vector from '../lib/struct-vector/Vector';
+import Vector2 from '../lib/struct-vector2/Vector2';
 import Matrix from '../../lib/struct-matrix/Matrix';
 import matrixFN  from '../renderable/fn-matrix';
 import Anchor from '../renderable/Anchor';
@@ -460,7 +460,7 @@ var tags = {
           y1 = coord.y;
 
           if (!control) {
-            control = new Vector();//.copy(coord);
+            control = new Vector2();//.copy(coord);
           }
 
           if (lower === 'c') {
@@ -520,7 +520,7 @@ var tags = {
           y1 = coord.y;
 
           if (!control) {
-            control = new Vector();//.copy(coord);
+            control = new Vector2();//.copy(coord);
           }
 
           if (control.isZero()) {
@@ -709,7 +709,7 @@ var tags = {
 
   },
 
-   // :REVIEW: a lot of redundancy with import/geom/Ellipse
+   // :REVIEW: a lot of redundancy with import/geometries/Ellipse
   circle: function(node) {
 
     var x = parseFloat(node.getAttribute('cx'));
@@ -759,7 +759,7 @@ var tags = {
 
   },
 
-   // :REVIEW: a lot of redundancy with import/geom/Rectangle
+   // :REVIEW: a lot of redundancy with import/geometries/Rectangle
   rect: function(node) {
 
     var x = parseFloat(node.getAttribute('x')) || 0;

@@ -4,7 +4,7 @@ import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
 
 const {Collection, CollectionEventTypes} = IMPORTS;
-const {Anchor, VectorEvented, VectorEventTypes} = IMPORTS;
+const {Anchor, Vector2Evented, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, common, curveFN, rectFN, exportFN, rendererBridge} = IMPORTS;
 

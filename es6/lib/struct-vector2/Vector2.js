@@ -4,15 +4,15 @@ import EventEmitter  from '../event-emitter/EventEmitter';
 import VectorEventTypes    from './VectorEventTypes';
 
 /**
- * A Vector captures coordinates. A `Vector` is specific to two.js because its
+ * A Vector2 captures coordinates. A `Vector2` is specific to two.js because its
  * main properties, x and y, trigger events which allow the renderers to efficiently
  * change only when they need to. By default, setting methods return their instance
- * of `Vector` for the purpose of chaining.
+ * of `Vector2` for the purpose of chaining.
  */
- class Vector  {
+ class Vector2  {
 
   /**
-  * construction var vector = new Two.Vector(x, y);
+  * construction var vector = new Two.Vector2(x, y);
   * x -- The x value of the vector.
   * y -- The y value of the vector.
   */
@@ -214,10 +214,10 @@ import VectorEventTypes    from './VectorEventTypes';
   }
 
   /**
-  * Returns a new instance of a Two.Vector with the same x, y values as the instance.
+  * Returns a new instance of a Two.Vector2 with the same x, y values as the instance.
   */
   clone() {
-    return new Vector(this.state.x, this.state.y);
+    return new Vector2(this.state.x, this.state.y);
   }
 
   toObject() {
@@ -231,7 +231,7 @@ import VectorEventTypes    from './VectorEventTypes';
 
 }
 
-Vector.zero = new Vector();
+Vector2.zero = new Vector2();
 
 
-export default Vector;
+export default Vector2;

@@ -13,15 +13,15 @@
 
 import TwoClassic from '../es6/TwoClassic';
 import Types from '../es6/renderer/RendererTypes';
-import Rectangle from '../es6/import/geom/Rectangle';
-import RoundedRectangle from '../es6/import/geom/RoundedRectangle';
-import Circle from '../es6/import/geom/Circle';
-import Ellipse from '../es6/import/geom/Ellipse';
-import Line from '../es6/import/geom/Line';
-import Polygon from '../es6/import/geom/Polygon';
-import Star  from '../es6/import/geom/Star';
-import ArcSegment from '../es6/import/geom/ArcSegment';
-import SineRing from '../es6/import/geom/SineRing';
+import Rectangle from '../es6/import/geometries/Rectangle';
+import RoundedRectangle from '../es6/import/geometries/RoundedRectangle';
+import Circle from '../es6/import/geometries/Circle';
+import Ellipse from '../es6/import/geometries/Ellipse';
+import Line from '../es6/import/geometries/Line';
+import Polygon from '../es6/import/geometries/Polygon';
+import Star  from '../es6/import/geometries/Star';
+import ArcSegment from '../es6/import/geometries/ArcSegment';
+import SineRing from '../es6/import/geometries/SineRing';
 import RadialGradient from '../es6/renderable/path-gradient/RadialGradient';
 import LinearGradient from '../es6/renderable/path-gradient/LinearGradient';
 
