@@ -3,7 +3,7 @@
 import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
 
-const {Anchor, Vector, VectorEventTypes} = IMPORTS;
+const {Anchor, VectorEvented, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, rectFN, exportFN, matrixFN, rendererBridge} = IMPORTS;
 

@@ -3,7 +3,7 @@
 import IMPORTS from '../_imports';
 import Gradient  from './Gradient';
 
-const {Vector, VectorEventTypes} = IMPORTS;
+const {VectorEvented, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, exportFN} = IMPORTS;
 
@@ -46,7 +46,7 @@ class LinearGradient extends Gradient {
       var oldV = this.getState()[key];
       if(oldV && oldV.dispatcher) { oldV.dispatcher.off(); }
       if(isNumber(x) || isNumber(y)) {
-        newV = new Vector().set(isNumber(x) ? x : 0, isNumber(y) ? y : 0);
+        newV = new VectorEvented().set(isNumber(x) ? x : 0, isNumber(y) ? y : 0);
       }
     }
     return newV;

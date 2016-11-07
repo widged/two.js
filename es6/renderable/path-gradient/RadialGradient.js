@@ -3,7 +3,7 @@
 import IMPORTS from '../_imports';
 import Gradient  from './Gradient';
 
-const {Vector, VectorEventTypes} = IMPORTS;
+const {VectorEvented, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, exportFN} = IMPORTS;
 

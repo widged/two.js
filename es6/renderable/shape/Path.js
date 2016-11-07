@@ -4,7 +4,7 @@ import IMPORTS    from '../_imports';
 import Renderable from '../Renderable';
 
 const {Collection, CollectionEventTypes} = IMPORTS;
-const {Anchor, Vector, VectorEventTypes} = IMPORTS;
+const {Anchor, VectorEvented, VectorEventTypes} = IMPORTS;
 const {RenderableDefaults} = IMPORTS;
 const {is, common, curveFN, rectFN, exportFN, rendererBridge} = IMPORTS;
 
@@ -19,6 +19,15 @@ const {min, max, round} = Math;
 
 const PROP_DEFAULTS= RenderableDefaults.Path;
 const PROP_KEYS = Object.keys(PROP_DEFAULTS);
+
+class ChangeMonitor {
+  constructor() {
+    this.changed = false;
+  }
+  change(v) {
+    this.changed = true;
+  }
+}
 
 /**
  * A `Path` is the base class for creating all drawable shapes in two.js. By default,
@@ -40,6 +49,8 @@ class Path extends Renderable {
 
   constructor(anchors, closed, curved, manual) {
     super();
+    this.state.anchorChangeMonitor = new ChangeMonitor();
+    this.initialized = false;
     // init
     var props = PROP_DEFAULTS;
     props.cap  = 'butt'; // Default of Adobe Illustrator
@@ -96,11 +107,20 @@ class Path extends Renderable {
     if(k === 'anchorColl') {
       // Listen for `Collection` changes and bind / unbind
       var anchorColl = v;
+      if (anchorColl) {
+        // anchorColl.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('activateAnchors',    () => { this.activateAnchors(v);   }));
+        // anchorColl.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('disactivateAnchors', () => { this.disactivateAnchors(v); }));
+      }
       if (anchorColl && typeof anchorColl.dispatcher === 'function') {
-        anchorColl.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('activateAnchors',    () => { this.activateAnchors(v);   }));
-        anchorColl.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('disactivateAnchors', () => { this.disactivateAnchors(v); }));
+        // anchorColl.dispatcher.on(CollectionEventTypes.insert, this.bindOnce('activateAnchors',    () => { this.activateAnchors(v);   }));
+        // anchorColl.dispatcher.on(CollectionEventTypes.remove, this.bindOnce('disactivateAnchors', () => { this.disactivateAnchors(v); }));
       }
       // Bind Initial Vertices
+      if(this.initialized) {
+        console.trace();
+        console.log('initialized already')
+      }
+      if(!this.initialized) { this.initialized = true; }
       this.activateAnchors(anchorColl);
       this.getState().changeTracker.raise(['anchors','length']);     // unraisedFlag: clip
     } else if(['closed','curved','beginning','ending'].includes(k) && v !== oldV) {
@@ -111,22 +131,28 @@ class Path extends Renderable {
   }
 
   activateAnchors(anchorColl)  {
-    var anchors = (anchorColl || {}.items);
+    var anchors = (anchorColl || {}).items;
     var i = (anchors || []).length, anchor = null;
     while(i--) {
       anchor = anchors[i];
+      if(anchor) { anchor.changeMonitor = this.state.anchorChangeMonitor; }
       if(anchor && anchor.dispatcher) {
-        anchor.dispatcher.on(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchors']); } ));
+        // anchor.dispatcher.on(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchors']); } ));
       }
     }
   }
 
   disactivateAnchors(anchorColl)  {
-    var anchors = (anchorColl || {}.items);
+    var anchors = (anchorColl || {}).items;
     var i = (anchors || []).length, anchor = null;
     while(i--) {
       anchor = anchors[i];
-      anchor.dispatcher.off(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchors']); } ));
+      if(anchor) {
+        // anchor.changeMonitor = null;
+      }
+      if(anchor && anchor.dispatcher) {
+        // anchor.dispatcher.off(VectorEventTypes.change, this.bindOnce('vectorChange', () => { this.getState().changeTracker.raise(['anchors']); } ));
+      }
     }
   }
 

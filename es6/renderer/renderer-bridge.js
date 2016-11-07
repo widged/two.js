@@ -12,6 +12,43 @@ var {removeRectBorder, includeAnchorInBoundingRect, shimBoundingClientRect} = re
 var FN = {}, NotInUse = {};
 
 // --------------------
+// preprocess
+// --------------------
+
+FN.preprocess = (shp) => {
+  var {updateShape, orientAnchorsTowards} = FN;
+  var {pointTowards} = shp.getProps();
+  // TODO: Update to not __always__ update. Just when it needs to.
+  if(shp.shapeType === 'path') {
+    console.log(shp.state.anchorChangeMonitor.changed)
+  }
+  updateShape(shp);
+  if(pointTowards) {
+    orientAnchorsTowards(shp, pointTowards);
+  }
+};
+
+
+FN.orientAnchorsTowards = (shp, pointTowards) => {
+  // :TODO: defaults to rectCentroid
+  // :REVIEW: this causes unwanted behaviors... optional rather than default behavior?
+  var {getBoundingClientRect} = FN;
+  var {anchorColl:anchors} = shp.getProps();
+  var pt;
+  if(typeof pointTowards === "function") {
+    pt = pointTowards(getBoundingClientRect(shp, true));
+  } else if (isObject(pointTowards) && pointTowards.x && pointTowards.y) {
+    pt = pointTowards;
+  }
+  if(pt) {
+    for (var i = 0, ni = (anchors || []).length , v = null; i < ni; i++) {
+      anchors[i].subSelf({x: pt.x,y: pt.y});
+    }
+  }
+
+};
+
+// --------------------
 // update and renderer
 // --------------------
 
@@ -20,10 +57,12 @@ FN.getShapeRenderer = (shp) => {
 };
 
 FN.updateShape = (shp, isDeep) => {
-  var {updateShape, updateAnyShape, updatePath} = FN;
+  var {updateShape, updateAnyShape, updatePath, plotPath} = FN;
   if(!shp) { return; }
   if(shp.shapeType === 'path') {
-    updatePath(shp);
+    var {automatic} = shp.getProps();
+    // shp = updatePath(shp);
+    if (automatic) { plotPath(shp); }
     updateAnyShape(shp, isDeep);
   } else {
     updateAnyShape(shp, isDeep);
@@ -33,7 +72,6 @@ FN.updateShape = (shp, isDeep) => {
 
 
 FN.updatePath = (shp) => {
-  var {plotPath} = FN;
   var {copyVertices} = FN;
   var {changeTracker} = shp.getState();
   var {anchorColl, beginning, ending, automatic} = shp.getProps();
@@ -41,7 +79,6 @@ FN.updatePath = (shp) => {
     var anchors = anchorColl.items;
     anchors = copyVertices({ anchors, beginning, ending });
     shp.setProps({anchorColl: anchors});
-    if (automatic) { plotPath(shp); }
   }
   return shp;
 };
@@ -116,15 +153,6 @@ FN.updateAnyShape = (shp, deep) => {
 
 };
 
-FN.preprocess = (shp) => {
-  var {updateShape, orientAnchorsTowards} = FN;
-  var {pointTowards} = shp.getProps();
-  // TODO: Update to not __always__ update. Just when it needs to.
-  updateShape(shp);
-  if(pointTowards) {
-    orientAnchorsTowards(shp, pointTowards);
-  }
-};
 
 
 /**
@@ -171,24 +199,6 @@ FN.getBoundingClientRect = (shp, shallow) => {
  };
 
 
-FN.orientAnchorsTowards = (shp, pointTowards) => {
-  // :TODO: defaults to rectCentroid
-  // :REVIEW: this causes unwanted behaviors... optional rather than default behavior?
-  var {getBoundingClientRect} = FN;
-  var {anchorColl:anchors} = shp.getProps();
-  var pt;
-  if(typeof pointTowards === "function") {
-    pt = pointTowards(getBoundingClientRect(shp, true));
-  } else if (isObject(pointTowards) && pointTowards.x && pointTowards.y) {
-    pt = pointTowards;
-  }
-  if(pt) {
-    for (var i = 0, ni = (anchors || []).length , v = null; i < ni; i++) {
-      anchors[i].subSelf({x: pt.x,y: pt.y});
-    }
-  }
-
-};
 
 
 

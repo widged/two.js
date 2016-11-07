@@ -28,10 +28,7 @@ var {isNumber, isObject} = is;
    */
   constructor(x, y, command, config) {
     super(x,y);
-    // x  -- The x value of the anchor's position.
-    this.x = x || 0;
-    // y  -- The y value of the anchor's position.
-    this.y = y || 0;
+    this.intern.changeMonitor = null;
     // command  -- The command for the given anchor. It must be one of `CommandsTypes`.
     this.state.command = command || Commands.MOVE;
     this.state.relative = true;
@@ -67,6 +64,12 @@ var {isNumber, isObject} = is;
 
   }
 
+  get changeMonitor() { throw 'no direct access'; }
+  set changeMonitor(_) {
+    this.intern.changeMonitor = _;
+  }
+
+
   get command() {
     return this.state.command;
   }
@@ -76,7 +79,7 @@ var {isNumber, isObject} = is;
     if (this.state.command === Commands.CURVE && !isObject(this.controls)) {
       Anchor.AppendCurveProperties(this);
     }
-    this.whenChange();
+    this.whenChange('command');
   }
 
   get relative() {
@@ -86,13 +89,15 @@ var {isNumber, isObject} = is;
   set relative(b) {
     if (this.state.relative == b) { return this; }
     this.state.relative = !!b;
-    this.whenChange();
+    this.whenChange('relative');
     return;
   }
 
-   whenChange() {
-      this.dispatcher.emit(VectorEventTypes.change);
-   }
+  whenChange(attributeName) {
+    // let's comment out, no need to dispatch events
+    // super.whenChange(attributeName);
+    if(this.intern.changeMonitor) { this.intern.changeMonitor.change(this); }
+  }
 
    /**
    * Convenience method to add event bubbling to an attached path.

@@ -5,7 +5,7 @@ import util  from '../../TwoUtil';
 import Commands  from '../../lib/struct-anchor/CommandTypes';
 
 import Anchor   from '../../lib/struct-anchor/Anchor';
-import Vector   from '../../lib/struct-vector/Vector';
+import VectorEvented   from '../../lib/struct-vector/VectorEvented';
 import Matrix   from '../../lib/struct-matrix/Matrix';
 
 var {mod, arrayLast} = util;
@@ -285,8 +285,8 @@ FN.getControlPoints = (a, b, c)  => {
 
   // So we know which angle corresponds to which side.
 
-  b.u = isObject(b.controls.left) ? b.controls.left : new Vector(0, 0);
-  b.v = isObject(b.controls.right) ? b.controls.right : new Vector(0, 0);
+  b.u = isObject(b.controls.left) ? b.controls.left : new VectorEvented(0, 0);
+  b.v = isObject(b.controls.right) ? b.controls.right : new VectorEvented(0, 0);
 
   // TODO: Issue 73
   if (d1 < 0.0001 || d2 < 0.0001) {
@@ -335,7 +335,7 @@ FN.getControlPoints = (a, b, c)  => {
  */
 FN.getReflection = (a, b, relative)  => {
 
-  return new Vector(
+  return new VectorEvented(
     2 * a.x - (b.x + a.x) - (relative ? a.x : 0),
     2 * a.y - (b.y + a.y) - (relative ? a.y : 0)
   );
@@ -582,7 +582,7 @@ NotInUse.getPointAt = (t, obj, pth) => {
         return obj;
       }
 
-      return new Vector(x, y);
+      return new VectorEvented(x, y);
 
 };
 

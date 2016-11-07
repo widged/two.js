@@ -85,7 +85,7 @@ class Matrix {
 
     }
 
-    if (l <= 3) { // Multiply Vector
+    if (l <= 3) { // Multiply VectorEvented
 
       var x, y, z;
       a = a || 0;
@@ -326,7 +326,7 @@ Matrix.Identity = [
  */
 Matrix.Multiply = (A, B, C) => {
 
-  if (B.length <= 3) { // Multiply Vector
+  if (B.length <= 3) { // Multiply VectorEvented
 
     var x, y, z, e = A;
 

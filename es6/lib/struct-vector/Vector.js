@@ -17,40 +17,34 @@ import VectorEventTypes    from './VectorEventTypes';
   * y -- The y value of the vector.
   */
   constructor(x, y) {
-    this.dispatcher = new EventEmitter([VectorEventTypes.change]);
+    this.intern = {
+      dispatcher : undefined,
+    };
     this.state = {
       x :  x || 0,
       y : y || 0
     };
-    this.whenChange();
   }
-
 
   get x() { return this.state.x; }
   set x(v){
     this.state.x = v;
-    this.whenChange('x');
     return this;
   }
 
   get y() { return this.state.y; }
   set y(v) {
     this.state.y = v;
-    this.whenChange('y');
     return this;
-  }
-
-  whenChange(attributeName) {
-    this.dispatcher.emit(VectorEventTypes.change, attributeName);
   }
 
   /**
   Set the x, y properties of the vector to the arguments x, y.
   */
   set(x, y) {
+    var pt = this.state;
     this.state.x = x;
     this.state.y = y;
-    this.whenChange();
     return this;
   }
 
@@ -60,7 +54,6 @@ import VectorEventTypes    from './VectorEventTypes';
   copy(v) {
     this.state.x = v.x;
     this.state.y = v.y;
-    this.whenChange();
     return this;
   }
 
@@ -70,7 +63,6 @@ import VectorEventTypes    from './VectorEventTypes';
   clear() {
     this.state.x = 0;
     this.state.y = 0;
-    this.whenChange();
     return this;
   }
 
@@ -81,7 +73,6 @@ import VectorEventTypes    from './VectorEventTypes';
   add(v1, v2) {
     this.state.x = v1.x + v2.x;
     this.state.y = v1.y + v2.y;
-    this.whenChange();
     return this;
   }
 
@@ -91,7 +82,6 @@ import VectorEventTypes    from './VectorEventTypes';
   addSelf({x,y}) {
     this.state.x += x;
     this.state.y += y;
-    this.whenChange();
     return this;
   }
 
@@ -101,7 +91,6 @@ import VectorEventTypes    from './VectorEventTypes';
   sub(v1, v2) {
     this.state.x = v1.x - v2.x;
     this.state.y = v1.y - v2.y;
-    this.whenChange();
     return this;
   }
 
@@ -111,7 +100,6 @@ import VectorEventTypes    from './VectorEventTypes';
   subSelf({x,y}) {
     this.state.x -= x;
     this.state.y -= y;
-    this.whenChange();
     return this;
   }
 
@@ -121,7 +109,6 @@ import VectorEventTypes    from './VectorEventTypes';
   multiplySelf(v) {
     this.state.x *= v.x;
     this.state.y *= v.y;
-    this.whenChange();
     return this;
   }
 
@@ -131,7 +118,6 @@ import VectorEventTypes    from './VectorEventTypes';
   multiplyScalar(s) {
     this.state.x *= s;
     this.state.y *= s;
-    this.whenChange();
     return this;
   }
 
@@ -142,7 +128,6 @@ import VectorEventTypes    from './VectorEventTypes';
     if (s) {
       this.state.x /= s;
       this.state.y /= s;
-      this.whenChange();
       return this;
     }
     return this.clear();
@@ -187,8 +172,8 @@ import VectorEventTypes    from './VectorEventTypes';
   * Return the distance from the instance to another vector, v.
   */
   distanceTo({x,y}) {
-    var dx = this.state.x - v.x,
-        dy = this.state.y - v.y;
+    var dx = this.state.x - x,
+        dy = this.state.y - y;
     var squared = dx * dx + dy * dy;
     return Math.sqrt(squared);
   }
